@@ -1,3 +1,4 @@
+#读取配置服务
 spring:
 #config-client
   cloud:

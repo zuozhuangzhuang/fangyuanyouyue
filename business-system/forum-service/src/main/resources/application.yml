@@ -9,7 +9,7 @@ server:
 spring:
   application:
 #   服务与服务之间相互调用一般都是根据这个name
-    name: client1
+    name: forum-service
 #zipkin
   zipkin:
     base-url: http://localhost:9411
