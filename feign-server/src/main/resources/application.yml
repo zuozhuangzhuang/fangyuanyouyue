@@ -1,0 +1,24 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+  port: 8765
+
+spring:
+  application:
+    name: service-feign
+
+#断路器开关
+feign:
+    hystrix:
+        enabled: true
+#防止springboot2.0以上出现Unable to connect to Command Metric Stream
+#默认其实的切入点是：/actuator/hystrix.stream 要改成/hystrix.stream
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+base-path: /
