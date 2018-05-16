@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fangyuanyouyue.user.dao.a_userMapper" >
+  <resultMap id="BaseResultMap" type="com.fangyuanyouyue.user.model.a_user" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="nickName" property="nickname" jdbcType="VARCHAR" />
+    <result column="gender" property="gender" jdbcType="CHAR" />
+    <result column="add_time" property="addTime" jdbcType="BIGINT" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="img_url" property="imgUrl" jdbcType="VARCHAR" />
+    <result column="login_pwd" property="loginPwd" jdbcType="VARCHAR" />
+    <result column="is_hx" property="isHx" jdbcType="CHAR" />
+    <result column="alipay" property="alipay" jdbcType="VARCHAR" />
+    <result column="wechat" property="wechat" jdbcType="VARCHAR" />
+    <result column="token" property="token" jdbcType="VARCHAR" />
+    <result column="user_ext_id" property="userExtId" jdbcType="INTEGER" />
+    <result column="pay_pwd" property="payPwd" jdbcType="VARCHAR" />
+    <result column="birth" property="birth" jdbcType="VARCHAR" />
+    <result column="qq_cliend" property="qqCliend" jdbcType="VARCHAR" />
+    <result column="wechat_cliend" property="wechatCliend" jdbcType="VARCHAR" />
+    <result column="is_ext" property="isExt" jdbcType="CHAR" />
+    <result column="hx_pwd" property="hxPwd" jdbcType="VARCHAR" />
+    <result column="autograph" property="autograph" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="fans_count" property="fansCount" jdbcType="INTEGER" />
+    <result column="user_exp_id" property="userExpId" jdbcType="INTEGER" />
+    <result column="contact" property="contact" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, phone, nickName, gender, add_time, balance, status, img_url, login_pwd, is_hx, 
+    alipay, wechat, token, user_ext_id, pay_pwd, birth, qq_cliend, wechat_cliend, is_ext, 
+    hx_pwd, autograph, address, fans_count, user_exp_id, contact
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from a_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from a_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.a_user" >
+    insert into a_user (id, phone, nickName, 
+      gender, add_time, balance, 
+      status, img_url, login_pwd, 
+      is_hx, alipay, wechat, 
+      token, user_ext_id, pay_pwd, 
+      birth, qq_cliend, wechat_cliend, 
+      is_ext, hx_pwd, autograph, 
+      address, fans_count, user_exp_id, 
+      contact)
+    values (#{id,jdbcType=INTEGER}, #{phone,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, 
+      #{gender,jdbcType=CHAR}, #{addTime,jdbcType=BIGINT}, #{balance,jdbcType=DECIMAL}, 
+      #{status,jdbcType=CHAR}, #{imgUrl,jdbcType=VARCHAR}, #{loginPwd,jdbcType=VARCHAR}, 
+      #{isHx,jdbcType=CHAR}, #{alipay,jdbcType=VARCHAR}, #{wechat,jdbcType=VARCHAR}, 
+      #{token,jdbcType=VARCHAR}, #{userExtId,jdbcType=INTEGER}, #{payPwd,jdbcType=VARCHAR}, 
+      #{birth,jdbcType=VARCHAR}, #{qqCliend,jdbcType=VARCHAR}, #{wechatCliend,jdbcType=VARCHAR}, 
+      #{isExt,jdbcType=CHAR}, #{hxPwd,jdbcType=VARCHAR}, #{autograph,jdbcType=VARCHAR}, 
+      #{address,jdbcType=VARCHAR}, #{fansCount,jdbcType=INTEGER}, #{userExpId,jdbcType=INTEGER}, 
+      #{contact,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.fangyuanyouyue.user.model.a_user" >
+    insert into a_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="nickname != null" >
+        nickName,
+      </if>
+      <if test="gender != null" >
+        gender,
+      </if>
+      <if test="addTime != null" >
+        add_time,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="imgUrl != null" >
+        img_url,
+      </if>
+      <if test="loginPwd != null" >
+        login_pwd,
+      </if>
+      <if test="isHx != null" >
+        is_hx,
+      </if>
+      <if test="alipay != null" >
+        alipay,
+      </if>
+      <if test="wechat != null" >
+        wechat,
+      </if>
+      <if test="token != null" >
+        token,
+      </if>
+      <if test="userExtId != null" >
+        user_ext_id,
+      </if>
+      <if test="payPwd != null" >
+        pay_pwd,
+      </if>
+      <if test="birth != null" >
+        birth,
+      </if>
+      <if test="qqCliend != null" >
+        qq_cliend,
+      </if>
+      <if test="wechatCliend != null" >
+        wechat_cliend,
+      </if>
+      <if test="isExt != null" >
+        is_ext,
+      </if>
+      <if test="hxPwd != null" >
+        hx_pwd,
+      </if>
+      <if test="autograph != null" >
+        autograph,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="fansCount != null" >
+        fans_count,
+      </if>
+      <if test="userExpId != null" >
+        user_exp_id,
+      </if>
+      <if test="contact != null" >
+        contact,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        #{gender,jdbcType=CHAR},
+      </if>
+      <if test="addTime != null" >
+        #{addTime,jdbcType=BIGINT},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="imgUrl != null" >
+        #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPwd != null" >
+        #{loginPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isHx != null" >
+        #{isHx,jdbcType=CHAR},
+      </if>
+      <if test="alipay != null" >
+        #{alipay,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null" >
+        #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="userExtId != null" >
+        #{userExtId,jdbcType=INTEGER},
+      </if>
+      <if test="payPwd != null" >
+        #{payPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="birth != null" >
+        #{birth,jdbcType=VARCHAR},
+      </if>
+      <if test="qqCliend != null" >
+        #{qqCliend,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatCliend != null" >
+        #{wechatCliend,jdbcType=VARCHAR},
+      </if>
+      <if test="isExt != null" >
+        #{isExt,jdbcType=CHAR},
+      </if>
+      <if test="hxPwd != null" >
+        #{hxPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="autograph != null" >
+        #{autograph,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="fansCount != null" >
+        #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="userExpId != null" >
+        #{userExpId,jdbcType=INTEGER},
+      </if>
+      <if test="contact != null" >
+        #{contact,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.fangyuanyouyue.user.model.a_user" >
+    update a_user
+    <set >
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickName = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="gender != null" >
+        gender = #{gender,jdbcType=CHAR},
+      </if>
+      <if test="addTime != null" >
+        add_time = #{addTime,jdbcType=BIGINT},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="imgUrl != null" >
+        img_url = #{imgUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="loginPwd != null" >
+        login_pwd = #{loginPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="isHx != null" >
+        is_hx = #{isHx,jdbcType=CHAR},
+      </if>
+      <if test="alipay != null" >
+        alipay = #{alipay,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null" >
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="token != null" >
+        token = #{token,jdbcType=VARCHAR},
+      </if>
+      <if test="userExtId != null" >
+        user_ext_id = #{userExtId,jdbcType=INTEGER},
+      </if>
+      <if test="payPwd != null" >
+        pay_pwd = #{payPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="birth != null" >
+        birth = #{birth,jdbcType=VARCHAR},
+      </if>
+      <if test="qqCliend != null" >
+        qq_cliend = #{qqCliend,jdbcType=VARCHAR},
+      </if>
+      <if test="wechatCliend != null" >
+        wechat_cliend = #{wechatCliend,jdbcType=VARCHAR},
+      </if>
+      <if test="isExt != null" >
+        is_ext = #{isExt,jdbcType=CHAR},
+      </if>
+      <if test="hxPwd != null" >
+        hx_pwd = #{hxPwd,jdbcType=VARCHAR},
+      </if>
+      <if test="autograph != null" >
+        autograph = #{autograph,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="fansCount != null" >
+        fans_count = #{fansCount,jdbcType=INTEGER},
+      </if>
+      <if test="userExpId != null" >
+        user_exp_id = #{userExpId,jdbcType=INTEGER},
+      </if>
+      <if test="contact != null" >
+        contact = #{contact,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.fangyuanyouyue.user.model.a_user" >
+    update a_user
+    set phone = #{phone,jdbcType=VARCHAR},
+      nickName = #{nickname,jdbcType=VARCHAR},
+      gender = #{gender,jdbcType=CHAR},
+      add_time = #{addTime,jdbcType=BIGINT},
+      balance = #{balance,jdbcType=DECIMAL},
+      status = #{status,jdbcType=CHAR},
+      img_url = #{imgUrl,jdbcType=VARCHAR},
+      login_pwd = #{loginPwd,jdbcType=VARCHAR},
+      is_hx = #{isHx,jdbcType=CHAR},
+      alipay = #{alipay,jdbcType=VARCHAR},
+      wechat = #{wechat,jdbcType=VARCHAR},
+      token = #{token,jdbcType=VARCHAR},
+      user_ext_id = #{userExtId,jdbcType=INTEGER},
+      pay_pwd = #{payPwd,jdbcType=VARCHAR},
+      birth = #{birth,jdbcType=VARCHAR},
+      qq_cliend = #{qqCliend,jdbcType=VARCHAR},
+      wechat_cliend = #{wechatCliend,jdbcType=VARCHAR},
+      is_ext = #{isExt,jdbcType=CHAR},
+      hx_pwd = #{hxPwd,jdbcType=VARCHAR},
+      autograph = #{autograph,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      fans_count = #{fansCount,jdbcType=INTEGER},
+      user_exp_id = #{userExpId,jdbcType=INTEGER},
+      contact = #{contact,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="getList" resultType="com.fangyuanyouyue.user.model.a_user">
+    select * from a_user
+  </select>
+</mapper>

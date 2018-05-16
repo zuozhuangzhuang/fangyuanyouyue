@@ -1,31 +1,42 @@
 package com.fangyuanyouyue.user;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableEurekaClient
-@RestController
+@EnableSwagger2
 public class UserServiceApplication {
+	/**
+	 * ************************************************************************
+	 * **                              _oo0oo_                               **
+	 * **                             o8888888o                              **
+	 * **                             88" . "88                              **
+	 * **                             (| -_- |)                              **
+	 * **                             0\  =  /0                              **
+	 * **                           ___/'---'\___                            **
+	 * **                        .' \\\|     |// '.                          **
+	 * **                       / \\\|||  :  |||// \\                        **
+	 * **                      / _ ||||| -:- |||||- \\                       **
+	 * **                      | |  \\\\  -  /// |   |                       **
+	 * **                      | \_|  ''\---/''  |_/ |                       **
+	 * **                      \  .-\__  '-'  __/-.  /                       **
+	 * **                    ___'. .'  /--.--\  '. .'___                     **
+	 * **                 ."" '<  '.___\_<|>_/___.' >'  "".                  **
+	 * **                | | : '-  \'.;'\ _ /';.'/ - ' : | |                 **
+	 * **                \  \ '_.   \_ __\ /__ _/   .-' /  /                 **
+	 * **            ====='-.____'.___ \_____/___.-'____.-'=====             **
+	 * **                              '=---='                               **
+	 * ************************************************************************
+	 * **                        佛祖保佑      启动正常                        **
+	 * ************************************************************************
+	 *
+	 */
 
 	public static void main(String[] args) {
 		SpringApplication.run(UserServiceApplication.class, args);
 	}
 
-	private static final Logger LOG = Logger.getLogger(UserServiceApplication.class.getName());
-	@Value("${server.port}")
-	String port;
-	@RequestMapping("/user")
-	public String user(@RequestParam String name) {
-		LOG.log(Level.INFO, "calling trace user-service  ");
-		return "user "+name+",i am from port:" +port;
-	}
 }
