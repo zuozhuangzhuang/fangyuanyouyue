@@ -1,8 +1,8 @@
-package com.fangyuanyouyue.user.user.impl;
+package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.UserDao;
 import com.fangyuanyouyue.user.model.User;
-import com.fangyuanyouyue.user.user.UserService;
+import com.fangyuanyouyue.user.service.UserService;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.fangyuanyouyue.user.user;
+package com.fangyuanyouyue.user.service;
 
 import com.fangyuanyouyue.user.model.User;
 

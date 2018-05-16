@@ -327,7 +327,11 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="getList" resultType="com.fangyuanyouyue.user.model.a_user">
+  <select id="getList" resultMap="BaseResultMap">
     select * from a_user
+  </select>
+
+  <select id="getUserByPhone" parameterType="String" resultMap="BaseResultMap">
+    select * from a_user where phone like #{phone,jdbcType=VARCHAR}
   </select>
 </mapper>

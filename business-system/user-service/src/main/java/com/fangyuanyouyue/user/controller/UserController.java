@@ -4,7 +4,7 @@ import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.User;
 import com.fangyuanyouyue.user.param.BaseParam;
-import com.fangyuanyouyue.user.user.UserService;
+import com.fangyuanyouyue.user.service.UserService;
 import com.fangyuanyouyue.user.utils.Status;
 import com.github.pagehelper.PageHelper;
 import io.swagger.annotations.*;

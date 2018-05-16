@@ -20,4 +20,6 @@ public interface a_userMapper {
     int updateByPrimaryKey(a_user record);
 
     List<a_user> getList();
+
+    a_user getUserByPhone(String phone);
 }
