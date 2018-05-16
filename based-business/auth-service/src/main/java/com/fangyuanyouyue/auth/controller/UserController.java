@@ -22,13 +22,10 @@ import java.util.logging.Level;
 @Controller
 @RequestMapping(value = "/user")
 public class UserController extends BaseController{
-    @Value("${service_name}")
-    String service_name;
 
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserService userService;
-
     @ApiOperation(value="新增用户", notes="新增用户接口")
     @ResponseBody
     @PostMapping("/add")
@@ -55,18 +52,15 @@ public class UserController extends BaseController{
     }
 
 
-//    @ApiOperation(value="index", notes="index")
-//    @GetMapping(value = "/index")
-//    public String index(){
-//        return userService.index();
-//    }
 
+//    @ApiOperation(value="index", notes="index")
     @ApiOperation(value="hello", notes="hello")
     @GetMapping(value = "/hello")
     public String hello() {
         return "Hello World";
     }
 
+    //    }
     @ApiOperation(value="getUser", notes="getUser")
     @GetMapping(value = "/getUser")
     public User getUser(BaseParam param) {
@@ -75,6 +69,7 @@ public class UserController extends BaseController{
         return user;
     }
 
+    //        return userService.index();
     @ApiOperation(value="获取信息", notes="根据type获取信息")
     @ApiImplicitParam(name = "type", value = "类型", required = true, dataType = "String",paramType = "query")
     @ApiResponses(value = {@ApiResponse(code = 200,message = "请求成功",response = String.class)})
@@ -100,16 +95,20 @@ public class UserController extends BaseController{
         }
     }
 
-    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(AuthServiceApplication.class.getName());
+    //    public String index(){
+
+    //    @GetMapping(value = "/index")
+    @Value("${service_name}")
+    String service_name;
     @Value("${server.port}")
     String port;
-
     @ApiOperation(value="auth", notes="auth测试")
     @ApiImplicitParam(name = "name", value = "名称", dataType = "String",paramType = "query")
     @PostMapping("/auth")
     @ResponseBody
     public String auth(@RequestParam String name) {
-        LOG.log(Level.INFO, "calling trace based-business  ");
+        log.debug("calling trace based-business  ");
         return service_name + ",auth "+name+",i am from port:" +port;
     }
+
 }
