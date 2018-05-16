@@ -4,88 +4,50 @@ import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.User;
 import com.fangyuanyouyue.user.param.BaseParam;
+import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.UserService;
+import com.fangyuanyouyue.user.utils.MD5Util;
 import com.fangyuanyouyue.user.utils.Status;
-import com.github.pagehelper.PageHelper;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/user")
 public class UserController extends BaseController{
-
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserService userService;
-    @ApiOperation(value="新增用户", notes="新增用户接口")
-    @ResponseBody
-    @PostMapping("/add")
-    public int addUser(User user){
-        return userService.addUser(user);
-    }
 
-    @ApiOperation(value="分页获取用户列表", notes="获取用户列表")
+
+    @ApiOperation(value="获取用户列表", notes="获取用户列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "pageNum", dataType = "int", name = "pageNum", value = "页数", required = true),
-            @ApiImplicitParam(paramType = "pageSize", dataType = "int", name = "pageSize", value = "每页数量", required = true)
+            @ApiImplicitParam(name = "start", value = "起始页", required = true, dataType = "Integer",paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, dataType = "Integer",paramType = "query")
     })
-    @ApiResponses(value = {@ApiResponse(code = 200,message = "请求成功",response = String.class)})
     @ResponseBody
-    @GetMapping("/all")
-    public Object findAllUser(
-            @RequestParam(name = "pageNum", required = false, defaultValue = "1")
-                    int pageNum,
-            @RequestParam(name = "pageSize", required = false, defaultValue = "10")
-                    int pageSize){
-        //开始分页
-        PageHelper.startPage(pageNum,pageSize);
-        return userService.findAllUser(pageNum,pageSize);
-    }
-
-
-
-//    @ApiOperation(value="index", notes="index")
-    @ApiOperation(value="hello", notes="hello")
-    @GetMapping(value = "/hello")
-    public String hello() {
-        return "Hello World";
-    }
-
-    //    }
-    @ApiOperation(value="getUser", notes="getUser")
-    @GetMapping(value = "/getUser")
-    public User getUser(BaseParam param) {
-        User user=new User();
-        user.setUserName("小明");
-        return user;
-    }
-
-    //        return userService.index();
-    @ApiOperation(value="获取信息", notes="根据type获取信息")
-    @ApiImplicitParam(name = "type", value = "类型", required = true, dataType = "String",paramType = "query")
-    @ApiResponses(value = {@ApiResponse(code = 200,message = "请求成功",response = String.class)})
-    @PostMapping(value = "/getResult")
-    @ResponseBody
-    public String getResult(BaseParam param) throws IOException {
+    @GetMapping(value="/getList")
+    public String getList(BaseParam param) throws IOException {
         try{
-            log.info("----》测试获取结果《----");
+            log.info("----》获取用户列表《----");
             log.info("参数："+param.toString());
-            System.out.println(param.toString());
-            System.out.println(param.getType());
-            if(StringUtils.isEmpty(param.getType())){
-                return toError("类型为空！");
+            if(param.getStart() == null || param.getLimit() == null){
+                return toError("分页参数异常！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"哟，宝贝儿，被你发现我了！");
-            if(StringUtils.isNotEmpty(param.getName())) {
-                result.put("user",new User());
-            }
+            List<User> a_users = userService.getList(param.getStart(),param.getLimit());
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"请求成功！");
+            result.put("a_users",a_users);
             return toResult(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,20 +55,108 @@ public class UserController extends BaseController{
         }
     }
 
-    //    public String index(){
 
-    //    @GetMapping(value = "/index")
-    @Value("${name}")
-    String name;
-    @Value("${server.port}")
-    String port;
-    @ApiOperation(value="auth", notes="auth测试")
-    @ApiImplicitParam(name = "name", value = "名称", dataType = "String",paramType = "query")
-    @PostMapping("/auth")
+    @ApiOperation(value="用户登录", notes="用户登录")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String",paramType = "query"),
+        @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String",paramType = "query")
+    })
+    @PostMapping(value="/login")
     @ResponseBody
-    public String auth(@RequestParam String name) {
-        log.info("calling trace based-business  ");
-        return name + ",auth "+name+",i am from port:" +port;
+    public String login(UserParam param) throws IOException {
+        try{
+            log.info("----》用户登录《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getPhone())){
+                return toError("手机号码不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getLoginPwd())){
+                return toError("密码不能为空！");
+            }
+            //MD5加密
+            param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
+            //假设成功
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"登陆成功！");
+            return toResult(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
+
+    @ApiOperation(value="注册", notes="注册")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String",paramType = "query")
+    })
+    @PostMapping(value="/regist")
+    @ResponseBody
+    public String regist(UserParam param) throws IOException {
+        try{
+            log.info("----》注册《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getPhone())){
+                return toError("手机号码不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getLoginPwd())){
+                return toError("登录密码不能为空！");
+            }
+            User a_user = userService.getUserByPhone(param.getPhone());
+            if(a_user != null){
+                return toError("手机号码已被注册！");
+            }
+            //MD5加密
+            param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
+            //假设成功
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"注册成功！");
+            result.put("param",param);
+            return toResult(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
+    @ApiOperation(value="实名认证", notes="实名认证")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "cardNo", value = "身份证号", required = true, dataType = "String",paramType = "query")
+    })
+    @PostMapping(value="/modify")
+    @ResponseBody
+    public String modify(UserParam param) throws IOException {
+        try{
+            log.info("----》实名认证《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError("用户token不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getRealName())){
+                return toError("用户真实姓名不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getCardNo())){
+                return toError("用户身份照号码不能为空！");
+            }
+            User user= userService.getUserByToken(param.getToken());
+            if(user==null){
+                return toError("999","登录超时，请重新登录！");
+            }
+            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+                return toError("999","您的账号已被冻结，请联系管理员！");
+            }
+            //MD5加密
+            param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
+            //假设成功
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"注册成功！");
+            result.put("param",param);
+            return toResult(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
     }
 
 }

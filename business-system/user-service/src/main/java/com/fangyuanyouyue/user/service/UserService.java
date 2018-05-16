@@ -5,8 +5,11 @@ import com.fangyuanyouyue.user.model.User;
 import java.util.List;
 
 public interface UserService {
+    List<User> getList(int pageNum, int pageSize);
 
-    int addUser(User user);
+    User selectByPrimaryKey(Integer id);
 
-    List<User> findAllUser(int pageNum, int pageSize);
+    User getUserByPhone(String phone);
+
+    User getUserByToken(String token);
 }
