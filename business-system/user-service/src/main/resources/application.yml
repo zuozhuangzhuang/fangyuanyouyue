@@ -36,6 +36,12 @@ spring:
       poolPreparedStatements: true
       maxPoolPreparedStatementPerConnectionSize: 20
       maxOpenPreparedStatements: 20
+#bus
+  rabbitmq:
+    host: localhost
+    port: 5672
+#    username:
+#    password:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
