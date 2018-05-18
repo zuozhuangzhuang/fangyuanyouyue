@@ -3,7 +3,7 @@ eureka:
     serviceUrl:
 #     服务注册中心的地址
       defaultZone: http://localhost:8761/eureka/
-#0 端口随机
+#为0 端口随机
 server:
   port: 0
 
@@ -40,8 +40,12 @@ spring:
   rabbitmq:
     host: localhost
     port: 5672
-#    username:
-#    password:
+    username: guest
+    password: guest
+  cloud:
+    bus:
+      trace:
+        enabled: true
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -59,3 +63,9 @@ pagehelper:
     supportMethodsArguments: true
     params: count=countSql
     returnPageInfo: check
+#springcloud-bus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ["bus-refresh"]
