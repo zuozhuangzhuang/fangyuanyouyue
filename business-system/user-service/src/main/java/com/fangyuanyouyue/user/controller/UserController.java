@@ -3,58 +3,43 @@ package com.fangyuanyouyue.user.controller;
 import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.User;
-import com.fangyuanyouyue.user.param.BaseParam;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.UserService;
 import com.fangyuanyouyue.user.utils.MD5Util;
 import com.fangyuanyouyue.user.utils.Status;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
-import java.util.List;
 
 @Controller
 @RequestMapping(value = "/user")
+@Api(description = "用户系统Controller")
 public class UserController extends BaseController{
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserService userService;
+    @Value("${name}")
+    String name;
+    @Value("${version}")
+    String version;
 
-
-    @ApiOperation(value="获取用户列表", notes="获取用户列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "start", value = "起始页", required = true, dataType = "Integer",paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "每页数量", required = true, dataType = "Integer",paramType = "query")
-    })
+    @RequestMapping("/hi")
     @ResponseBody
-    @GetMapping(value="/getList")
-    public String getList(BaseParam param) throws IOException {
-        try{
-            log.info("----》获取用户列表《----");
-            log.info("参数："+param.toString());
-            if(param.getStart() == null || param.getLimit() == null){
-                return toError("分页参数异常！");
-            }
-            List<User> a_users = userService.getList(param.getStart(),param.getLimit());
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"请求成功！");
-            result.put("a_users",a_users);
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
+    public String hi(){
+        return "hi,I am "+name;
     }
-
 
     @ApiOperation(value="用户登录", notes="用户登录")
     @ApiImplicitParams({
@@ -75,7 +60,7 @@ public class UserController extends BaseController{
             }
             //MD5加密
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-            //假设成功
+            //TODO 假设成功
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"登陆成功！");
             return toResult(result);
         } catch (Exception e) {
@@ -108,9 +93,11 @@ public class UserController extends BaseController{
             }
             //MD5加密
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-            //假设成功
+            //TODO 假设成功
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"注册成功！");
-            result.put("param",param);
+//            result.put("param",param);
+            result.put("name",name);
+            result.put("version",version);
             return toResult(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,8 +136,8 @@ public class UserController extends BaseController{
             }
             //MD5加密
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-            //假设成功
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"注册成功！");
+            //TODO 假设成功
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(),"实名认证成功！");
             result.put("param",param);
             return toResult(result);
         } catch (Exception e) {
@@ -158,5 +145,7 @@ public class UserController extends BaseController{
             return toError("系统繁忙，请稍后再试！");
         }
     }
+
+
 
 }
