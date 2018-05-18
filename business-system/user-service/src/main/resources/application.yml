@@ -42,11 +42,16 @@ spring:
     port: 5672
     username: guest
     password: guest
+#springcloud-bus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ["health","info","bus-refresh"]
   cloud:
     bus:
       trace:
         enabled: true
-
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.fangyuanyouyue.user.model
@@ -63,9 +68,3 @@ pagehelper:
     supportMethodsArguments: true
     params: count=countSql
     returnPageInfo: check
-#springcloud-bus
-management:
-  endpoints:
-    web:
-      exposure:
-        include: ["bus-refresh"]

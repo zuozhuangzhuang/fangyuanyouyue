@@ -26,6 +26,7 @@ import java.io.IOException;
 @Controller
 @RequestMapping(value = "/user")
 @Api(description = "用户系统Controller")
+@RefreshScope
 public class UserController extends BaseController{
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
