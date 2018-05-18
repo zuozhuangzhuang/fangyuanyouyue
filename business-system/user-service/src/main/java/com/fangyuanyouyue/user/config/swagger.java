@@ -1,13 +1,17 @@
 package com.fangyuanyouyue.user.config;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
 
 /**
  * swagger配置类
@@ -38,6 +42,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 // response：抛出异常的类
 // @ApiModel：描述一个Model的信息（这种一般用在post创建的时候，使用@RequestBody这样的场景，请求参数无法使用@ApiImplicitParam注解进行描述的时候）
 // @ApiModelProperty：描述一个model的属性
+// contact：name 作者 email 作者邮箱地址
 @Configuration
 public class swagger {
 
@@ -47,16 +52,18 @@ public class swagger {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.fangyuanyouyue.user.controller"))
+                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build();
     }
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("这里是文档界面标题")
-                .description("这里是文档界面介绍")
-                .termsOfServiceUrl("这是什么")
-                .version("版本1.0吧")
+                .title("小方圆用户系统api")
+                .description("用户系统接口文档说明")
+                .contact(new Contact("左壮壮", "", "zuozhuang_zzz@163.com"))
+                .version("1.0")
                 .build();
     }
+
 }
