@@ -1,13 +1,17 @@
 package com.fangyuanyouyue.auth.config;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger.web.UiConfiguration;
 
 /**
  * swagger配置类
@@ -41,22 +45,24 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class swagger {
 
+
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.fangyuanyouyue.auth.controller"))
+                .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
                 .paths(PathSelectors.any())
                 .build();
     }
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("这里是文档界面标题")
-                .description("这里是文档界面介绍")
-                .termsOfServiceUrl("这是什么")
-                .version("版本1.0吧")
+                .title("小方圆权限系统api")
+                .description("权限系统接口文档说明")
+                .contact(new Contact("左壮壮", "", "zuozhuang_zzz@163.com"))
+                .version("1.0")
                 .build();
     }
 }
