@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+/based-business/auth-service/auth-service.iml
+/based-framework/config-server/config-server.iml
+/based-framework/eureka-server/eureka-server.iml
+/based-framework/zuul-server/zuul-server.iml
+/business-system/user-service/user-service.iml
+/based-framework/feign-server/feign-server.iml
+/based-framework/zipkin-server/zipkin-server.iml
+/based-framework/config-server/target/
+/based-framework/zuul-server/target/
+/business-system/user-service/target/
+/based-framework/eureka-server/target/
