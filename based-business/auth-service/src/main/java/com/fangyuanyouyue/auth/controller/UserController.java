@@ -1,6 +1,5 @@
 package com.fangyuanyouyue.auth.controller;
 
-import com.fangyuanyouyue.auth.AuthServiceApplication;
 import com.fangyuanyouyue.auth.client.BaseClientResult;
 import com.fangyuanyouyue.auth.client.BaseController;
 import com.fangyuanyouyue.auth.model.User;
@@ -17,10 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 @Controller
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/auth")
+@Api(description = "权限系统Controller")
 public class UserController extends BaseController{
 
     protected Logger log = Logger.getLogger(this.getClass());
@@ -77,7 +76,7 @@ public class UserController extends BaseController{
     @ResponseBody
     public String getResult(BaseParam param) throws IOException {
         try{
-            log.info("----》测试获取结果《----");
+            log.info("----》获取信息《----");
             log.info("参数："+param.toString());
             System.out.println(param.toString());
             System.out.println(param.getType());
