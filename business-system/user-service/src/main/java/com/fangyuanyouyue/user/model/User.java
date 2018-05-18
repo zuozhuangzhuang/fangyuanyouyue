@@ -5,53 +5,53 @@ import java.math.BigDecimal;
 public class User {
     private Integer id;
 
-    private String phone;
+    private String phone;//手机号
 
-    private String nickname;
+    private String nickname;//昵称
 
-    private String gender;
+    private String gender;//性别
 
-    private Long addTime;
+    private Long addTime;//添加时间
 
-    private BigDecimal balance;
+    private BigDecimal balance;//余额
 
-    private String status;
+    private String status;//状态
 
-    private String imgUrl;
+    private String imgUrl;//头像地址
 
-    private String loginPwd;
+    private String loginPwd;//登录密码
 
-    private String isHx;
+    private String isHx;//是否注册环信0是  1否
 
-    private String alipay;
+    private String alipay;//支付宝账号
 
-    private String wechat;
+    private String wechat;//微信账号
 
-    private String token;
+    private String token;//用户标识
 
-    private Integer userExtId;
+    private Integer userExtId;//用户实名认证表ID
 
-    private String payPwd;
+    private String payPwd;//支付密码
 
-    private String birth;
+    private String birth;//出生日期
 
-    private String qqCliend;
+    private String qqCliend;//三方qq识别号
 
-    private String wechatCliend;
+    private String wechatCliend;//三方微信识别号
 
-    private String isExt;
+    private String isExt;//是否进行实名认证0未申请  1已申请
 
-    private String hxPwd;
+    private String hxPwd;//环信密码
 
-    private String autograph;
+    private String autograph;//签名
 
-    private String address;
+    private String address;//用户所在地
 
-    private Integer fansCount;
+    private Integer fansCount;//粉丝数量基数(后台可编辑)
 
-    private Integer userExpId;
+    private Integer userExpId;//经验值外键
 
-    private String contact;
+    private String contact;//联系方式
 
     public Integer getId() {
         return id;
