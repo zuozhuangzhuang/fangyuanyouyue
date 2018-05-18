@@ -12,11 +12,17 @@ spring:
     name: service-zuul
 
 zuul:
+  host:
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
   routes:
-    api-a:
+    feign-server:
 #以/feign开头的请求都转发给service-feign服务
       path: /feign/*
-      serviceId: service-feign
-#    api-b:
-#      path: /api-b/**
-#      serviceId: service-feign
+      serviceId: feign-server
+    auth-service:
+      path: /auth/**
+      serviceId: auth-service
+    user-service:
+      path: /user/**
+      serviceId: user-service
