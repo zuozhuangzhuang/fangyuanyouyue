@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.service;
 
 import com.fangyuanyouyue.user.model.User;
+import com.fangyuanyouyue.user.param.UserParam;
 
 import java.util.List;
 
@@ -27,4 +28,11 @@ public interface UserService {
      * @return
      */
     User getUserByToken(String token);
+
+    /**
+     * 修改用户信息
+     * @param param
+     * @return
+     */
+    void updateByPrimaryKey(UserParam param);
 }

@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-@ApiModel(value = "用户相关参数")
+//@ApiModel(value = "用户相关参数")
 public class UserParam extends BaseParam {
 	private String phone;//手机号，账号
 	private String loginPwd;//登录密码

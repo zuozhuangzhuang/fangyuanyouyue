@@ -9,7 +9,7 @@ public class User {
 
     private String nickname;//昵称
 
-    private String gender;//性别
+    private String gender;//性别  0女 1男
 
     private Long addTime;//添加时间
 

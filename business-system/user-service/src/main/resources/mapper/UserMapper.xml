@@ -334,4 +334,7 @@
   <select id="getUserByPhone" parameterType="String" resultMap="BaseResultMap">
     select * from a_user where phone like #{phone,jdbcType=VARCHAR}
   </select>
+  <select id="getUserByToken" parameterType="String" resultMap="BaseResultMap">
+    select * from a_user where token = #{token,jdbcType=VARCHAR}
+  </select>
 </mapper>
