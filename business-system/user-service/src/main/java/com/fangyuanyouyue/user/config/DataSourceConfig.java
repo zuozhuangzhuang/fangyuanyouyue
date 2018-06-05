@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan("com.raid.dao")
+@MapperScan("com.fangyuanyouyue.user.dao")
 @EnableTransactionManagement
 public class DataSourceConfig {
 
