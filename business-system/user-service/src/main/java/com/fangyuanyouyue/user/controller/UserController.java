@@ -31,15 +31,15 @@ public class UserController extends BaseController {
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserService userService;
-    @Value("${name}")
+    @Value("${name:errorName}")
     String name;
-    @Value("${version}")
+    @Value("${version:errorVersion}")
     String version;
 
     @RequestMapping("/hi")
     @ResponseBody
     public String hi() {
-        return "hi,I am " + name;
+        return "hi,I am " + name + ",version is " + version;
     }
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
@@ -96,7 +96,7 @@ public class UserController extends BaseController {
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
             //TODO 注册
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "注册成功！");
-//            result.put("param",param);
+            result.put("param",param);
             result.put("name", name);
             result.put("version", version);
             return toResult(result);
