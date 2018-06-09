@@ -16,12 +16,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/user")
@@ -35,6 +39,9 @@ public class UserController extends BaseController {
     String name;
     @Value("${version:errorVersion}")
     String version;
+
+    @Autowired
+    private RestTemplate  restTemplate;
 
     @RequestMapping("/hi")
     @ResponseBody
@@ -62,6 +69,11 @@ public class UserController extends BaseController {
             //MD5加密
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
             //TODO 用户登录
+//            RestTemplate restTemplate = new RestTemplate();
+//            Map<String,Object> map = new HashMap<>();
+//            map.put("token","62FY1517261146429");
+//            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://goods-service/goods/goodsList","",String.class,map);
+//            System.out.println("猜猜我是啥："+responseEntity);
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "登陆成功！");
             return toResult(result);
         } catch (Exception e) {
@@ -724,6 +736,14 @@ public class UserController extends BaseController {
             if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
+            Map<String,Object> map = new HashMap<>();
+            map.put("classify","5");
+            map.put("start","0");
+            map.put("limit","10");
+//            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8769/user/user/sign","",String.class,map);
+//            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8769/goods/goods/goodsList",String.class,map);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://goods-service/goods/goodsList",String.class,map);
+            System.out.println("猜猜我是啥："+responseEntity);
             //TODO 签到
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "签到成功！");
             return toResult(result);
