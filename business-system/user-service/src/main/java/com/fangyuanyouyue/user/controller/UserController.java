@@ -2,10 +2,13 @@ package com.fangyuanyouyue.user.controller;
 
 import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
-import com.fangyuanyouyue.user.model.User;
+import com.fangyuanyouyue.user.model.UserAddressInfo;
+import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.param.UserParam;
+import com.fangyuanyouyue.user.service.SchedualGoodsService;
 import com.fangyuanyouyue.user.service.UserService;
 import com.fangyuanyouyue.user.utils.MD5Util;
+import com.fangyuanyouyue.user.utils.ServiceException;
 import com.fangyuanyouyue.user.utils.Status;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -16,16 +19,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Controller
 @RequestMapping(value = "/user")
@@ -35,24 +35,62 @@ public class UserController extends BaseController {
     protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserService userService;
-    @Value("${name:errorName}")
-    String name;
-    @Value("${version:errorVersion}")
-    String version;
+
 
     @Autowired
-    private RestTemplate  restTemplate;
+    private SchedualGoodsService schedualGoodsService;
 
-    @RequestMapping("/hi")
+    @ApiOperation(value = "注册", notes = "注册",position = 0)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "loginPwd", value = "登录密码",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "nickName", value = "昵称",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "headImgUrl", value = "头像地址", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序", required = true, dataType = "int", paramType = "query")
+
+    })
+    @PostMapping(value = "/regist")
     @ResponseBody
-    public String hi() {
-        return "hi,I am " + name + ",version is " + version;
+    public String regist(UserParam param) throws IOException {
+        try {
+            log.info("----》注册《----");
+            log.info("参数：" + param.toString());
+            if(param.getRegPlatform() == null){
+                return toError("注册平台不能为空！");
+            }
+            if (StringUtils.isEmpty(param.getPhone())) {
+                return toError("手机号码不能为空！");
+            }
+            if (StringUtils.isEmpty(param.getLoginPwd())) {
+                return toError("登录密码不能为空！");
+            }
+            if (StringUtils.isEmpty(param.getNickName())) {
+                return toError("用户昵称不能为空！");
+            }
+            UserInfo userInfo = userService.getUserByPhone(param.getPhone());
+            if (userInfo != null) {
+                return toError("手机号码已被注册！");
+            }
+            //TODO 注册
+            userInfo = userService.regist(param);
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "注册成功！");
+            result.put("userInfo",userInfo);
+            return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
     }
 
-    @ApiOperation(value = "用户登录", notes = "用户登录")
+    @ApiOperation(value = "用户登录", notes = "用户登录",position = 1)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "lastLoginPlatform", value = "登录平台 1安卓 2IOS 3小程序", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/login")
     @ResponseBody
@@ -66,63 +104,151 @@ public class UserController extends BaseController {
             if (StringUtils.isEmpty(param.getLoginPwd())) {
                 return toError("密码不能为空！");
             }
+            if(param.getLastLoginPlatform() == null){
+                return toError("登录平台不能为空！");
+            }
             //MD5加密
             param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
             //TODO 用户登录
-//            RestTemplate restTemplate = new RestTemplate();
-//            Map<String,Object> map = new HashMap<>();
-//            map.put("token","62FY1517261146429");
-//            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://goods-service/goods/goodsList","",String.class,map);
-//            System.out.println("猜猜我是啥："+responseEntity);
+            UserInfo userInfo = userService.login(param.getPhone(),param.getLoginPwd(),param.getLastLoginPlatform());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "登陆成功！");
+            result.put("userInfo",userInfo);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-
-    @ApiOperation(value = "注册", notes = "注册")
+    @ApiOperation(value = "三方注册", notes = "三方注册",position = 2)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "unionId", value = "第三方唯一ID",required = true,  dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序",required = true,  dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博",required = true,  dataType = "int", paramType = "query")
     })
-    @PostMapping(value = "/regist")
+    @PostMapping(value = "/thirdRegister")
     @ResponseBody
-    public String regist(UserParam param) throws IOException {
+    public String thirdRegister(UserParam param) throws IOException {
         try {
-            log.info("----》注册《----");
-            log.info("参数：" + param.toString());
-            if (StringUtils.isEmpty(param.getPhone())) {
-                return toError("手机号码不能为空！");
+            log.info("----》三方注册《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getUnionId())){
+                return toError("第三方唯一ID不能为空！");
             }
-            if (StringUtils.isEmpty(param.getLoginPwd())) {
-                return toError("登录密码不能为空！");
+            if(StringUtils.isEmpty(param.getThirdNickName())){
+                return toError("第三方账号昵称不能为空！");
             }
-            User a_user = userService.getUserByPhone(param.getPhone());
-            if (a_user != null) {
-                return toError("手机号码已被注册！");
+            if(param.getRegType() == null){
+                return toError("注册来源不能为空！");
             }
-            //MD5加密
-            param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-            //TODO 注册
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "注册成功！");
-            result.put("param",param);
-            result.put("name", name);
-            result.put("version", version);
+            if(param.getRegPlatform() == null){
+                return toError("注册平台不能为空！");
+            }
+            if(param.getType() == null){
+                return toError("注册类型不能为空！");
+            }
+            //TODO 三方注册：先注册用户，再添加第三方登录信息
+            UserInfo userInfo = userService.thirdRegister(param);
+
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "三方注册成功！");
+            result.put("userInfo",userInfo);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-    @ApiOperation(value = "实名认证", notes = "实名认证")
+    @ApiOperation(value = "APP三方登录", notes = "APP三方登录",position = 3)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "cardNo", value = "身份证号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "realName", value = "真实姓名", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "lastLoginPlatform", value = "登录平台 1安卓 2IOS 3小程序", required = true, dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/thirdLogin")
+    @ResponseBody
+    public String thirdLogin(UserParam param) throws IOException {
+        try {
+            log.info("----》APP三方登录《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getUnionId())){
+                return toError("第三方唯一ID不能为空！");
+            }
+            if(param.getType() == null){
+                return toError("注册类型不能为空！");
+            }
+            //TODO APP三方登录
+            UserInfo userInfo = userService.thirdLogin(param.getUnionId(),param.getType(),param.getLastLoginPlatform());
+
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "APP三方登录成功！");
+            result.put("userInfo",userInfo);
+            return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
+    @ApiOperation(value = "三方绑定", notes = "三方绑定",position = 4)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/thirdBind")
+    @ResponseBody
+    public String thirdBind(UserParam param) throws IOException {
+        try {
+            log.info("----》三方绑定《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getUnionId())){
+                return toError("三方识别号不能为空！");
+            }
+            //验证用户
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
+            if(user==null){
+                return toError("999","登录超时，请重新登录！");
+            }
+            if(user.getStatus() == 2){
+                return toError("999","您的账号已被冻结，请联系管理员！");
+            }
+            //TODO 三方绑定
+            //三方绑定是为了将微信号与手机号绑定到一个账户，如果用户用手机号注册过，又用微信号登录了第二个账号，将没有绑定功能，而是合并账号，以手机号为主，
+            // 如果用户已经存在手机号账号，并登录手机号账户，进行三方绑定，则将微信号绑定到此用户账户上
+            UserInfo userInfo = userService.thirdBind(param.getUserId(),param.getUnionId(),param.getType());
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "三方绑定成功！");
+            result.put("userInfo",userInfo);
+            return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
+
+    @ApiOperation(value = "实名认证", notes = "实名认证",position = 5)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id", required = true,dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "name", value = "真实姓名", required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "identity", value = "身份证号", required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "identity_img_cover", value = "身份证封面图",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "identity_img_back", value = "身份证背面",dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/certification")
     @ResponseBody
@@ -130,63 +256,66 @@ public class UserController extends BaseController {
         try {
             log.info("----》实名认证《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getRealName())){
+            if(StringUtils.isEmpty(param.getName())){
                 return toError("用户真实姓名不能为空！");
             }
-            if(StringUtils.isEmpty(param.getCardNo())){
+            if(StringUtils.isEmpty(param.getIdentity())){
                 return toError("用户身份照号码不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 实名认证
+            //TODO 需要身份证正反照片
+            userService.certification(param.getUserId(),param.getName(),param.getIdentity(),param.getIdentityImgCover(),param.getIdentityImgBack());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "实名认证成功！");
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-    @ApiOperation(value = "上传头像", notes = "上传头像")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headImg", value = "头像文件，格式为：jpeg，png，jpg", required = true, dataType = "file", paramType = "query")
-    })
-    @PostMapping(value = "/headImg")
-    @ResponseBody
-    public String headImg(UserParam param) throws IOException {
-        try {
-            log.info("----》上传头像《----");
-            if (StringUtils.isEmpty(param.getToken())) {
-                return toError("用户token不能为空！");
-            }
-            User user = userService.getUserByToken(param.getToken());
-            if (user == null) {
-                return toError("999", "登录超时，请重新登录！");
-            }
-            if (StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())) {
-                return toError("999", "您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 上传头像
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "上传头像成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
+//    @ApiOperation(value = "上传头像", notes = "上传头像")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
+//            @ApiImplicitParam(name = "headImg", value = "头像文件，格式为：jpeg，png，jpg", required = true, dataType = "file", paramType = "query")
+//    })
+//    @PostMapping(value = "/headImg")
+//    @ResponseBody
+//    public String headImg(UserParam param) throws IOException {
+//        try {
+//            log.info("----》上传头像《----");
+//            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
+//            if (user == null) {
+//                return toError("999", "登录超时，请重新登录！");
+//            }
+//            if (user.getStatus() == 2) {
+//                return toError("999", "您的账号已被冻结，请联系管理员！");
+//            }
+//            //TODO 上传头像
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "上传头像成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
 
     @ApiOperation(value = "完善资料", notes = "完善资料")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "headImg", value = "头像文件，格式为：jpeg，png，jpg", required = true, dataType = "file", paramType = "query"),
             @ApiImplicitParam(name = "nickName", value = "昵称", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "gender", value = "性别,0女,1男", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "payPwd", value = "支付密码", dataType = "String", paramType = "query"),
@@ -200,19 +329,17 @@ public class UserController extends BaseController {
     public String modify(UserParam param) throws IOException {
         try {
             log.info("----》完善资料《----");
-            if (StringUtils.isEmpty(param.getToken())) {
-                return toError("用户token不能为空！");
-            }
-            User user = userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if (user == null) {
                 return toError("999", "登录超时，请重新登录！");
             }
-            if (StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())) {
+            if (user.getStatus() == 2) {
                 return toError("999", "您的账号已被冻结，请联系管理员！");
             }
             //TODO 完善资料
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "完善资料成功！");
             return toResult(result);
+
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -221,7 +348,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "找回密码", notes = "找回密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "用户电话", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "string", paramType = "query")
     })
     @PostMapping(value = "/resetPwd")
@@ -230,17 +357,27 @@ public class UserController extends BaseController {
         try {
             log.info("----》找回密码《----");
             log.info("参数："+param.getPhone()+"---"+param.getNewPwd());
-            if(StringUtils.isEmpty(param.getPhone())){
-                return toError("电话号码不能为空！");
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
+            if(user==null){
+                return toError("999","登录超时，请重新登录！");
+            }
+            if(user.getStatus() == 2){
+                return toError("999","您的账号已被冻结，请联系管理员！");
             }
             if(StringUtils.isEmpty(param.getNewPwd())){
                 return toError("新密码不能为空！");
             }
-            //修改密码
-//            userService.updateByPrimaryKey(param);
             //TODO 找回密码
+            //修改密码
+            userService.resetPwd(param.getUserId(),param.getNewPwd());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "找回密码成功！");
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -249,7 +386,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "loginPwd", value = "登录密码，md5加密，32位小写字母", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "string", paramType = "query")
     })
@@ -259,16 +396,27 @@ public class UserController extends BaseController {
         try {
             log.info("----》修改密码《----");
             log.info("参数："+param.toString());
-            User user=userService.getUserByToken(param.getToken());
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
+            if(user.getStatus() == 2){
+                return toError("999","您的账号已被冻结，请联系管理员！");
+            }
             //判断旧密码是否正确
-            //修改密码
+            if(!MD5Util.getMD5String(param.getLoginPwd()).equals(user.getLoginPwd())){
+                return toError("旧密码不正确！");
+            }
             //TODO 修改密码
-//            userService.updateByPrimaryKey(param);
+            userService.resetPwd(param.getUserId(),param.getNewPwd());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改密码成功！");
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -277,13 +425,15 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "添加收货地址", notes = "添加收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "userName", value = "收货人姓名",  required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "phone", value = "联系电话",required = true, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "address", value = "详细收货地址",  required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "receiverName", value = "收货人姓名",  required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "address", value = "详细收货地址",  required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "postCode", value = "邮编",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1默认地址 2其他",dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/addAddress")
     @ResponseBody
@@ -291,28 +441,36 @@ public class UserController extends BaseController {
         try {
             log.info("----》添加收货地址《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getUserName())){
+            if(StringUtils.isEmpty(param.getReceiverName())){
                 return toError("收货人不能为空！");
             }
-            if(StringUtils.isEmpty(param.getPhone())){
+            if(StringUtils.isEmpty(param.getReceiverPhone())){
                 return toError("联系电话不能为空！");
             }
-            if(StringUtils.isEmpty(param.getAddress())){
-                return toError("收货地址不能为空！");
+            if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
+                return toError("省市区不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            if(StringUtils.isEmpty(param.getAddress())){
+                return toError("详细收货地址不能为空！");
+            }
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 添加收货地址
+            List<UserAddressInfo> userAddressInfos = userService.addAddress(param.getUserId(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加收货地址成功！");
+            result.put("userAddressInfos",userAddressInfos);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -321,7 +479,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改收货地址", notes = "修改收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "userName", value = "收货人姓名", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "address", value = "详细收货地址", dataType = "String", paramType = "query"),
@@ -336,22 +494,38 @@ public class UserController extends BaseController {
         try {
             log.info("----》修改收货地址《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
             if(param.getAddressId()==null || param.getAddressId().intValue()==0){
                 return toError("收货地址ID不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            if(StringUtils.isEmpty(param.getReceiverName())){
+                return toError("收货人不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getReceiverPhone())){
+                return toError("联系电话不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
+                return toError("省市区不能为空！");
+            }
+            if(StringUtils.isEmpty(param.getAddress())){
+                return toError("详细收货地址不能为空！");
+            }
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 修改收货地址
+            userService.updateAddress(param.getUserId(),param.getAddressId(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改收货地址成功！");
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -360,7 +534,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "删除收货地址", notes = "删除收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/deleteAddress")
@@ -369,21 +543,23 @@ public class UserController extends BaseController {
         try {
             log.info("----》删除收货地址《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            if(param.getAddressId()==null || param.getAddressId().intValue()==0){
+            if(param.getAddressId()==null){
                 return toError("收货地址ID不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 删除收货地址
+            List<UserAddressInfo> userAddressInfos = userService.deleteAddress(param.getUserId(),param.getAddressId());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "删除收货地址成功！");
+            result.put("userAddressInfos",userAddressInfos);
             return toResult(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -393,7 +569,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "设置默认收货地址", notes = "设置默认收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/defaultAddress")
@@ -402,14 +578,11 @@ public class UserController extends BaseController {
         try {
             log.info("----》设置默认收货地址《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 设置默认收货地址
@@ -423,9 +596,9 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改绑定手机", notes = "修改绑定手机")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "loginPwd", value = "登录密码", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "loginPwd", value = "登录密码", dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/updatePhone")
     @ResponseBody
@@ -433,23 +606,20 @@ public class UserController extends BaseController {
         try {
             log.info("----》修改绑定手机《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("token不能为空！");
-            }
             if(StringUtils.isEmpty(param.getPhone())){
                 return toError("新的手机号码不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
             if(user.getPhone().equals(param.getPhone())){
                 return toError("不能与旧手机号相同！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
-            User oldUser = userService.getUserByPhone(param.getPhone());
+            UserInfo oldUser = userService.getUserByPhone(param.getPhone());
             if(oldUser!=null){
                 return toError("该手机已被其他帐号绑定，请不要重复绑定！");
             }
@@ -462,118 +632,10 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "三方注册", notes = "三方注册")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userName", value = "用户名", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headUrl", value = "头像地址", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别0女1男", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "qqCliend", value = "qq唯一识别号", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "wechatCliend", value = "微信唯一识别号", dataType = "String", paramType = "query")
-//            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
-//            @ApiImplicitParam(name = "loginPwd", value = "登录密码(MD5加密)", required = true, dataType = "String", paramType = "query")
-    })
-    @PostMapping(value = "/thirdRegister")
-    @ResponseBody
-    public String thirdRegister(UserParam param) throws IOException {
-        try {
-            log.info("----》三方注册《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getUserName())){
-                return toError("三方用户名不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getGender())){
-                return toError("性别不能为空！");
-            }
-            /*if(StringUtils.isEmpty(param.getPhone())){
-                return toError("手机号不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getLoginPwd())){
-                return toError("登录密码不能为空！");
-            }*/
-            if(StringUtils.isEmpty(param.getHeadUrl())){
-                return toError("头像地址不能为空！");
-            }
-            if(StringUtils.isNotEmpty(param.getQqCliend()) && StringUtils.isNotEmpty(param.getWechatCliend())){
-                return toError("不能同时传递两个三方识别号！");
-            }
-            if(StringUtils.isEmpty(param.getQqCliend()) && StringUtils.isEmpty(param.getWechatCliend())){
-                return toError("三方号不能为空！");
-            }
-            //TODO 三方注册
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "三方注册成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "APP三方登录", notes = "APP三方登录")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "thirdNo", value = "三方唯一识别号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "三方类型 0 QQ  1微信", required = true, dataType = "String", paramType = "query")
-    })
-    @PostMapping(value = "/thirdLogin")
-    @ResponseBody
-    public String thirdLogin(UserParam param) throws IOException {
-        try {
-            log.info("----》APP三方登录《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getThirdNo())){
-                return toError("3","三方识别号不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getType())){
-                return toError("3","三方识别号类型不能为空！");
-            }
-            //TODO APP三方登录
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "APP三方登录成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "三方绑定", notes = "三方绑定")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "thirdNo", value = "三方唯一识别号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "三方类型 0 QQ  1微信", required = true, dataType = "String", paramType = "query")
-    })
-    @PostMapping(value = "/thirdBind")
-    @ResponseBody
-    public String thirdBind(UserParam param) throws IOException {
-        try {
-            log.info("----》三方绑定《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getThirdNo())){
-                return toError("三方识别号不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getType())){
-                return toError("三方识别号类型不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            User user=userService.getUserByToken(param.getToken());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
-            }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
-                return toError("999","您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 三方绑定
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "三方绑定成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
 
     @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
@@ -583,20 +645,17 @@ public class UserController extends BaseController {
         try {
             log.info("----》我的粉丝《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
             if(param.getStart()==null){
                 return toError("分页start不能为空！");
             }
             if(param.getLimit()==null){
                 return toError("分页limit不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 我的粉丝
@@ -611,7 +670,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "添加/取消关注", notes = "添加/取消关注")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "userId ", value = "被关注用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "0关注 1取消关注", required = true, dataType = "int", paramType = "query")
     })
@@ -621,20 +680,14 @@ public class UserController extends BaseController {
         try {
             log.info("----》添加关注/取消关注《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
             if(param.getUserId()==null || param.getUserId().intValue()==0){
                 return toError("用户id不能为空！");
             }
-            if(StringUtils.isEmpty(param.getType())){
-                return toError("操作类型不能为空！");
-            }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             if(user.getId().intValue()==param.getUserId().intValue()){
@@ -651,7 +704,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "我的关注", notes = "我的关注")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
@@ -661,9 +714,6 @@ public class UserController extends BaseController {
         try {
             log.info("----》我的关注《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
             if(param.getStart()==null){
                 return toError("分页start不能为空！");
             }
@@ -681,7 +731,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "好友列表", notes = "好友列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
@@ -691,20 +741,17 @@ public class UserController extends BaseController {
         try {
             log.info("----》好友列表《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
             if(param.getStart()==null){
                 return toError("分页start不能为空！");
             }
             if(param.getLimit()==null){
                 return toError("分页limit不能为空！");
             }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 好友列表
@@ -718,7 +765,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "签到", notes = "签到")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "int", paramType = "query"),
     })
     @PostMapping(value = "/sign")
     @ResponseBody
@@ -726,24 +773,13 @@ public class UserController extends BaseController {
         try {
             log.info("----》签到《----");
             log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
-            }
-            User user=userService.getUserByToken(param.getToken());
+            UserInfo user=userService.selectByPrimaryKey(param.getUserId());
             if(user==null){
                 return toError("999","登录超时，请重新登录！");
             }
-            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
+            if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
-            Map<String,Object> map = new HashMap<>();
-            map.put("classify","5");
-            map.put("start","0");
-            map.put("limit","10");
-//            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8769/user/user/sign","",String.class,map);
-//            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8769/goods/goods/goodsList",String.class,map);
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://goods-service/goods/goodsList",String.class,map);
-            System.out.println("猜猜我是啥："+responseEntity);
             //TODO 签到
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "签到成功！");
             return toResult(result);
@@ -752,5 +788,17 @@ public class UserController extends BaseController {
             return toError("系统繁忙，请稍后再试！");
         }
     }
+
+    //测试配置文件获取
+    @Value("${name:errorName}")
+    String name;
+    @Value("${version:errorVersion}")
+    String version;
+    @RequestMapping("/hi")
+    @ResponseBody
+    public String hi() {
+        return "hi,I am " + name + ",version is " + version;
+    }
+
 
 }

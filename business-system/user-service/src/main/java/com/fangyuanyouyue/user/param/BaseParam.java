@@ -15,18 +15,18 @@ public class BaseParam {
 	private Integer limit; // 限制页
 	@ApiModelProperty(name = "name", value = "搜素字段", dataType = "Integer")
 	private String name; // 搜素字段
-	@ApiModelProperty(name = "type", value = "类型", dataType = "String")
-	private String type;//类型
+	@ApiModelProperty(name = "type", value = "类型", dataType = "Integer")
+	private Integer type;//类型
 
 	public BaseParam() {
 
 	}
 
-	public String getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
