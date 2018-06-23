@@ -1,23 +1,21 @@
 package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.*;
-import com.fangyuanyouyue.user.model.IdentityAuthApply;
-import com.fangyuanyouyue.user.model.UserAddressInfo;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.model.UserInfoExt;
 import com.fangyuanyouyue.user.model.UserThirdParty;
+import com.fangyuanyouyue.user.model.UserVip;
 import com.fangyuanyouyue.user.param.UserParam;
-import com.fangyuanyouyue.user.service.UserService;
+import com.fangyuanyouyue.user.service.UserInfoService;
 import com.fangyuanyouyue.user.utils.DateStampUtils;
 import com.fangyuanyouyue.user.utils.MD5Util;
 import com.fangyuanyouyue.user.utils.ServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
-@Service(value = "userService")
-public class UserServiceImpl implements UserService {
+@Service(value = "userInfoService")
+public class UserInfoServiceImpl implements UserInfoService {
 
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -29,6 +27,10 @@ public class UserServiceImpl implements UserService {
     private UserInfoExtMapper userInfoExtMapper;
     @Autowired
     private UserAddressInfoMapper userAddressInfoMapper;
+    @Autowired
+    private UserVipMapper userVipMapper;
+    @Autowired
+    private UserExamineMapper userExamineMapper;
 
     @Override
     public UserInfo selectByPrimaryKey(Integer id) {
@@ -40,6 +42,11 @@ public class UserServiceImpl implements UserService {
         return userInfoMapper.getUserByPhone(phone);
     }
 
+    @Override
+    public UserInfo getUserByNickName(String nickName) {
+        UserInfo userInfo = userInfoMapper.getUserByNickName(nickName);
+        return userInfo;
+    }
 //    @Override
 //    public UserInfo getUserByToken(String token) {
 //        return userInfoMapper.getUserByToken(token);
@@ -60,18 +67,30 @@ public class UserServiceImpl implements UserService {
         //初始化用户信息
         UserInfo user = new UserInfo();
         //手机号注册必定是APP端
-        user.setRegType(1);
+        user.setRegType(1);//注册来源 1APP 2微信小程序
         user.setRegPlatform(param.getRegPlatform());
         user.setAddTime(DateStampUtils.getTimesteamp());
         user.setUpdateTime(DateStampUtils.getTimesteamp());
         user.setPhone(param.getPhone());
         user.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
         user.setNickName(param.getPhone());
-        user.setStatus(1);
-        if(param.getGender() != null){//性别默认为 2不确定
-            user.setGender(param.getGender());
-        }
+        user.setStatus(1);//状态 1正常 2冻结
+        user.setGender(param.getGender());
         userInfoMapper.insert(user);
+        //用户扩展信息表
+        UserInfoExt userInfoExt = new UserInfoExt();
+        userInfoExt.setUserId(user.getId());
+        userInfoExt.setStatus(2);
+        userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
+        userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
+        userInfoExtMapper.insert(userInfoExt);
+        //用户会员系统
+        UserVip userVip = new UserVip();
+        userVip.setUserId(user.getId());
+        userVip.setStatus(2);//会员状态1已开通 2未开通
+        userVip.setAddTime(DateStampUtils.getTimesteamp());
+        userVip.setUpdateTime(DateStampUtils.getTimesteamp());
+        userVipMapper.insert(userVip);
         //TODO 注册通讯账户
         //TODO 调用钱包系统初始化接口
         //初始化用户钱包
@@ -109,7 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo thirdRegister(UserParam param)  throws ServiceException{
-        //TODO 初始化用户信息
+        //初始化用户信息
         UserInfo user = new UserInfo();
         user.setNickName(param.getThirdNickName());
         user.setHeadImgUrl(param.getThirdHeadImgUrl());
@@ -122,7 +141,7 @@ public class UserServiceImpl implements UserService {
             user.setGender(param.getGender());
         }
         userInfoMapper.insert(user);
-        //TODO 初始化用户第三方登录信息
+        //初始化用户第三方登录信息
         UserThirdParty userThirdParty = new UserThirdParty();
         userThirdParty.setUserId(user.getId());
         userThirdParty.setNickName(param.getThirdNickName());
@@ -132,6 +151,20 @@ public class UserServiceImpl implements UserService {
         userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
         userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
         userThirdPartyMapper.insert(userThirdParty);
+        //用户扩展信息表
+        UserInfoExt userInfoExt = new UserInfoExt();
+        userInfoExt.setUserId(user.getId());
+        userInfoExt.setStatus(2);
+        userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
+        userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
+        userInfoExtMapper.insert(userInfoExt);
+        //用户会员系统
+        UserVip userVip = new UserVip();
+        userVip.setUserId(user.getId());
+        userVip.setStatus(2);//会员状态1已开通 2未开通
+        userVip.setAddTime(DateStampUtils.getTimesteamp());
+        userVip.setUpdateTime(DateStampUtils.getTimesteamp());
+        userVipMapper.insert(userVip);
         //TODO 注册通讯账户
         //TODO 调用钱包系统初始化接口
         //初始化用户钱包
@@ -183,42 +216,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void certification(Integer userId, String name, String identity, String identityImgCover, String identityImgBack) throws ServiceException {
-        IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(userId);
-        if(identityAuthApply != null){
-            if(identityAuthApply.getStatus() == 1){
-                throw new ServiceException("您已提交过实名认证，请耐心等待！");
-            }else if(identityAuthApply.getStatus() == 2){
-                throw new ServiceException("您的实名认证已通过，请勿重复提交！");
-            }
-        }else{
-            //用户扩展信息表
-            UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(userId);
-            userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
-            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
-            userInfoExt.setIdentity(identity);
-            userInfoExt.setName(name);
-            userInfoExt.setUserId(userId);
-            userInfoExt.setStatus(2);
-            userInfoExtMapper.insert(userInfoExt);
-
-            //实名认证申请表
-            identityAuthApply.setAddTime(DateStampUtils.getTimesteamp());
-            identityAuthApply.setUpdateTime(DateStampUtils.getTimesteamp());
-            identityAuthApply.setIdentity(identity);
-            identityAuthApply.setName(name);
-            identityAuthApply.setStatus(1);
-            if(identityImgCover != null && !identityImgCover.equals("")){
-                identityAuthApply.setIdentityImgCover(identityImgCover);
-            }
-            if(identityImgBack != null && !identityImgBack.equals("")){
-                identityAuthApply.setIdentityImgBack(identityImgBack);
-            }
-            identityAuthApplyMapper.insert(identityAuthApply);
-        }
-    }
-
-    @Override
     public void resetPwd(Integer userId, String newPwd) throws ServiceException{
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
@@ -234,67 +231,56 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserAddressInfo> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException{
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+    public UserInfo modify(UserParam param) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(param.getUserId());
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
         }else{
-            UserAddressInfo userAddressInfo = new UserAddressInfo();
-            userAddressInfo.setAddTime(DateStampUtils.getTimesteamp());
-            userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
-            userAddressInfo.setReceiverName(receiverName);
-            userAddressInfo.setReceiverPhone(receiverPhone);
-            userAddressInfo.setProvince(province);
-            userAddressInfo.setCity(city);
-            userAddressInfo.setArea(area);
-            userAddressInfo.setAddress(address);
-            if(type != null){
-                userAddressInfo.setType(type);
+            //用户信息
+            if(StringUtils.isNotEmpty(param.getPhone())){
+                userInfo.setPhone(param.getPhone());
             }
-            userAddressInfoMapper.insert(userAddressInfo);
-            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-            return userAddressInfos;
+            if(StringUtils.isNotEmpty(param.getEmail())){
+                userInfo.setEmail(param.getEmail());
+            }
+            if(StringUtils.isNotEmpty(param.getNickName())){
+                userInfo.setNickName(param.getNickName());
+            }
+            if(StringUtils.isNotEmpty(param.getHeadImgUrl())){
+                userInfo.setHeadImgUrl(param.getHeadImgUrl());
+            }
+            if(StringUtils.isNotEmpty(param.getBgImgUrl())){
+                userInfo.setBgImgUrl(param.getBgImgUrl());
+            }
+            if(param.getGender() != null){
+                userInfo.setGender(param.getGender());
+            }
+            if(StringUtils.isNotEmpty(param.getSignature())){
+                userInfo.setSignature(param.getSignature());
+            }
+            if(StringUtils.isNotEmpty(param.getContact())){
+                userInfo.setContact(param.getContact());
+            }
+            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
+            userInfoMapper.updateByPrimaryKey(userInfo);
+            //用户扩展信息表
+            UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(param.getUserId());
+            if(StringUtils.isNotEmpty(param.getIdentity())){
+                userInfoExt.setIdentity(param.getIdentity());
+            }
+            if(StringUtils.isNotEmpty(param.getName())){
+                userInfoExt.setName(param.getName());
+            }
+            if(StringUtils.isNotEmpty(param.getPayPwd())){
+                userInfoExt.setPayPwd(MD5Util.getMD5String(param.getPayPwd()));
+            }
+            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
+            userInfoExtMapper.updateByPrimaryKey(userInfoExt);
+            return userInfo;
         }
     }
 
-    @Override
-    public UserAddressInfo updateAddress(Integer userId, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
-        if(userInfo == null){
-            throw new ServiceException("此用户不存在！");
-        }else{
-            UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
-            if(userAddressInfo == null){
-                throw new ServiceException("收货地址有误！");
-            }else{
-                userAddressInfo.setReceiverName(receiverName);
-                userAddressInfo.setReceiverPhone(receiverPhone);
-                userAddressInfo.setProvince(province);
-                userAddressInfo.setCity(city);
-                userAddressInfo.setArea(area);
-                userAddressInfo.setAddress(address);
-                userAddressInfo.setPostCode(postCode);
-                userAddressInfo.setType(type);
-                userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
-                return userAddressInfo;
-            }
-        }
-    }
 
-    @Override
-    public List<UserAddressInfo> deleteAddress(Integer userId, Integer addressId) throws ServiceException {
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
-        if(userInfo == null){
-            throw new ServiceException("此用户不存在！");
-        }else{
-            UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
-            if(userAddressInfo == null){
-                throw new ServiceException("收货地址有误！");
-            }else{
-                userAddressInfoMapper.deleteByPrimaryKey(addressId);
-                List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-                return userAddressInfos;
-            }
-        }
-    }
+
+
 }
