@@ -29,7 +29,7 @@ public class UserParam extends BaseParam {
 
 	private String levelDesc;//等级描述
 
-	private Integer status;//状态 1正常 2冻结
+	private Integer status;//用户信息状态 1正常 2冻结 / 用户扩展实名登记状态 1已实名 2未实名 / 用户会员状态1已开通 2未开通 / 实名认证状态 1申请 2通过 3拒绝
 
 	private Date updateTime;//更新时间
 
@@ -42,6 +42,8 @@ public class UserParam extends BaseParam {
 	private String name;//真实姓名
 
 	private String identity;//身份证号码
+
+	private String payPwd;//支付密码，明文6位，MD5小写
 
 	private String identityImgCover;//身份证封面图
 
@@ -367,6 +369,14 @@ public class UserParam extends BaseParam {
 		this.lastLoginPlatform = lastLoginPlatform;
 	}
 
+	public String getPayPwd() {
+		return payPwd;
+	}
+
+	public void setPayPwd(String payPwd) {
+		this.payPwd = payPwd;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
@@ -389,6 +399,7 @@ public class UserParam extends BaseParam {
 				", birth='" + birth + '\'' +
 				", name='" + name + '\'' +
 				", identity='" + identity + '\'' +
+				", payPwd='" + payPwd + '\'' +
 				", identityImgCover='" + identityImgCover + '\'' +
 				", identityImgBack='" + identityImgBack + '\'' +
 				", receiverName='" + receiverName + '\'' +
