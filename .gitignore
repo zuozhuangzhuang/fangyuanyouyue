@@ -10,3 +10,11 @@
 /based-framework/zuul-server/target/
 /business-system/user-service/target/
 /based-framework/eureka-server/target/
+/based-business/sms-service/sms-service.iml
+/business-system/goods-service/goods-service.iml
+/business-system/order-service/order-service.iml
+/based-business/auth-service/target/
+/business-system/goods-service/target/
+/based-framework/config-client/config-client.iml
+/hs_err_pid62808.log
+/fangyuanyouyue.iml
