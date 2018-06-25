@@ -46,20 +46,6 @@ public class TestController {
 //    andDo：添加ResultHandler结果处理器，比如调试时打印结果到控制台；
 //    andReturn：最后返回相应的MvcResult；然后进行自定义验证/进行下一步的异步处理；
 //    accept：指定请求的Accept头信息；
-    /**
-     * 登录
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void login() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/login")
-                .param("phone","18103966057")
-                .param("loginPwd","123456")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
 
     /**
      * 注册
@@ -71,6 +57,80 @@ public class TestController {
         mvc.perform(MockMvcRequestBuilders.post("/user/regist")
                 .param("phone","18103966057")
                 .param("loginPwd","123456")
+                .param("nickName","昵称")
+//                .param("headImgUrl","123456")
+                .param("gender","1")
+                .param("regPlatform","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 登录
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void login() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/login")
+                .param("phone","18103966057")
+                .param("loginPwd","123456")
+                .param("lastLoginPlatform","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 三方注册
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void thirdRegister() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/thirdRegister")
+                .param("thirdNickName","偷看")
+                .param("thirdHeadImgUrl","http://app.fangyuanyouyue.com/static/pic/2018/03/05/HEADIMG_180305120832068.jpg")
+                .param("gender","0")
+                .param("unionId","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
+                .param("regType","2")
+                .param("regPlatform","3")
+                .param("type","1")
+//                .param("phone","18103966057")
+//                .param("loginPwd","123456")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * APP三方登录
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void thirdLogin() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/thirdLogin")
+                .param("unionId","oJ9SjwsSoaWNMR_xflHnyaRnUf2Q")
+                .param("type","1")
+                .param("lastLoginPlatform","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 三方绑定
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void thirdBind() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/thirdBind")
+                .param("thirdNo","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
+                .param("type","1")
+                .param("token","6008FY1525397451364")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -118,14 +178,18 @@ public class TestController {
     @Transactional
     public void modify() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/modify")
-                .param("token","6008FY1525397451364")
-                .param("nickName","123")
+                .param("userId","1")
+                .param("phone","18103966057")
+                .param("email","zuozhuang_zzz@163.com")
+                .param("nickName","偷看看哟")
+                .param("headImgUrl","")
+                .param("bgImgUrl","")
                 .param("gender","1")
+                .param("signature","个性签名")
+                .param("contact","13333333333")
+                .param("identity","41282419940411771X")
+                .param("name","左壮壮")
                 .param("payPwd","123456")
-                .param("birth","1524187628465")
-                .param("autograph","zzz")
-                .param("address","广东省 深圳市")
-                .param("contact","18103966057")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -154,7 +218,7 @@ public class TestController {
     @Transactional
     public void updatePwd() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updatePwd")
-                .param("token","6008FY1525397451364")
+                .param("userId","1")
                 .param("loginPwd","123456")
                 .param("newPwd","654321")
                 .accept(MediaType.APPLICATION_JSON))
@@ -170,13 +234,15 @@ public class TestController {
     @Transactional
     public void addAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/addAddress")
-                .param("token","6008FY1525397451364")
-                .param("userName","左壮壮")
-                .param("phone","18103966057")
-                .param("address","世界金融中心B座1015")
+                .param("userId","1")
+                .param("receiverName","左壮壮")
+                .param("receiverPhone","18103966057")
                 .param("province","广东省")
                 .param("city","深圳市")
                 .param("area","罗湖区")
+                .param("address","世界金融中心B座1015")
+                .param("postCode","450000")
+                .param("type","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -190,14 +256,14 @@ public class TestController {
     @Transactional
     public void updateAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updateAddress")
-                .param("token","6008FY1525397451364")
-                .param("userName","左壮壮")
-                .param("phone","18103966057")
+                .param("userId","1")
                 .param("addressId","1")
-                .param("address","世界金融中心B座1015")
+                .param("receiverName","左壮壮")
+                .param("receiverPhone","18103966057")
                 .param("province","广东省")
                 .param("city","深圳市")
                 .param("area","罗湖区")
+                .param("address","世界金融中心B座1015")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -212,7 +278,7 @@ public class TestController {
     @Transactional
     public void deleteAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/deleteAddress")
-                .param("token","6008FY1525397451364")
+                .param("userId","1")
                 .param("addressId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -228,7 +294,7 @@ public class TestController {
     @Transactional
     public void defaultAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/defaultAddress")
-                .param("token","6008FY1525397451364")
+                .param("userId","1")
                 .param("addressId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -244,64 +310,13 @@ public class TestController {
     @Transactional
     public void updatePhone() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updatePhone")
-                .param("token","6008FY1525397451364")
-                .param("loginPwd","123456")
-                .param("phone","18103966057")
+                .param("userId","1")
+                .param("phone","18103966056")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
-    /**
-     * 三方注册
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void thirdRegister() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/thirdRegister")
-                .param("userName","6008FY1525397451364")
-                .param("headUrl","http://app.fangyuanyouyue.com/static/pic/2018/03/05/HEADIMG_180305120832068.jpg")
-                .param("gender","0")
-                .param("wechatCliend","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
-//                .param("phone","18103966057")
-//                .param("loginPwd","123456")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * APP三方登录
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void thirdLogin() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/thirdLogin")
-                .param("thirdNo","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
-                .param("type","1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-
-    /**
-     * 三方绑定
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void thirdBind() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/thirdBind")
-                .param("thirdNo","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
-                .param("type","1")
-                .param("token","6008FY1525397451364")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
 
 
     /**

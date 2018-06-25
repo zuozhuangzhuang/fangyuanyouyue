@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.dao;
 
 import com.fangyuanyouyue.user.model.UserAddressInfo;
+import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -19,5 +20,7 @@ public interface UserAddressInfoMapper {
 
     int updateByPrimaryKey(UserAddressInfo record);
 
-    List<UserAddressInfo> selectAddressByUserId(int userId);
+    List<UserAddressInfo> selectAddressByUserId(Integer userId);
+
+    UserAddressInfo selectDefaultAddressByUserId(Integer userId);
 }

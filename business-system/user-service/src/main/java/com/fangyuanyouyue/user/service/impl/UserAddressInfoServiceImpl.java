@@ -6,6 +6,7 @@ import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.service.UserAddressInfoService;
 import com.fangyuanyouyue.user.utils.DateStampUtils;
 import com.fangyuanyouyue.user.utils.ServiceException;
+import com.fangyuanyouyue.user.utils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,6 +92,25 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
                 return userAddressInfos;
             }
+        }
+    }
+
+    @Override
+    public void defaultAddress(Integer userId, Integer addressId) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("此用户不存在！");
+        }else{
+            //TODO 取消旧默认地址
+            UserAddressInfo defaultAddress = userAddressInfoMapper.selectDefaultAddressByUserId(userId);
+            defaultAddress.setType(Integer.valueOf(Status.OTHER.getValue()));
+            //TODO 设置新默认地址
+            UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
+            if(userAddressInfo == null){
+                throw new ServiceException("参数错误！");
+            }
+            userAddressInfo.setType(Integer.valueOf(Status.ISDEFAULT.getValue()));
+            userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
         }
     }
 }

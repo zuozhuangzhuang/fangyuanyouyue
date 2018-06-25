@@ -49,4 +49,12 @@ public interface UserAddressInfoService {
      * @throws ServiceException
      */
     List<UserAddressInfo> deleteAddress(Integer userId,Integer addressId) throws ServiceException;
+
+    /**
+     * 设置默认收货地址
+     * @param userId
+     * @param addressId
+     * @throws ServiceException
+     */
+    void defaultAddress(Integer userId,Integer addressId) throws ServiceException;
 }

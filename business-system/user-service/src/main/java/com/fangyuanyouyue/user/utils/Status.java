@@ -7,6 +7,8 @@ package com.fangyuanyouyue.user.utils;
 public enum Status {
 	
 	YES("0"),NO("1"),
+	//收货地址类型 1默认地址 2其他
+	ISDEFAULT("1"),OTHER("2"),
 	NORMAL("0"),UNNORMAL("1"),DELETE("2"),	//普通的状态，只有两种
 	//状态 0 待付款  1已付款  2已完成  3已发货  4已取消
 	ORDER_PREPAY("0"),ORDER_PAY("1"),ORDER_COMPLETE("2"),ORDER_SENDED("3"),ORDER_CANCEL("4"),
