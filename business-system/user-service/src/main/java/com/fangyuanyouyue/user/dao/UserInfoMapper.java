@@ -22,5 +22,4 @@ public interface UserInfoMapper {
 
     UserInfo getUserByNickName(String nickName);
 
-    UserInfo getUserByPhonePwd(@Param("phone") String phone, @Param("loginPwd") String loginPwd);
 }

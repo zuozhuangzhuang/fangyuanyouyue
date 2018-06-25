@@ -225,6 +225,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 throw new ServiceException("不能和旧密码相同！");
             }else{
                 userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
+                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
             }
         }
@@ -240,6 +241,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 throw new ServiceException("不能和旧密码相同！");
             }else{
                 userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
+                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
             }
         }
@@ -302,6 +304,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new ServiceException("用户不存在！");
         }else{
             userInfo.setPhone(phone);
+            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             return userInfo;
         }

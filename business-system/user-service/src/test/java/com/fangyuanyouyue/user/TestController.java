@@ -318,85 +318,85 @@ public class TestController {
     }
 
 
-
-    /**
-     * 我的粉丝
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void myFans() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/myFans")
-                .param("token","6008FY1525397451364")
-                .param("start","1")
-                .param("limit","10")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 添加/取消关注
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void fansFollow() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/fansFollow")
-                .param("token","6008FY1525397451364")
-                .param("userId","6008")
-                .param("type","0")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 我的关注
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void myFollows() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/myFollows")
-                .param("token","6008FY1525397451364")
-                .param("start","1")
-                .param("limit","10")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 好友列表
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void friendList() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/friendList")
-                .param("token","6008FY1525397451364")
-                .param("start","1")
-                .param("limit","10")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 签到
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void sign() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/sign")
-                .param("token","6008FY1525397451364")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
+//
+//    /**
+//     * 我的粉丝
+//     * @throws Exception
+//     */
+//    @Test
+//    @Transactional
+//    public void myFans() throws Exception {
+//        mvc.perform(MockMvcRequestBuilders.post("/user/myFans")
+//                .param("token","6008FY1525397451364")
+//                .param("start","1")
+//                .param("limit","10")
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//    }
+//
+//    /**
+//     * 添加/取消关注
+//     * @throws Exception
+//     */
+//    @Test
+//    @Transactional
+//    public void fansFollow() throws Exception {
+//        mvc.perform(MockMvcRequestBuilders.post("/user/fansFollow")
+//                .param("token","6008FY1525397451364")
+//                .param("userId","6008")
+//                .param("type","0")
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//    }
+//
+//    /**
+//     * 我的关注
+//     * @throws Exception
+//     */
+//    @Test
+//    @Transactional
+//    public void myFollows() throws Exception {
+//        mvc.perform(MockMvcRequestBuilders.post("/user/myFollows")
+//                .param("token","6008FY1525397451364")
+//                .param("start","1")
+//                .param("limit","10")
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//    }
+//
+//    /**
+//     * 好友列表
+//     * @throws Exception
+//     */
+//    @Test
+//    @Transactional
+//    public void friendList() throws Exception {
+//        mvc.perform(MockMvcRequestBuilders.post("/user/friendList")
+//                .param("token","6008FY1525397451364")
+//                .param("start","1")
+//                .param("limit","10")
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//    }
+//
+//    /**
+//     * 签到
+//     * @throws Exception
+//     */
+//    @Test
+//    @Transactional
+//    public void sign() throws Exception {
+//        mvc.perform(MockMvcRequestBuilders.post("/user/sign")
+//                .param("token","6008FY1525397451364")
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(MockMvcResultHandlers.print())
+//                .andReturn();
+//    }
+//
 
 
 }

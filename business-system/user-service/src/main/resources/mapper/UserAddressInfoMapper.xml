@@ -168,7 +168,7 @@
       city = #{city,jdbcType=VARCHAR},
       area = #{area,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
-      post_code = #{postCode,jdbcType=VARCHARselectDefaultAddressByUserId},
+      post_code = #{postCode,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
@@ -177,7 +177,7 @@
   <select id="selectAddressByUserId" parameterType="Integer" resultMap="BaseResultMap">
     select * from user_address_info where user_id = #{userId,jdbcType=INTEGER}
   </select>
-  
+
   <select id="selectDefaultAddressByUserId" parameterType="Integer" resultMap="BaseResultMap">
     select * from user_address_info where type = 1 and user_id = #{userId,jdbcType=INTEGER}
   </select>

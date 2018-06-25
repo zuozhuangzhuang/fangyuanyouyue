@@ -72,6 +72,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 userAddressInfo.setAddress(address);
                 userAddressInfo.setPostCode(postCode);
                 userAddressInfo.setType(type);
+                userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
                 return userAddressInfo;
             }
@@ -104,12 +105,15 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             //TODO 取消旧默认地址
             UserAddressInfo defaultAddress = userAddressInfoMapper.selectDefaultAddressByUserId(userId);
             defaultAddress.setType(Integer.valueOf(Status.OTHER.getValue()));
+            defaultAddress.setUpdateTime(DateStampUtils.getTimesteamp());
+            userAddressInfoMapper.updateByPrimaryKey(defaultAddress);
             //TODO 设置新默认地址
             UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
             if(userAddressInfo == null){
                 throw new ServiceException("参数错误！");
             }
             userAddressInfo.setType(Integer.valueOf(Status.ISDEFAULT.getValue()));
+            userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
         }
     }

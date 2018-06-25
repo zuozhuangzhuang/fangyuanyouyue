@@ -654,8 +654,10 @@ public class UserController extends BaseController {
             if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
-            if(user.getPhone().equals(param.getPhone())){
-                return toError("不能与旧手机号相同！");
+            if(user.getPhone() != null && !user.getPhone().equals("")){
+                if(user.getPhone().equals(param.getPhone())){
+                    return toError("不能与旧手机号相同！");
+                }
             }
             UserInfo oldUser = userInfoService.getUserByPhone(param.getPhone());
             if(oldUser != null){
