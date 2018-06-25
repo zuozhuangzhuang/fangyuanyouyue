@@ -44,7 +44,7 @@ public class UserParam extends BaseParam {
 	private String name;//真实姓名
 	@ApiModelProperty(name = "identity", value = "身份证号码", dataType = "String",hidden = true)
 	private String identity;//身份证号码
-	@ApiModelProperty(name = "payPwd", value = "支付密码，明文6位，MD5小写", dataType = "String",hidden = true)
+	@ApiModelProperty(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String",hidden = true)
 	private String payPwd;//支付密码，明文6位，MD5小写
 	@ApiModelProperty(name = "identityImgCover", value = "身份证封面图", dataType = "String",hidden = true)
 	private String identityImgCover;//身份证封面图

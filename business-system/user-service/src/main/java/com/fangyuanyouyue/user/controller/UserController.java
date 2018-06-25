@@ -329,7 +329,7 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "contact", value = "联系电话", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "identity", value = "身份证号码", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "name", value = "真实姓名", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "payPwd", value = "支付密码，明文6位，MD5小写", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/modify")
     @ResponseBody
@@ -346,13 +346,14 @@ public class UserController extends BaseController {
             if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
-            //TODO 1.手机号不可以重复 2.用户昵称不可以重复 3.如果有正在审批昵称，不可以提交修改昵称 4.修改昵称需要审批
+            //手机号不可以重复
             if(StringUtils.isNotEmpty(param.getPhone())){
                 UserInfo userByPhone = userInfoService.getUserByPhone(param.getPhone());
                 if(userByPhone != null){
                     return toError("此手机号已被注册！");
                 }
             }
+            //用户昵称不可以重复
             if(StringUtils.isNotEmpty(param.getNickName())){
                 UserInfo userByNickName = userInfoService.getUserByNickName(param.getNickName());
                 if(userByNickName != null){
@@ -360,18 +361,15 @@ public class UserController extends BaseController {
                 }
                 if(!param.getNickName().equals(user.getNickName())) {//用户修改了昵称
                     //查询此用户申请中的昵称
+                    //如果有正在审批昵称，不可以提交修改昵称 TODO 4.修改昵称需要审批
                     UserExamine userExamine = userExamineService.getUserExamineByUserId(param.getUserId());
                     if(userExamine != null){
                         if(userExamine.getStatus() == 0){
-                            return toError("此昵称已在申请中……");
+                            return toError("此昵称已在申请中，请勿重复提交");
                         }
                     }
                 }
-
-            }else{
-                return toError("用户昵称不能为空！");
             }
-
             //TODO 完善资料
             UserInfo userInfo = userInfoService.modify(param);
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "完善资料成功！");
@@ -388,7 +386,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "找回密码", notes = "找回密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "phone", value = "用户手机", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "string", paramType = "query")
     })
     @PostMapping(value = "/resetPwd")
@@ -397,22 +395,15 @@ public class UserController extends BaseController {
         try {
             log.info("----》找回密码《----");
             log.info("参数："+param.getPhone()+"---"+param.getNewPwd());
-            if(param.getUserId() == null){
-                return toError("用户ID不能为空！");
-            }
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError("999","您的账号已被冻结，请联系管理员！");
+            if(param.getPhone() == null){
+                return toError("用户手机不能为空！");
             }
             if(StringUtils.isEmpty(param.getNewPwd())){
                 return toError("新密码不能为空！");
             }
             //TODO 找回密码
             //修改密码
-            userInfoService.resetPwd(param.getUserId(),param.getNewPwd());
+            userInfoService.resetPwd(param.getPhone(),param.getNewPwd());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "找回密码成功！");
             return toResult(result);
         } catch (ServiceException e) {
@@ -451,7 +442,7 @@ public class UserController extends BaseController {
                 return toError("旧密码不正确！");
             }
             //TODO 修改密码
-            userInfoService.resetPwd(param.getUserId(),param.getNewPwd());
+            userInfoService.updatePwd(param.getUserId(),param.getNewPwd());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改密码成功！");
             return toResult(result);
         } catch (ServiceException e) {
@@ -521,12 +512,12 @@ public class UserController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "userName", value = "收货人姓名", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "address", value = "详细收货地址", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "receiverName", value = "收货人姓名", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "phone", value = "联系电话",required = true, dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "address", value = "详细收货地址", dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/updateAddress")
     @ResponseBody
@@ -621,16 +612,18 @@ public class UserController extends BaseController {
         try {
             log.info("----》设置默认收货地址《----");
             log.info("参数："+param.toString());
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
+            }
+            UserInfo user = userInfoService.selectByPrimaryKey(param.getUserId());
+            if(user == null){
                 return toError("999","登录超时，请重新登录！");
             }
             if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
             //TODO 设置默认收货地址
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "设置默认收货地址成功！");
-            return toResult(result);
+            return toSuccess("设置默认收货地址成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -640,8 +633,7 @@ public class UserController extends BaseController {
     @ApiOperation(value = "修改绑定手机", notes = "修改绑定手机")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "loginPwd", value = "登录密码", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/updatePhone")
     @ResponseBody
@@ -652,22 +644,27 @@ public class UserController extends BaseController {
             if(StringUtils.isEmpty(param.getPhone())){
                 return toError("新的手机号码不能为空！");
             }
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
             }
-            if(user.getPhone().equals(param.getPhone())){
-                return toError("不能与旧手机号相同！");
+            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
+            if(user == null){
+                return toError("999","登录超时，请重新登录！");
             }
             if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
+            if(user.getPhone().equals(param.getPhone())){
+                return toError("不能与旧手机号相同！");
+            }
             UserInfo oldUser = userInfoService.getUserByPhone(param.getPhone());
-            if(oldUser!=null){
+            if(oldUser != null){
                 return toError("该手机已被其他帐号绑定，请不要重复绑定！");
             }
             //TODO 修改绑定手机
+            UserInfo userInfo = userInfoService.updatePhone(param.getUserId(),param.getPhone());
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改绑定手机成功！");
+            result.put("userInfo",userInfo);
             return toResult(result);
         } catch (Exception e) {
             e.printStackTrace();

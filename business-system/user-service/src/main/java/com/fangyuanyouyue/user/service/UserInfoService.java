@@ -92,14 +92,27 @@ public interface UserInfoService {
     UserInfo modify(UserParam param) throws ServiceException;
 
     /**
-     * 重置密码
+     * 找回密码
+     * @param phone
+     * @param newPwd
+     * @throws ServiceException
+     */
+    void resetPwd(String phone,String newPwd) throws ServiceException;
+
+    /**
+     * 修改密码
      * @param userId
      * @param newPwd
      * @throws ServiceException
      */
-    void resetPwd(Integer userId,String newPwd) throws ServiceException;
+    void updatePwd(Integer userId,String newPwd) throws ServiceException;
 
-
-
+    /**
+     * 修改绑定手机
+     * @param userId
+     * @param phone
+     * @throws ServiceException
+     */
+    UserInfo updatePhone(Integer userId,String phone) throws ServiceException;
 
 }

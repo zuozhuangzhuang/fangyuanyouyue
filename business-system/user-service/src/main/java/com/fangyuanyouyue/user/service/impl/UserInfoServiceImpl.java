@@ -216,7 +216,22 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public void resetPwd(Integer userId, String newPwd) throws ServiceException{
+    public void resetPwd(String phone, String newPwd) throws ServiceException{
+        UserInfo userInfo = userInfoMapper.getUserByPhone(phone);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
+                throw new ServiceException("不能和旧密码相同！");
+            }else{
+                userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
+                userInfoMapper.updateByPrimaryKey(userInfo);
+            }
+        }
+    }
+
+    @Override
+    public void updatePwd(Integer userId, String newPwd) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -280,7 +295,15 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
-
-
-
+    @Override
+    public UserInfo updatePhone(Integer userId, String phone) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            userInfo.setPhone(phone);
+            userInfoMapper.updateByPrimaryKey(userInfo);
+            return userInfo;
+        }
+    }
 }
