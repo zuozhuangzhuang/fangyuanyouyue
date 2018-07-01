@@ -24,7 +24,7 @@
     delete from user_examine
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserExamine" >
+  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserExamine" useGeneratedKeys="true" keyProperty="id">
     insert into user_examine (id, user_id, old_nickName, 
       new_nickName, status, content, 
       add_time, update_time)

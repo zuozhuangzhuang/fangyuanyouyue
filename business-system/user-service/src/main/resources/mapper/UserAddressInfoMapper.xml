@@ -29,7 +29,7 @@
     delete from user_address_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserAddressInfo" >
+  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserAddressInfo" useGeneratedKeys="true" keyProperty="id">
     insert into user_address_info (id, user_id, receiver_name, 
       receiver_phone, province, city, 
       area, address, post_code, 
