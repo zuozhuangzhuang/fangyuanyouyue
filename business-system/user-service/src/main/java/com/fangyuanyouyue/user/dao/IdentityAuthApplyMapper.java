@@ -2,7 +2,9 @@ package com.fangyuanyouyue.user.dao;
 
 import com.fangyuanyouyue.user.model.IdentityAuthApply;
 import com.fangyuanyouyue.user.utils.ServiceException;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface IdentityAuthApplyMapper {
     int deleteByPrimaryKey(Integer id);
 
