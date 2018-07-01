@@ -17,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,15 +43,16 @@ public class UserController extends BaseController {
     @Autowired
     private SchedualGoodsService schedualGoodsService;//调用其他service时用
 
-    @ApiOperation(value = "注册", notes = "注册",position = 0)
+    @ApiOperation(value = "注册", notes = "注册")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "loginPwd", value = "登录密码",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "nickName", value = "昵称",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headImgUrl", value = "头像地址", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序", required = true, dataType = "Integer", paramType = "query")
-
+//            @ApiImplicitParam(name = "headImgUrl", value = "头像地址", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "headImg", value = "头像图片，格式为：jpeg，png，jpg", dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "bgImg", value = "背景图片", dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/regist")
     @ResponseBody
@@ -90,11 +90,11 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "用户登录", notes = "用户登录",position = 1)
+    @ApiOperation(value = "用户登录", notes = "用户登录")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "loginPwd", value = "登录密码", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "lastLoginPlatform", value = "登录平台 1安卓 2IOS 3小程序", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "lastLoginPlatform", value = "登录平台 1安卓 2IOS 3小程序", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/login")
     @ResponseBody
@@ -127,15 +127,15 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "三方注册", notes = "三方注册",position = 2)
+    @ApiOperation(value = "三方注册", notes = "三方注册")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "第三方唯一ID",required = true,  dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序",required = true,  dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博",required = true,  dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序",required = true,  dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博",required = true,  dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/thirdRegister")
     @ResponseBody
@@ -173,11 +173,16 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "APP三方登录", notes = "APP三方登录",position = 3)
+    @ApiOperation(value = "APP三方登录", notes = "APP三方登录")
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "unionId", value = "第三方唯一ID",required = true,  dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "platform", value = "注册/登录平台 1安卓 2IOS 3小程序",required = true,  dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "lastLoginPlatform", value = "登录平台 1安卓 2IOS 3小程序", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query"),
     })
     @PostMapping(value = "/thirdLogin")
     @ResponseBody
@@ -206,11 +211,11 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "三方绑定", notes = "三方绑定",position = 4)
+    @ApiOperation(value = "三方绑定", notes = "三方绑定")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/thirdBind")
     @ResponseBody
@@ -246,7 +251,7 @@ public class UserController extends BaseController {
     }
 
 
-    @ApiOperation(value = "实名认证", notes = "实名认证",position = 5)
+    @ApiOperation(value = "实名认证", notes = "实名认证")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", required = true,dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "name", value = "真实姓名", required = true,dataType = "String", paramType = "query"),
@@ -318,13 +323,14 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "完善资料", notes = "完善资料")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "phone", value = "手机号码",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "email", value = "电子邮件",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "userAddress", value = "用户所在地",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "nickName", value = "昵称", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headImgUrl", value = "头像图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "query"),
-            @ApiImplicitParam(name = "bgImgUrl", value = "背景图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "headImg", value = "头像图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "bgImg", value = "背景图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "signature", value = "个性签名", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "contact", value = "联系电话", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "identity", value = "身份证号码", dataType = "String", paramType = "query"),
@@ -336,6 +342,7 @@ public class UserController extends BaseController {
     public String modify(UserParam param) throws IOException {
         try {
             log.info("----》完善资料《----");
+            log.info("参数："+param.toString());
             if(param.getUserId() == null){
                 return toError("用户ID不能为空！");
             }
@@ -386,8 +393,8 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "找回密码", notes = "找回密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "用户手机", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "phone", value = "用户手机", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/resetPwd")
     @ResponseBody
@@ -417,9 +424,9 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改密码", notes = "修改密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "loginPwd", value = "登录密码，md5加密，32位小写字母", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "newPwd", value = "新密码密码，md5加密，32位小写字母",required = true, dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/updatePwd")
     @ResponseBody
@@ -456,9 +463,9 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "添加收货地址", notes = "添加收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "receiverName", value = "收货人姓名",  required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
@@ -510,10 +517,10 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改收货地址", notes = "修改收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "receiverName", value = "收货人姓名", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
@@ -565,8 +572,8 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "删除收货地址", notes = "删除收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/deleteAddress")
     @ResponseBody
@@ -592,6 +599,9 @@ public class UserController extends BaseController {
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "删除收货地址成功！");
             result.put("userAddressInfos",userAddressInfos);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -603,8 +613,8 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "设置默认收货地址", notes = "设置默认收货地址")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/defaultAddress")
     @ResponseBody
@@ -624,6 +634,9 @@ public class UserController extends BaseController {
             }
             //TODO 设置默认收货地址
             return toSuccess("设置默认收货地址成功！");
+//        } catch (ServiceException e) {
+//            e.printStackTrace();
+//            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -632,7 +645,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "修改绑定手机", notes = "修改绑定手机")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/updatePhone")
@@ -668,179 +681,219 @@ public class UserController extends BaseController {
             BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改绑定手机成功！");
             result.put("userInfo",userInfo);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-
-    @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
+    @ApiOperation(value = "合并账号", notes = "合并账号")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query")
     })
-    @PostMapping(value = "/myFans")
+    @PostMapping(value = "/accountMerge")
     @ResponseBody
-    public String myFans(UserParam param) throws IOException {
+    public String accountMerge(UserParam param) throws IOException{
         try {
-            log.info("----》我的粉丝《----");
+            log.info("----》合并账号《----");
             log.info("参数："+param.toString());
-            if(param.getStart()==null){
-                return toError("分页start不能为空！");
+            if(StringUtils.isEmpty(param.getPhone())){
+                return toError("手机号码不能为空！");
             }
-            if(param.getLimit()==null){
-                return toError("分页limit不能为空！");
+            if(param.getUserId() == null){
+                return toError("用户ID不能为空！");
             }
             UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
+            if(user == null){
                 return toError("999","登录超时，请重新登录！");
             }
             if(user.getStatus() == 2){
                 return toError("999","您的账号已被冻结，请联系管理员！");
             }
-            //TODO 我的粉丝
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的粉丝成功！");
+            //TODO 合并账号
+            UserInfo userInfo = userInfoService.accountMerge(param.getUserId(),param.getPhone());
+            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "修改绑定手机成功！");
+            result.put("userInfo",userInfo);
             return toResult(result);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-
-    @ApiOperation(value = "添加/取消关注", notes = "添加/取消关注")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "userId ", value = "被关注用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "0关注 1取消关注", required = true, dataType = "Integer", paramType = "query")
-    })
-    @PostMapping(value = "/fansFollow")
-    @ResponseBody
-    public String fansFollow(UserParam param) throws IOException {
-        try {
-            log.info("----》添加关注/取消关注《----");
-            log.info("参数："+param.toString());
-            if(param.getUserId()==null || param.getUserId().intValue()==0){
-                return toError("用户id不能为空！");
-            }
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError("999","您的账号已被冻结，请联系管理员！");
-            }
-            if(user.getId().intValue()==param.getUserId().intValue()){
-                return toError("不能关注自己");
-            }
-            //TODO 添加/取消关注
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加/取消关注成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "我的关注", notes = "我的关注")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
-    })
-    @PostMapping(value = "/myFollows")
-    @ResponseBody
-    public String myFollows(UserParam param) throws IOException {
-        try {
-            log.info("----》我的关注《----");
-            log.info("参数："+param.toString());
-            if(param.getStart()==null){
-                return toError("分页start不能为空！");
-            }
-            if(param.getLimit()==null){
-                return toError("分页limit不能为空！");
-            }
-            //TODO 我的关注
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的关注列表成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "好友列表", notes = "好友列表")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
-    })
-    @PostMapping(value = "/friendList")
-    @ResponseBody
-    public String friendList(UserParam param) throws IOException {
-        try {
-            log.info("----》好友列表《----");
-            log.info("参数："+param.toString());
-            if(param.getStart()==null){
-                return toError("分页start不能为空！");
-            }
-            if(param.getLimit()==null){
-                return toError("分页limit不能为空！");
-            }
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError("999","您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 好友列表
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取好友列表成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "签到", notes = "签到")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-    })
-    @PostMapping(value = "/sign")
-    @ResponseBody
-    public String sign(UserParam param) throws IOException {
-        try {
-            log.info("----》签到《----");
-            log.info("参数："+param.toString());
-            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-            if(user==null){
-                return toError("999","登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError("999","您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 签到
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "签到成功！");
-            return toResult(result);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
+//    @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
+//    })
+//    @PostMapping(value = "/myFans")
+//    @ResponseBody
+//    public String myFans(UserParam param) throws IOException {
+//        try {
+//            log.info("----》我的粉丝《----");
+//            log.info("参数："+param.toString());
+//            if(param.getStart()==null){
+//                return toError("分页start不能为空！");
+//            }
+//            if(param.getLimit()==null){
+//                return toError("分页limit不能为空！");
+//            }
+//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
+//            if(user==null){
+//                return toError("999","登录超时，请重新登录！");
+//            }
+//            if(user.getStatus() == 2){
+//                return toError("999","您的账号已被冻结，请联系管理员！");
+//            }
+//            //TODO 我的粉丝
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的粉丝成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
+//
+//
+//    @ApiOperation(value = "添加/取消关注", notes = "添加/取消关注")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "userId ", value = "被关注用户id", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "type", value = "0关注 1取消关注", required = true, dataType = "Integer", paramType = "query")
+//    })
+//    @PostMapping(value = "/fansFollow")
+//    @ResponseBody
+//    public String fansFollow(UserParam param) throws IOException {
+//        try {
+//            log.info("----》添加关注/取消关注《----");
+//            log.info("参数："+param.toString());
+//            if(param.getUserId()==null || param.getUserId().intValue()==0){
+//                return toError("用户id不能为空！");
+//            }
+//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
+//            if(user==null){
+//                return toError("999","登录超时，请重新登录！");
+//            }
+//            if(user.getStatus() == 2){
+//                return toError("999","您的账号已被冻结，请联系管理员！");
+//            }
+//            if(user.getId().intValue()==param.getUserId().intValue()){
+//                return toError("不能关注自己");
+//            }
+//            //TODO 添加/取消关注
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加/取消关注成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
+//
+//    @ApiOperation(value = "我的关注", notes = "我的关注")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
+//    })
+//    @PostMapping(value = "/myFollows")
+//    @ResponseBody
+//    public String myFollows(UserParam param) throws IOException {
+//        try {
+//            log.info("----》我的关注《----");
+//            log.info("参数："+param.toString());
+//            if(param.getStart()==null){
+//                return toError("分页start不能为空！");
+//            }
+//            if(param.getLimit()==null){
+//                return toError("分页limit不能为空！");
+//            }
+//            //TODO 我的关注
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的关注列表成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
+//
+//    @ApiOperation(value = "好友列表", notes = "好友列表")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
+//    })
+//    @PostMapping(value = "/friendList")
+//    @ResponseBody
+//    public String friendList(UserParam param) throws IOException {
+//        try {
+//            log.info("----》好友列表《----");
+//            log.info("参数："+param.toString());
+//            if(param.getStart()==null){
+//                return toError("分页start不能为空！");
+//            }
+//            if(param.getLimit()==null){
+//                return toError("分页limit不能为空！");
+//            }
+//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
+//            if(user==null){
+//                return toError("999","登录超时，请重新登录！");
+//            }
+//            if(user.getStatus() == 2){
+//                return toError("999","您的账号已被冻结，请联系管理员！");
+//            }
+//            //TODO 好友列表
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取好友列表成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
+//
+//    @ApiOperation(value = "签到", notes = "签到")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
+//    })
+//    @PostMapping(value = "/sign")
+//    @ResponseBody
+//    public String sign(UserParam param) throws IOException {
+//        try {
+//            log.info("----》签到《----");
+//            log.info("参数："+param.toString());
+//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
+//            if(user==null){
+//                return toError("999","登录超时，请重新登录！");
+//            }
+//            if(user.getStatus() == 2){
+//                return toError("999","您的账号已被冻结，请联系管理员！");
+//            }
+//            //TODO 签到
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "签到成功！");
+//            return toResult(result);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return toError("系统繁忙，请稍后再试！");
+//        }
+//    }
 
     //测试配置文件获取
-    @Value("${name:errorName}")
-    String name;
-    @Value("${version:errorVersion}")
-    String version;
-    @RequestMapping("/hi")
-    @ResponseBody
-    public String hi() {
-        return "hi,I am " + name + ",version is " + version;
-    }
+//    @Value("${name:errorName}")
+//    String name;
+//    @Value("${version:errorVersion}")
+//    String version;
+//    @RequestMapping("/hi")
+//    @ResponseBody
+//    public String hi() {
+//        return "hi,I am " + name + ",version is " + version;
+//    }
 
 
 }
