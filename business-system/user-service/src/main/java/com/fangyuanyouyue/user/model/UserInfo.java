@@ -2,15 +2,14 @@ package com.fangyuanyouyue.user.model;
 
 import java.util.Date;
 
-/**
- * 用户信息表
- */
 public class UserInfo {
     private Integer id;
 
     private String phone;//手机号码
 
     private String email;//电子邮件
+
+    private String address;//用户所在地
 
     private String loginPwd;//登录密码,MD5小写
 
@@ -70,6 +69,14 @@ public class UserInfo {
 
     public void setEmail(String email) {
         this.email = email == null ? null : email.trim();
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address == null ? null : address.trim();
     }
 
     public String getLoginPwd() {
