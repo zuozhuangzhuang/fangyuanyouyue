@@ -29,15 +29,9 @@ public interface UserInfoService {
      * @param nickName
      * @return
      */
-    UserInfo getUserByNickName(String nickName);
+    UserInfo getUserByNickName(String nickName) throws ServiceException;
 
 
-    /**
-     * 修改用户信息
-     * @param param
-     * @return
-     */
-    void updateByPrimaryKey(UserParam param);
 
     /**
      * 用户手机注册
@@ -115,4 +109,12 @@ public interface UserInfoService {
      */
     UserInfo updatePhone(Integer userId,String phone) throws ServiceException;
 
+    /**
+     * 合并账号
+     * @param userId
+     * @param phone
+     * @return
+     * @throws ServiceException
+     */
+    UserInfo accountMerge(Integer userId,String phone) throws ServiceException;
 }
