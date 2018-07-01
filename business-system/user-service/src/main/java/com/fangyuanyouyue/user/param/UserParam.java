@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.param;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -10,31 +11,37 @@ public class UserParam extends BaseParam {
 	private String phone;//手机号码
 	@ApiModelProperty(name = "email", value = "电子邮件", dataType = "String",hidden = true)
 	private String email;//电子邮件
+	@ApiModelProperty(name = "userAddress", value = "用户所在地", dataType = "String",hidden = true)
+	private String userAddress;//用户所在地
 	@ApiModelProperty(name = "loginPwd", value = "登录密码,MD5小写", dataType = "String",hidden = true)
 	private String loginPwd;//登录密码,MD5小写
 	@ApiModelProperty(name = "nickName", value = "昵称", dataType = "String",hidden = true)
 	private String nickName;//昵称
 	@ApiModelProperty(name = "headImgUrl", value = "头像图片地址", dataType = "String",hidden = true)
 	private String headImgUrl;//头像图片地址
+	@ApiModelProperty(name = "headImg", value = "头像图片", dataType = "file",hidden = true)
+	private MultipartFile headImg;//头像图片
 	@ApiModelProperty(name = "bgImgUrl", value = "背景图片地址", dataType = "String",hidden = true)
 	private String bgImgUrl;//背景图片地址
-	@ApiModelProperty(name = "gender", value = "性别，0女 1男 2不确定", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "bgImg", value = "背景图片", dataType = "file",hidden = true)
+	private MultipartFile bgImg;//背景图片
+	@ApiModelProperty(name = "gender", value = "性别，0女 1男 2不确定", dataType = "int",hidden = true)
 	private Integer gender;//性别，0女 1男 2不确定
 	@ApiModelProperty(name = "signature", value = "个性签名", dataType = "String",hidden = true)
 	private String signature;//个性签名
 	@ApiModelProperty(name = "contact", value = "联系电话", dataType = "String",hidden = true)
 	private String contact;//联系电话
-	@ApiModelProperty(name = "regType", value = "注册来源 1app 2微信小程序", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "regType", value = "注册来源 1app 2微信小程序", dataType = "int",hidden = true)
 	private Integer regType;//注册来源 1app 2微信小程序
-	@ApiModelProperty(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "regPlatform", value = "注册平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
 	private Integer regPlatform;//注册平台 1安卓 2IOS 3小程序
 	@ApiModelProperty(name = "levelDesc", value = "等级描述", dataType = "String",hidden = true)
 	private String levelDesc;//等级描述
-	@ApiModelProperty(name = "status", value = "状态", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "status", value = "状态", dataType = "int",hidden = true)
 	private Integer status;//用户信息状态 1正常 2冻结 / 用户扩展实名登记状态 1已实名 2未实名 / 用户会员状态1已开通 2未开通 / 实名认证状态 1申请 2通过 3拒绝
-	@ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "int",hidden = true)
 	private Date updateTime;//更新时间
-	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "int",hidden = true)
 	private Integer userId;//用户ID
 	@ApiModelProperty(name = "newPwd", value = "新密码", dataType = "String",hidden = true)
 	private String newPwd;//新密码
@@ -64,7 +71,7 @@ public class UserParam extends BaseParam {
 	private String address;//详细地址
 	@ApiModelProperty(name = "postCode", value = "邮编", dataType = "String",hidden = true)
 	private String postCode;//邮编
-	@ApiModelProperty(name = "addressId", value = "地址ID", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "addressId", value = "地址ID", dataType = "int",hidden = true)
 	private Integer addressId;//地址ID
 	@ApiModelProperty(name = "unionId", value = "第三方唯一ID", dataType = "String",hidden = true)
 	private String unionId;//第三方唯一ID
@@ -78,7 +85,7 @@ public class UserParam extends BaseParam {
 	private String thirdNickName;//第三方账号昵称
 	@ApiModelProperty(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String",hidden = true)
 	private String thirdHeadImgUrl;//第三方账号头像地址
-	@ApiModelProperty(name = "lastLoginPlatform", value = "最后登录平台 1安卓 2IOS 3小程序", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "lastLoginPlatform", value = "最后登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
 	private Integer lastLoginPlatform;//最后登录平台 1安卓 2IOS 3小程序
 
 	public String getPhone() {
@@ -95,6 +102,14 @@ public class UserParam extends BaseParam {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getUserAddress() {
+		return userAddress;
+	}
+
+	public void setUserAddress(String userAddress) {
+		this.userAddress = userAddress;
 	}
 
 	public String getLoginPwd() {
@@ -379,15 +394,34 @@ public class UserParam extends BaseParam {
 		this.payPwd = payPwd;
 	}
 
+	public MultipartFile getHeadImg() {
+		return headImg;
+	}
+
+	public void setHeadImg(MultipartFile headImg) {
+		this.headImg = headImg;
+	}
+
+	public MultipartFile getBgImg() {
+		return bgImg;
+	}
+
+	public void setBgImg(MultipartFile bgImg) {
+		this.bgImg = bgImg;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
 				"phone='" + phone + '\'' +
 				", email='" + email + '\'' +
+				", userAddress='" + userAddress + '\'' +
 				", loginPwd='" + loginPwd + '\'' +
 				", nickName='" + nickName + '\'' +
 				", headImgUrl='" + headImgUrl + '\'' +
+				", headImg=" + headImg +
 				", bgImgUrl='" + bgImgUrl + '\'' +
+				", bgImg=" + bgImg +
 				", gender=" + gender +
 				", signature='" + signature + '\'' +
 				", contact='" + contact + '\'' +
