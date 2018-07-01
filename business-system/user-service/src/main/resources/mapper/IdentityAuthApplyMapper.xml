@@ -37,7 +37,7 @@
       #{rejectDesc,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{addTime,jdbcType=TIMESTAMP}, 
       #{updateTime,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.fangyuanyouyue.user.model.IdentityAuthApply" >
+  <insert id="insertSelective" parameterType="com.fangyuanyouyue.user.model.IdentityAuthApply" useGeneratedKeys="true" keyProperty="id">
     insert into identity_auth_apply
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
