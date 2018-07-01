@@ -7,12 +7,12 @@ import com.fangyuanyouyue.user.model.UserThirdParty;
 import com.fangyuanyouyue.user.model.UserVip;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.UserInfoService;
-import com.fangyuanyouyue.user.utils.DateStampUtils;
-import com.fangyuanyouyue.user.utils.MD5Util;
-import com.fangyuanyouyue.user.utils.ServiceException;
+import com.fangyuanyouyue.user.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service(value = "userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
@@ -32,6 +32,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private UserExamineMapper userExamineMapper;
 
+    @Value("${pic_server:errorPicServer}")
+    private String PIC_SERVER;// 图片服务器
+
+    @Value("${pic_path:errorPicPath}")
+    private String PIC_PATH;// 图片存放路径
+
     @Override
     public UserInfo selectByPrimaryKey(Integer id) {
         return userInfoMapper.selectByPrimaryKey(id);
@@ -43,22 +49,12 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfo getUserByNickName(String nickName) {
+    public UserInfo getUserByNickName(String nickName) throws ServiceException{
         UserInfo userInfo = userInfoMapper.getUserByNickName(nickName);
-        return userInfo;
-    }
-//    @Override
-//    public UserInfo getUserByToken(String token) {
-//        return userInfoMapper.getUserByToken(token);
-//    }
-
-    @Override
-    public void updateByPrimaryKey(UserParam param) {
-        //根据手机号获取用户，修改密码
-        UserInfo user = userInfoMapper.getUserByPhone(param.getPhone());
-        if(user!=null){
-            user.setLoginPwd(MD5Util.getMD5String(param.getNewPwd()));
-            userInfoMapper.updateByPrimaryKey(user);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            return userInfo;
         }
     }
 
@@ -67,6 +63,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         //初始化用户信息
         UserInfo user = new UserInfo();
         //手机号注册必定是APP端
+        // 保存头像
+        saveHeadImg(param.getHeadImg(),user);
+        //保存背景图片
+        saveBgImg(param.getBgImg(),user);
+
         user.setRegType(1);//注册来源 1APP 2微信小程序
         user.setRegPlatform(param.getRegPlatform());
         user.setAddTime(DateStampUtils.getTimesteamp());
@@ -80,7 +81,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         //用户扩展信息表
         UserInfoExt userInfoExt = new UserInfoExt();
         userInfoExt.setUserId(user.getId());
-        userInfoExt.setStatus(2);
+        userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
         userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
         userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
         userInfoExtMapper.insert(userInfoExt);
@@ -136,7 +137,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setRegPlatform(param.getRegPlatform());
         user.setAddTime(DateStampUtils.getTimesteamp());
         user.setUpdateTime(DateStampUtils.getTimesteamp());
-        user.setStatus(1);
+        user.setStatus(1);//状态 1正常 2冻结
         if(param.getGender() != null){
             user.setGender(param.getGender());
         }
@@ -154,7 +155,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         //用户扩展信息表
         UserInfoExt userInfoExt = new UserInfoExt();
         userInfoExt.setUserId(user.getId());
-        userInfoExt.setStatus(2);
+        userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
         userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
         userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
         userInfoExtMapper.insert(userInfoExt);
@@ -263,12 +264,10 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(StringUtils.isNotEmpty(param.getNickName())){
                 userInfo.setNickName(param.getNickName());
             }
-            if(StringUtils.isNotEmpty(param.getHeadImgUrl())){
-                userInfo.setHeadImgUrl(param.getHeadImgUrl());
-            }
-            if(StringUtils.isNotEmpty(param.getBgImgUrl())){
-                userInfo.setBgImgUrl(param.getBgImgUrl());
-            }
+            // 保存头像
+            saveHeadImg(param.getHeadImg(),userInfo);
+            //保存背景图片
+            saveBgImg(param.getBgImg(),userInfo);
             if(param.getGender() != null){
                 userInfo.setGender(param.getGender());
             }
@@ -277,6 +276,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
             if(StringUtils.isNotEmpty(param.getContact())){
                 userInfo.setContact(param.getContact());
+            }
+            if(StringUtils.isNotEmpty(param.getUserAddress())){
+                userInfo.setAddress(param.getUserAddress());
             }
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
@@ -297,6 +299,51 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
+
+    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
+        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+        FileUtil util = new FileUtil();
+        String fileName;
+        if(headImg != null){
+            try {
+                fileName = util.getFileName(headImg, "HEADIMG");
+                String name = fileName.toLowerCase();
+                if (name.endsWith("jpeg") || name.endsWith("png")
+                        || name.endsWith("jpg")) {
+                    util.saveFile(headImg, PIC_PATH + date, fileName);
+                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
+                } else {
+                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("保存头像图片出错！");
+            }
+        }
+    }
+
+    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
+        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+        FileUtil util = new FileUtil();
+        String fileName;
+        if(bgImg != null){
+            try {
+                fileName = util.getFileName(bgImg, "BGIMG");
+                String name = fileName.toLowerCase();
+                if (name.endsWith("jpeg") || name.endsWith("png")
+                        || name.endsWith("jpg")) {
+                    util.saveFile(bgImg, PIC_PATH + date, fileName);
+                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
+                } else {
+                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("保存背景图片出错！");
+            }
+        }
+    }
+
     @Override
     public UserInfo updatePhone(Integer userId, String phone) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
@@ -307,6 +354,26 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             return userInfo;
+        }
+    }
+
+    @Override
+    public UserInfo accountMerge(Integer userId, String phone) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("第三方用户不存在！");
+        }else{
+            UserInfo userInfoByPhone = userInfoMapper.getUserByPhone(phone);
+            if(userInfoByPhone == null){
+                throw new ServiceException("手机号用户不存在！");
+            }else{
+                //TODO 合并余额、粉丝、关注、收藏、商品、收货地址、好友、会员时间、
+                //第三方登录账号在未绑定手机号时拥有功能：
+
+                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
+                userInfoMapper.updateByPrimaryKey(userInfo);
+                return userInfo;
+            }
         }
     }
 }
