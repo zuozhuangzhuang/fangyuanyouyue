@@ -37,6 +37,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             throw new ServiceException("用户不存在！");
         }else{
             UserAddressInfo userAddressInfo = new UserAddressInfo();
+            userAddressInfo.setUserId(userId);
             userAddressInfo.setAddTime(DateStampUtils.getTimesteamp());
             userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userAddressInfo.setReceiverName(receiverName);
