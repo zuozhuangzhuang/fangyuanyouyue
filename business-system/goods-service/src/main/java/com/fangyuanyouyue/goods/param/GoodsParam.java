@@ -1,162 +1,126 @@
 package com.fangyuanyouyue.goods.param;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 
 public class GoodsParam extends BaseParam{
-    private Integer id;
-    private String phone;//手机号，账号
-    private String loginPwd;//登录密码
-    private String cliendId;//识别号
-    private String code;//
-
-    private String nickName;//用户昵称
-    private String gender;//用户性别
-    private Integer userId;//用户ID
-    private String token;//用户token
-
-    private String cardNo;//身份证号
-    private String realName;//真实姓名
-    private String content;//申请实名认证理由
-    private String type;//
-
-    private String userName;//
-    private String address;//详细地址
-    private String province;//省
-    private String city;//市
-    private String area;//区
-
-    private Integer addressId;//地址ID
-
-    private String version;//版本
-
-    private Integer catalogId;//
-    private String title;//标题
+    //公用
+    @ApiModelProperty(name = "imgUrl", value = "图片地址", dataType = "String",hidden = true)
+    private String imgUrl;//图片地址
+    @ApiModelProperty(name = "price", value = "价格", dataType = "BigDecimal",hidden = true)
     private BigDecimal price;//价格
-    private MultipartFile[] imgUrl;//图片路径
-    private String imgWidth;//图片宽
-    private String imgHeight;//图片高
-    private Long startTime;//竞拍开始时间
-    private Long endTime;//竞拍结束时间
-    private BigDecimal addPrice;//加价幅度
+    @ApiModelProperty(name = "status", value = "状态", dataType = "Integer",hidden = true)
+    private Integer status;//状态 GoodsComment：1正常 2隐藏 GoodsInfo：普通商品 1出售中 2已售出 5删除
+    @ApiModelProperty(name = "addTime", value = "添加时间", dataType = "Date",hidden = true)
+    private Date addTime;//添加时间
+    @ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "Integer",hidden = true)
+    private Date updateTime;//更新时间
 
-    private String search;//查询字段
 
-    private Integer goodsId;//商品ID
 
-    private Integer orderId;//订单ID
 
-    private Integer commentId;//留言ID
-    private Integer replyId;//回复ID
+    //GoodsInfo
+    @ApiModelProperty(name = "goodsInfoId", value = "商品表ID", dataType = "Integer",hidden = true)
+    private Integer goodsInfoId;//商品表ID
+    @ApiModelProperty(name = "goodsInfoIds", value = "商品id数组", dataType = "Integer",hidden = true)
+    private Integer[] goodsInfoIds;//商品id数组
+    @ApiModelProperty(name = "userId", value = "发布用户id", dataType = "Integer",hidden = true)
+    private Integer userId;//发布用户id
+    @ApiModelProperty(name = "goodsInfoName", value = "商品名称", dataType = "String",hidden = true)
+    private String goodsInfoName;//商品名称
+    @ApiModelProperty(name = "description", value = "商品详情", dataType = "String",hidden = true)
+    private String description;//商品详情
+    @ApiModelProperty(name = "postage", value = "运费", dataType = "BigDecimal",hidden = true)
+    private BigDecimal postage;//运费
+    @ApiModelProperty(name = "label", value = "标签", dataType = "String",hidden = true)
+    private String label;//标签
+    @ApiModelProperty(name = "sort", value = "排序", dataType = "Integer",hidden = true)
+    private Integer sort;//排序
 
-    private String payPwd;//支付密码
 
+
+
+    //GoodsImg
+    @ApiModelProperty(name = "goodsImgId", value = "商品图片表ID", dataType = "Integer",hidden = true)
+    private Integer goodsImgId;//商品图片表ID
+    @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "Integer",hidden = true)
+    private Integer goodsId;//商品id
+    @ApiModelProperty(name = "file1", value = "图片文件1", dataType = "file",hidden = true)
     private MultipartFile file1;//图片文件1
+    @ApiModelProperty(name = "file2", value = "图片文件2", dataType = "file",hidden = true)
     private MultipartFile file2;
+    @ApiModelProperty(name = "file3", value = "图片文件3", dataType = "file",hidden = true)
     private MultipartFile file3;
+    @ApiModelProperty(name = "file4", value = "图片文件4", dataType = "file",hidden = true)
     private MultipartFile file4;
+    @ApiModelProperty(name = "file5", value = "图片文件5", dataType = "file",hidden = true)
     private MultipartFile file5;
+    @ApiModelProperty(name = "file6", value = "图片文件6", dataType = "file",hidden = true)
     private MultipartFile file6;
-    private String pic1;//图片路径1
-    private String pic2;
-    private String pic3;
-    private String pic4;
-    private String pic5;
-    private String pic6;
 
-    private MultipartFile headImg;//头像
 
-    private Integer companyId;//物流公司ID
-    private String number;//物流公司编号
 
-    private String description;//商品描述/商品详情
 
-    private String newPwd;//新密码
+   //GoodsComment
+    @ApiModelProperty(name = "goodsCommentId", value = "商品评论表ID", dataType = "Integer",hidden = true)
+    private Integer goodsCommentId;//商品评论表ID
+    @ApiModelProperty(name = "commentId", value = "回复评论id", dataType = "Integer",hidden = true)
+    private Integer commentId;//回复评论id
+    @ApiModelProperty(name = "content", value = "评论内容", dataType = "String",hidden = true)
+    private String content;//评论内容
+    @ApiModelProperty(name = "likesCount", value = "点赞次数", dataType = "Integer",hidden = true)
+    private Integer likesCount;//点赞次数
+    @ApiModelProperty(name = "img1Url", value = "图片地址1", dataType = "String",hidden = true)
+    private String img1Url;//图片地址1
+    @ApiModelProperty(name = "img2Url", value = "图片地址2", dataType = "String",hidden = true)
+    private String img2Url;//图片地址2
+    @ApiModelProperty(name = "img3Url", value = "图片地址3", dataType = "String",hidden = true)
+    private String img3Url;//图片地址3
 
-    private String birth;//生日
 
-    private String qqCliend;//qq三方识别号
-    private String wechatCliend;//微信三方识别号
 
-    private String thirdNo;//三方订单号
-    private String unionId;//微信识别码
 
-    private String headUrl;//头像路径
+    //GoodsCategory
+    @ApiModelProperty(name = "goodsCategoryId", value = "商品类目表ID", dataType = "Integer",hidden = true)
+    private Integer goodsCategoryId;//商品类目表ID
+    @ApiModelProperty(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）", dataType = "Integer",hidden = true)
+    private Integer[] goodsCategoryIds;//商品分类数组（同一商品可多种分类）
+    @ApiModelProperty(name = "parentId", value = "上级id", dataType = "Integer",hidden = true)
+    private Integer parentId;//上级id
+    @ApiModelProperty(name = "goodsCategoryName", value = "类目名称", dataType = "String",hidden = true)
+    private String goodsCategoryName;//类目名称
 
-    private BigDecimal withdrawPrice;
-    private String account;
-    private BigDecimal decisionPrice;//一口价
-    private String isSpecial;//是否特价商品  0是 1否
 
-    private String goodsType;
-    private String sortType;
-    private String classify;
-    private BigDecimal postage;//邮费
 
-    private String autograph;
 
-    private String goodsIds;
-    private String orderIds;
+    //CartInfo
+    @ApiModelProperty(name = "cartInfoId", value = "购物车表ID", dataType = "Integer",hidden = true)
+    private Integer cartInfoId;//购物车表ID
 
-    private String contact;
-    private String platform;
 
-    public Integer getId() {
-        return id;
+
+
+    //CartDetail
+    @ApiModelProperty(name = "cartDetailId", value = "购物车明细表ID", dataType = "Integer",hidden = true)
+    private Integer cartDetailId;//购物车明细表ID
+    @ApiModelProperty(name = "cartId", value = "购物车id", dataType = "Integer",hidden = true)
+    private Integer cartId;//购物车id
+    @ApiModelProperty(name = "count", value = "数量", dataType = "Integer",hidden = true)
+    private Integer count;//数量
+
+
+
+    public Integer getGoodsInfoId() {
+        return goodsInfoId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getLoginPwd() {
-        return loginPwd;
-    }
-
-    public void setLoginPwd(String loginPwd) {
-        this.loginPwd = loginPwd;
-    }
-
-    public String getCliendId() {
-        return cliendId;
-    }
-
-    public void setCliendId(String cliendId) {
-        this.cliendId = cliendId;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setGoodsInfoId(Integer goodsInfoId) {
+        this.goodsInfoId = goodsInfoId;
     }
 
     public Integer getUserId() {
@@ -167,182 +131,44 @@ public class GoodsParam extends BaseParam{
         this.userId = userId;
     }
 
-    public String getToken() {
-        return token;
+    public String getGoodsInfoName() {
+        return goodsInfoName;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setGoodsInfoName(String goodsInfoName) {
+        this.goodsInfoName = goodsInfoName;
     }
 
-    public String getCardNo() {
-        return cardNo;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCardNo(String cardNo) {
-        this.cardNo = cardNo;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getRealName() {
-        return realName;
+    public BigDecimal getPostage() {
+        return postage;
     }
 
-    public void setRealName(String realName) {
-        this.realName = realName;
+    public void setPostage(BigDecimal postage) {
+        this.postage = postage;
     }
 
-    public String getContent() {
-        return content;
+    public String getLabel() {
+        return label;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    @Override
-    public String getType() {
-        return type;
+    public Integer getGoodsImgId() {
+        return goodsImgId;
     }
 
-    @Override
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getArea() {
-        return area;
-    }
-
-    public void setArea(String area) {
-        this.area = area;
-    }
-
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public Integer getCatalogId() {
-        return catalogId;
-    }
-
-    public void setCatalogId(Integer catalogId) {
-        this.catalogId = catalogId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public MultipartFile[] getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(MultipartFile[] imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public String getImgWidth() {
-        return imgWidth;
-    }
-
-    public void setImgWidth(String imgWidth) {
-        this.imgWidth = imgWidth;
-    }
-
-    public String getImgHeight() {
-        return imgHeight;
-    }
-
-    public void setImgHeight(String imgHeight) {
-        this.imgHeight = imgHeight;
-    }
-
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Long startTime) {
-        this.startTime = startTime;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Long endTime) {
-        this.endTime = endTime;
-    }
-
-    public BigDecimal getAddPrice() {
-        return addPrice;
-    }
-
-    public void setAddPrice(BigDecimal addPrice) {
-        this.addPrice = addPrice;
-    }
-
-    public String getSearch() {
-        return search;
-    }
-
-    public void setSearch(String search) {
-        this.search = search;
+    public void setGoodsImgId(Integer goodsImgId) {
+        this.goodsImgId = goodsImgId;
     }
 
     public Integer getGoodsId() {
@@ -353,12 +179,12 @@ public class GoodsParam extends BaseParam{
         this.goodsId = goodsId;
     }
 
-    public Integer getOrderId() {
-        return orderId;
+    public Integer getGoodsCommentId() {
+        return goodsCommentId;
     }
 
-    public void setOrderId(Integer orderId) {
-        this.orderId = orderId;
+    public void setGoodsCommentId(Integer goodsCommentId) {
+        this.goodsCommentId = goodsCommentId;
     }
 
     public Integer getCommentId() {
@@ -369,20 +195,148 @@ public class GoodsParam extends BaseParam{
         this.commentId = commentId;
     }
 
-    public Integer getReplyId() {
-        return replyId;
+    public String getContent() {
+        return content;
     }
 
-    public void setReplyId(Integer replyId) {
-        this.replyId = replyId;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public String getPayPwd() {
-        return payPwd;
+    public Integer getLikesCount() {
+        return likesCount;
     }
 
-    public void setPayPwd(String payPwd) {
-        this.payPwd = payPwd;
+    public void setLikesCount(Integer likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public String getImg1Url() {
+        return img1Url;
+    }
+
+    public void setImg1Url(String img1Url) {
+        this.img1Url = img1Url;
+    }
+
+    public String getImg2Url() {
+        return img2Url;
+    }
+
+    public void setImg2Url(String img2Url) {
+        this.img2Url = img2Url;
+    }
+
+    public String getImg3Url() {
+        return img3Url;
+    }
+
+    public void setImg3Url(String img3Url) {
+        this.img3Url = img3Url;
+    }
+
+    public Integer getGoodsCategoryId() {
+        return goodsCategoryId;
+    }
+
+    public void setGoodsCategoryId(Integer goodsCategoryId) {
+        this.goodsCategoryId = goodsCategoryId;
+    }
+
+    public Integer getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Integer parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getGoodsCategoryName() {
+        return goodsCategoryName;
+    }
+
+    public void setGoodsCategoryName(String goodsCategoryName) {
+        this.goodsCategoryName = goodsCategoryName;
+    }
+
+    public Integer getCartInfoId() {
+        return cartInfoId;
+    }
+
+    public void setCartInfoId(Integer cartInfoId) {
+        this.cartInfoId = cartInfoId;
+    }
+
+    public Integer getCartDetailId() {
+        return cartDetailId;
+    }
+
+    public void setCartDetailId(Integer cartDetailId) {
+        this.cartDetailId = cartDetailId;
+    }
+
+    public Integer getCartId() {
+        return cartId;
+    }
+
+    public void setCartId(Integer cartId) {
+        this.cartId = cartId;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Date getAddTime() {
+        return addTime;
+    }
+
+    public void setAddTime(Date addTime) {
+        this.addTime = addTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 
     public MultipartFile getFile1() {
@@ -433,320 +387,61 @@ public class GoodsParam extends BaseParam{
         this.file6 = file6;
     }
 
-    public String getPic1() {
-        return pic1;
+    public Integer[] getGoodsCategoryIds() {
+        return goodsCategoryIds;
     }
 
-    public void setPic1(String pic1) {
-        this.pic1 = pic1;
+    public void setGoodsCategoryIds(Integer[] goodsCategoryIds) {
+        this.goodsCategoryIds = goodsCategoryIds;
     }
 
-    public String getPic2() {
-        return pic2;
+    public Integer[] getGoodsInfoIds() {
+        return goodsInfoIds;
     }
 
-    public void setPic2(String pic2) {
-        this.pic2 = pic2;
-    }
-
-    public String getPic3() {
-        return pic3;
-    }
-
-    public void setPic3(String pic3) {
-        this.pic3 = pic3;
-    }
-
-    public String getPic4() {
-        return pic4;
-    }
-
-    public void setPic4(String pic4) {
-        this.pic4 = pic4;
-    }
-
-    public String getPic5() {
-        return pic5;
-    }
-
-    public void setPic5(String pic5) {
-        this.pic5 = pic5;
-    }
-
-    public String getPic6() {
-        return pic6;
-    }
-
-    public void setPic6(String pic6) {
-        this.pic6 = pic6;
-    }
-
-    public MultipartFile getHeadImg() {
-        return headImg;
-    }
-
-    public void setHeadImg(MultipartFile headImg) {
-        this.headImg = headImg;
-    }
-
-    public Integer getCompanyId() {
-        return companyId;
-    }
-
-    public void setCompanyId(Integer companyId) {
-        this.companyId = companyId;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getNewPwd() {
-        return newPwd;
-    }
-
-    public void setNewPwd(String newPwd) {
-        this.newPwd = newPwd;
-    }
-
-    public String getBirth() {
-        return birth;
-    }
-
-    public void setBirth(String birth) {
-        this.birth = birth;
-    }
-
-    public String getQqCliend() {
-        return qqCliend;
-    }
-
-    public void setQqCliend(String qqCliend) {
-        this.qqCliend = qqCliend;
-    }
-
-    public String getWechatCliend() {
-        return wechatCliend;
-    }
-
-    public void setWechatCliend(String wechatCliend) {
-        this.wechatCliend = wechatCliend;
-    }
-
-    public String getThirdNo() {
-        return thirdNo;
-    }
-
-    public void setThirdNo(String thirdNo) {
-        this.thirdNo = thirdNo;
-    }
-
-    public String getUnionId() {
-        return unionId;
-    }
-
-    public void setUnionId(String unionId) {
-        this.unionId = unionId;
-    }
-
-    public String getHeadUrl() {
-        return headUrl;
-    }
-
-    public void setHeadUrl(String headUrl) {
-        this.headUrl = headUrl;
-    }
-
-    public BigDecimal getWithdrawPrice() {
-        return withdrawPrice;
-    }
-
-    public void setWithdrawPrice(BigDecimal withdrawPrice) {
-        this.withdrawPrice = withdrawPrice;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public BigDecimal getDecisionPrice() {
-        return decisionPrice;
-    }
-
-    public void setDecisionPrice(BigDecimal decisionPrice) {
-        this.decisionPrice = decisionPrice;
-    }
-
-    public String getIsSpecial() {
-        return isSpecial;
-    }
-
-    public void setIsSpecial(String isSpecial) {
-        this.isSpecial = isSpecial;
-    }
-
-    public String getGoodsType() {
-        return goodsType;
-    }
-
-    public void setGoodsType(String goodsType) {
-        this.goodsType = goodsType;
-    }
-
-    public String getSortType() {
-        return sortType;
-    }
-
-    public void setSortType(String sortType) {
-        this.sortType = sortType;
-    }
-
-    public String getClassify() {
-        return classify;
-    }
-
-    public void setClassify(String classify) {
-        this.classify = classify;
-    }
-
-    public BigDecimal getPostage() {
-        return postage;
-    }
-
-    public void setPostage(BigDecimal postage) {
-        this.postage = postage;
-    }
-
-    public String getAutograph() {
-        return autograph;
-    }
-
-    public void setAutograph(String autograph) {
-        this.autograph = autograph;
-    }
-
-    public String getOrderIds() {
-        return orderIds;
-    }
-
-    public void setOrderIds(String orderIds) {
-        this.orderIds = orderIds;
-    }
-
-    public String getContact() {
-        return contact;
-    }
-
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public String getGoodsIds() {
-        return goodsIds;
-    }
-
-    public void setGoodsIds(String goodsIds) {
-        this.goodsIds = goodsIds;
+    public void setGoodsInfoIds(Integer[] goodsInfoIds) {
+        this.goodsInfoIds = goodsInfoIds;
     }
 
     @Override
     public String toString() {
         return "GoodsParam{" +
-                "id=" + id +
-                ", phone='" + phone + '\'' +
-                ", loginPwd='" + loginPwd + '\'' +
-                ", cliendId='" + cliendId + '\'' +
-                ", code='" + code + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", gender='" + gender + '\'' +
-                ", userId=" + userId +
-                ", token='" + token + '\'' +
-                ", cardNo='" + cardNo + '\'' +
-                ", realName='" + realName + '\'' +
-                ", content='" + content + '\'' +
-                ", type='" + type + '\'' +
-                ", userName='" + userName + '\'' +
-                ", address='" + address + '\'' +
-                ", province='" + province + '\'' +
-                ", city='" + city + '\'' +
-                ", area='" + area + '\'' +
-                ", addressId=" + addressId +
-                ", version='" + version + '\'' +
-                ", catalogId=" + catalogId +
-                ", title='" + title + '\'' +
+                "imgUrl='" + imgUrl + '\'' +
                 ", price=" + price +
-                ", imgUrl=" + Arrays.toString(imgUrl) +
-                ", imgWidth='" + imgWidth + '\'' +
-                ", imgHeight='" + imgHeight + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", addPrice=" + addPrice +
-                ", search='" + search + '\'' +
+                ", status=" + status +
+                ", addTime=" + addTime +
+                ", updateTime=" + updateTime +
+                ", goodsInfoId=" + goodsInfoId +
+                ", goodsInfoIds=" + Arrays.toString(goodsInfoIds) +
+                ", userId=" + userId +
+                ", goodsInfoName='" + goodsInfoName + '\'' +
+                ", description='" + description + '\'' +
+                ", postage=" + postage +
+                ", label='" + label + '\'' +
+                ", sort=" + sort +
+                ", goodsImgId=" + goodsImgId +
                 ", goodsId=" + goodsId +
-                ", orderId=" + orderId +
-                ", commentId=" + commentId +
-                ", replyId=" + replyId +
-                ", payPwd='" + payPwd + '\'' +
                 ", file1=" + file1 +
                 ", file2=" + file2 +
                 ", file3=" + file3 +
                 ", file4=" + file4 +
                 ", file5=" + file5 +
                 ", file6=" + file6 +
-                ", pic1='" + pic1 + '\'' +
-                ", pic2='" + pic2 + '\'' +
-                ", pic3='" + pic3 + '\'' +
-                ", pic4='" + pic4 + '\'' +
-                ", pic5='" + pic5 + '\'' +
-                ", pic6='" + pic6 + '\'' +
-                ", headImg=" + headImg +
-                ", companyId=" + companyId +
-                ", number='" + number + '\'' +
-                ", description='" + description + '\'' +
-                ", newPwd='" + newPwd + '\'' +
-                ", birth='" + birth + '\'' +
-                ", qqCliend='" + qqCliend + '\'' +
-                ", wechatCliend='" + wechatCliend + '\'' +
-                ", thirdNo='" + thirdNo + '\'' +
-                ", unionId='" + unionId + '\'' +
-                ", headUrl='" + headUrl + '\'' +
-                ", withdrawPrice=" + withdrawPrice +
-                ", account='" + account + '\'' +
-                ", decisionPrice=" + decisionPrice +
-                ", isSpecial='" + isSpecial + '\'' +
-                ", goodsType='" + goodsType + '\'' +
-                ", sortType='" + sortType + '\'' +
-                ", classify='" + classify + '\'' +
-                ", postage=" + postage +
-                ", autograph='" + autograph + '\'' +
-                ", goodsIds='" + goodsIds + '\'' +
-                ", orderIds='" + orderIds + '\'' +
-                ", contact='" + contact + '\'' +
-                ", platform='" + platform + '\'' +
+                ", goodsCommentId=" + goodsCommentId +
+                ", commentId=" + commentId +
+                ", content='" + content + '\'' +
+                ", likesCount=" + likesCount +
+                ", img1Url='" + img1Url + '\'' +
+                ", img2Url='" + img2Url + '\'' +
+                ", img3Url='" + img3Url + '\'' +
+                ", goodsCategoryId=" + goodsCategoryId +
+                ", goodsCategoryIds=" + Arrays.toString(goodsCategoryIds) +
+                ", parentId=" + parentId +
+                ", goodsCategoryName='" + goodsCategoryName + '\'' +
+                ", cartInfoId=" + cartInfoId +
+                ", cartDetailId=" + cartDetailId +
+                ", cartId=" + cartId +
+                ", count=" + count +
                 '}';
     }
 }
