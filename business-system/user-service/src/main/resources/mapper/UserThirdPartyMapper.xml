@@ -28,7 +28,7 @@
     delete from user_third_party
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserThirdParty" >
+  <insert id="insert" parameterType="com.fangyuanyouyue.user.model.UserThirdParty" useGeneratedKeys="true" keyProperty="id">
     insert into user_third_party (id, user_id, type, 
       union_id, app_open_id, mp_open_id, 
       mini_open_id, nick_name, head_img_url, 
@@ -162,7 +162,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="getUserByThirdNoTypr" resultMap="BaseResultMap">
+  <select id="getUserByThirdNoType" resultMap="BaseResultMap">
     select * from user_third_party where union_id = #{unionId,jdbcType=VARCHAR} and type = #{type,jdbcType=INTEGER}
   </select>
 </mapper>
