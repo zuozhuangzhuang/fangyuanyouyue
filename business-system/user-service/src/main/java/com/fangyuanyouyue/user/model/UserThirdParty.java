@@ -20,6 +20,8 @@ public class UserThirdParty {
 
     private String miniOpenId;//小程序openid
 
+    private String sessionKey;//对用户数据进行加密签名的密钥
+
     private String nickName;//第三方账号昵称
 
     private String headImgUrl;//第三方账号头像地址
@@ -27,6 +29,7 @@ public class UserThirdParty {
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
 
     public Integer getId() {
         return id;
@@ -114,5 +117,13 @@ public class UserThirdParty {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getSessionKey() {
+        return sessionKey;
+    }
+
+    public void setSessionKey(String sessionKey) {
+        this.sessionKey = sessionKey == null ? null : sessionKey.trim();
     }
 }

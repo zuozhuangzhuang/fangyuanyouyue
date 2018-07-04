@@ -21,7 +21,7 @@ public interface UserThirdPartyMapper {
     /**
      * 根据第三方唯一ID和类型获取第三方登录信息
      * @param unionId
-     * @param type
+     * @param type 类型 1微信 2QQ 3微博
      * @return
      */
     UserThirdParty getUserByThirdNoType(@Param("unionId") String unionId, @Param("type") int type);
