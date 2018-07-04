@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.user.service;
 
+import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.utils.ServiceException;
@@ -38,7 +39,7 @@ public interface UserInfoService {
      * @param param
      * @return
      */
-    UserInfo regist(UserParam param) throws ServiceException;
+    UserDto regist(UserParam param) throws ServiceException;
 
     /**
      * 用户手机号登录
@@ -47,14 +48,14 @@ public interface UserInfoService {
      * @param lastLoginPlatform
      * @return
      */
-    UserInfo login(String phone,String logingPwd,Integer lastLoginPlatform) throws ServiceException;
+    UserDto login(String phone,String logingPwd,Integer lastLoginPlatform) throws ServiceException;
 
     /**
      * 三方注册
      * @param param
      * @return
      */
-    UserInfo thirdRegister(UserParam param) throws ServiceException;
+    UserDto thirdRegister(UserParam param) throws ServiceException;
 
     /**
      * 三方登陆
@@ -63,7 +64,7 @@ public interface UserInfoService {
      * @return
      * @throws ServiceException
      */
-    UserInfo thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException;
+    UserDto thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException;
 
     /**
      * 三方绑定
@@ -73,7 +74,7 @@ public interface UserInfoService {
      * @return
      * @throws ServiceException
      */
-    UserInfo thirdBind(Integer userId,String unionId,Integer type) throws ServiceException;
+    UserDto thirdBind(Integer userId,String unionId,Integer type) throws ServiceException;
 
 
 
@@ -83,7 +84,7 @@ public interface UserInfoService {
      * @return
      * @throws ServiceException
      */
-    UserInfo modify(UserParam param) throws ServiceException;
+    UserDto modify(UserParam param) throws ServiceException;
 
     /**
      * 找回密码
@@ -107,7 +108,7 @@ public interface UserInfoService {
      * @param phone
      * @throws ServiceException
      */
-    UserInfo updatePhone(Integer userId,String phone) throws ServiceException;
+    UserDto updatePhone(Integer userId,String phone) throws ServiceException;
 
     /**
      * 合并账号
@@ -116,5 +117,21 @@ public interface UserInfoService {
      * @return
      * @throws ServiceException
      */
-    UserInfo accountMerge(Integer userId,String phone) throws ServiceException;
+    UserDto accountMerge(Integer userId,String phone) throws ServiceException;
+
+    /**
+     * 小程序登录
+     * @param param
+     * @return
+     * @throws ServiceException
+     */
+    UserDto miniLogin(UserParam param,String openid,String session_key) throws ServiceException;
+
+    /**
+     * 根据unionID获取用户
+     * @param unionId
+     * @return
+     * @throws ServiceException
+     */
+    UserInfo getUserByUnionId(String unionId,Integer type) throws ServiceException;
 }

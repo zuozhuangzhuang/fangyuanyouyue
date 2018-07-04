@@ -1,10 +1,8 @@
 package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.*;
-import com.fangyuanyouyue.user.model.UserInfo;
-import com.fangyuanyouyue.user.model.UserInfoExt;
-import com.fangyuanyouyue.user.model.UserThirdParty;
-import com.fangyuanyouyue.user.model.UserVip;
+import com.fangyuanyouyue.user.dto.UserDto;
+import com.fangyuanyouyue.user.model.*;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.UserInfoService;
 import com.fangyuanyouyue.user.utils.*;
@@ -59,7 +57,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public UserInfo regist(UserParam param) throws ServiceException{
+    public UserDto regist(UserParam param) throws ServiceException{
         //初始化用户信息
         UserInfo user = new UserInfo();
         //手机号注册必定是APP端
@@ -74,7 +72,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setUpdateTime(DateStampUtils.getTimesteamp());
         user.setPhone(param.getPhone());
         user.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-        user.setNickName(param.getPhone());
+        user.setNickName(param.getNickName());
         user.setStatus(1);//状态 1正常 2冻结
         user.setGender(param.getGender());
         userInfoMapper.insert(user);
@@ -95,11 +93,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         //TODO 注册通讯账户
         //TODO 调用钱包系统初始化接口
         //初始化用户钱包
-        return user;
+        UserDto userDto = setUserDtoByInfo(user);
+        return userDto;
     }
 
     @Override
-    public UserInfo login(String phone,String loginPwd,Integer lastLoginPlatform) throws ServiceException{
+    public UserDto login(String phone,String loginPwd,Integer lastLoginPlatform) throws ServiceException{
         UserInfo user = userInfoMapper.getUserByPhone(phone);
         //账号或密码错误处理
         if(user == null){
@@ -122,58 +121,66 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userInfoMapper.updateByPrimaryKey(user);
                 //TODO 注册通讯账户
                 //TODO 获取用户的相关信息：商品列表、钱包系统、好友列表
-                return user;
+                UserDto userDto = setUserDtoByInfo(user);
+                return userDto;
             }
         }
     }
 
     @Override
-    public UserInfo thirdRegister(UserParam param)  throws ServiceException{
-        //初始化用户信息
-        UserInfo user = new UserInfo();
-        user.setNickName(param.getThirdNickName());
-        user.setHeadImgUrl(param.getThirdHeadImgUrl());
-        user.setRegType(param.getRegType());
-        user.setRegPlatform(param.getRegPlatform());
-        user.setAddTime(DateStampUtils.getTimesteamp());
-        user.setUpdateTime(DateStampUtils.getTimesteamp());
-        user.setStatus(1);//状态 1正常 2冻结
-        if(param.getGender() != null){
-            user.setGender(param.getGender());
+    public UserDto thirdRegister(UserParam param)  throws ServiceException{
+        UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(param.getUnionId(),param.getType());
+        if(userThirdParty != null){
+            throw new ServiceException("用户已注册！");
+        }else{
+            //初始化用户信息
+            UserInfo user = new UserInfo();
+            user.setNickName(param.getThirdNickName());
+            user.setHeadImgUrl(param.getThirdHeadImgUrl());
+            user.setRegType(param.getRegType());
+            user.setRegPlatform(param.getRegPlatform());
+            user.setAddTime(DateStampUtils.getTimesteamp());
+            user.setUpdateTime(DateStampUtils.getTimesteamp());
+            user.setStatus(1);//状态 1正常 2冻结
+            if(param.getGender() != null){
+                user.setGender(param.getGender());
+            }
+            userInfoMapper.insert(user);
+            //初始化用户第三方登录信息
+            userThirdParty = new UserThirdParty();
+            userThirdParty.setUserId(user.getId());
+            userThirdParty.setNickName(param.getThirdNickName());
+            userThirdParty.setHeadImgUrl(param.getThirdHeadImgUrl());
+            userThirdParty.setUnionId(param.getUnionId());
+            userThirdParty.setType(param.getType());
+            userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
+            userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
+            userThirdPartyMapper.insert(userThirdParty);
+            //用户扩展信息表
+            UserInfoExt userInfoExt = new UserInfoExt();
+            userInfoExt.setUserId(user.getId());
+            userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+            userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
+            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
+            userInfoExtMapper.insert(userInfoExt);
+            //用户会员系统
+            UserVip userVip = new UserVip();
+            userVip.setUserId(user.getId());
+            userVip.setStatus(2);//会员状态1已开通 2未开通
+            userVip.setAddTime(DateStampUtils.getTimesteamp());
+            userVip.setUpdateTime(DateStampUtils.getTimesteamp());
+            userVipMapper.insert(userVip);
+            //TODO 注册通讯账户
+            //TODO 调用钱包系统初始化接口
+
+            UserDto userDto = setUserDtoByInfo(user);
+            return userDto;
+
         }
-        userInfoMapper.insert(user);
-        //初始化用户第三方登录信息
-        UserThirdParty userThirdParty = new UserThirdParty();
-        userThirdParty.setUserId(user.getId());
-        userThirdParty.setNickName(param.getThirdNickName());
-        userThirdParty.setHeadImgUrl(param.getThirdHeadImgUrl());
-        userThirdParty.setUnionId(param.getUnionId());
-        userThirdParty.setType(param.getType());
-        userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
-        userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
-        userThirdPartyMapper.insert(userThirdParty);
-        //用户扩展信息表
-        UserInfoExt userInfoExt = new UserInfoExt();
-        userInfoExt.setUserId(user.getId());
-        userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
-        userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
-        userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
-        userInfoExtMapper.insert(userInfoExt);
-        //用户会员系统
-        UserVip userVip = new UserVip();
-        userVip.setUserId(user.getId());
-        userVip.setStatus(2);//会员状态1已开通 2未开通
-        userVip.setAddTime(DateStampUtils.getTimesteamp());
-        userVip.setUpdateTime(DateStampUtils.getTimesteamp());
-        userVipMapper.insert(userVip);
-        //TODO 注册通讯账户
-        //TODO 调用钱包系统初始化接口
-        //初始化用户钱包
-        return user;
     }
 
     @Override
-    public UserInfo thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException {
+    public UserDto thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException {
         //根据第三方唯一ID和类型获取第三方登录信息
         UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(unionId,type);
         if(userThirdParty == null){
@@ -184,12 +191,13 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
             userInfo.setLastLoginPlatform(lastLoginPlatform);
             userInfoMapper.updateByPrimaryKey(userInfo);
-            return userInfo;
+            UserDto userDto = setUserDtoByInfo(userInfo);
+            return userDto;
         }
     }
 
     @Override
-    public UserInfo thirdBind(Integer userId,String unionId,Integer type) throws ServiceException {
+    public UserDto thirdBind(Integer userId,String unionId,Integer type) throws ServiceException {
         //根据用户ID获取用户，生成新的三方登陆信息
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
@@ -211,7 +219,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
                 userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
                 userThirdPartyMapper.insert(userThirdParty);
-                return userInfo;
+                UserDto userDto = setUserDtoByInfo(userInfo);
+                return userDto;
             }
         }
     }
@@ -219,37 +228,17 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public void resetPwd(String phone, String newPwd) throws ServiceException{
         UserInfo userInfo = userInfoMapper.getUserByPhone(phone);
-        if(userInfo == null){
-            throw new ServiceException("用户不存在！");
-        }else{
-            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
-                throw new ServiceException("不能和旧密码相同！");
-            }else{
-                userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
-                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
-                userInfoMapper.updateByPrimaryKey(userInfo);
-            }
-        }
+        updatePwd(newPwd, userInfo);
     }
 
     @Override
     public void updatePwd(Integer userId, String newPwd) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
-        if(userInfo == null){
-            throw new ServiceException("用户不存在！");
-        }else{
-            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
-                throw new ServiceException("不能和旧密码相同！");
-            }else{
-                userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
-                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
-                userInfoMapper.updateByPrimaryKey(userInfo);
-            }
-        }
+        updatePwd(newPwd, userInfo);
     }
 
     @Override
-    public UserInfo modify(UserParam param) throws ServiceException {
+    public UserDto modify(UserParam param) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(param.getUserId());
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -295,57 +284,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
             userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.updateByPrimaryKey(userInfoExt);
-            return userInfo;
+            UserDto userDto = setUserDtoByInfo(userInfo);
+            return userDto;
         }
     }
 
-
-    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
-        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-        FileUtil util = new FileUtil();
-        String fileName;
-        if(headImg != null){
-            try {
-                fileName = util.getFileName(headImg, "HEADIMG");
-                String name = fileName.toLowerCase();
-                if (name.endsWith("jpeg") || name.endsWith("png")
-                        || name.endsWith("jpg")) {
-                    util.saveFile(headImg, PIC_PATH + date, fileName);
-                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
-                } else {
-                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ServiceException("保存头像图片出错！");
-            }
-        }
-    }
-
-    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
-        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-        FileUtil util = new FileUtil();
-        String fileName;
-        if(bgImg != null){
-            try {
-                fileName = util.getFileName(bgImg, "BGIMG");
-                String name = fileName.toLowerCase();
-                if (name.endsWith("jpeg") || name.endsWith("png")
-                        || name.endsWith("jpg")) {
-                    util.saveFile(bgImg, PIC_PATH + date, fileName);
-                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
-                } else {
-                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ServiceException("保存背景图片出错！");
-            }
-        }
-    }
 
     @Override
-    public UserInfo updatePhone(Integer userId, String phone) throws ServiceException {
+    public UserDto updatePhone(Integer userId, String phone) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -353,12 +299,13 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setPhone(phone);
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
-            return userInfo;
+            UserDto userDto = setUserDtoByInfo(userInfo);
+            return userDto;
         }
     }
 
     @Override
-    public UserInfo accountMerge(Integer userId, String phone) throws ServiceException {
+    public UserDto accountMerge(Integer userId, String phone) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("第三方用户不存在！");
@@ -372,8 +319,183 @@ public class UserInfoServiceImpl implements UserInfoService {
 
                 userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
-                return userInfo;
+                UserDto userDto = setUserDtoByInfo(userInfo);
+                return userDto;
             }
+        }
+    }
+
+    /**
+     * 将userInfo封装到userDto中
+     * @param user
+     * @return
+     * @throws ServiceException
+     */
+    public UserDto setUserDtoByInfo(UserInfo user) throws ServiceException{
+        if(user == null){
+            throw new ServiceException("用户错误！");
+        }else{
+            UserDto userDto = new UserDto();
+            userDto.setUserId(user.getId());
+            userDto.setPhone(user.getPhone());
+            userDto.setEmail(user.getEmail());
+            userDto.setUserAddress(user.getAddress());
+            userDto.setNickName(user.getNickName());
+            userDto.setHeadImgUrl(user.getHeadImgUrl());
+            userDto.setBgImgUrl(user.getBgImgUrl());
+            userDto.setGender(user.getGender());
+            userDto.setSignature(user.getSignature());
+            userDto.setContact(user.getContact());
+            userDto.setLevel(user.getLevel());
+            userDto.setLevelDesc(user.getLevelDesc());
+            return userDto;
+        }
+    }
+
+    /**
+     * 保存头像图片
+     * @param headImg
+     * @param userInfo
+     * @throws ServiceException
+     */
+    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
+        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+        FileUtil util = new FileUtil();
+        String fileName;
+        if(headImg != null){
+            try {
+                fileName = util.getFileName(headImg, "HEADIMG");
+                String name = fileName.toLowerCase();
+                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
+                    util.saveFile(headImg, PIC_PATH + date, fileName);
+                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
+                } else {
+                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("保存头像图片出错！");
+            }
+        }
+    }
+
+    /**
+     * 保存背景图片
+     * @param bgImg
+     * @param userInfo
+     * @throws ServiceException
+     */
+    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
+        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+        FileUtil util = new FileUtil();
+        String fileName;
+        if(bgImg != null){
+            try {
+                fileName = util.getFileName(bgImg, "BGIMG");
+                String name = fileName.toLowerCase();
+                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
+                    util.saveFile(bgImg, PIC_PATH + date, fileName);
+                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
+                } else {
+                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ServiceException("保存背景图片出错！");
+            }
+        }
+    }
+
+    /**
+     * 修改密码
+     * @param newPwd
+     * @param userInfo
+     * @throws ServiceException
+     */
+    private void updatePwd(String newPwd, UserInfo userInfo) throws ServiceException {
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
+                throw new ServiceException("不能和旧密码相同！");
+            }else{
+                userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
+                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
+                userInfoMapper.updateByPrimaryKey(userInfo);
+            }
+        }
+    }
+
+    @Override
+    public UserDto miniLogin(UserParam param,String openid,String session_key) throws ServiceException {
+        //TODO 用户登录
+        //根据unionId和type获取用户第三方登录信息
+        UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(param.getUnionId(),1);
+        if(userThirdParty == null){
+            //TODO 如果用户为空，注册
+            //初始化用户信息
+            UserInfo user = new UserInfo();
+            user.setNickName(param.getThirdNickName());
+            user.setHeadImgUrl(param.getThirdHeadImgUrl());
+            user.setRegType(2);//注册来源 1app 2微信小程序
+            user.setRegPlatform(3);//注册平台 1安卓 2iOS 3小程序
+            user.setAddTime(DateStampUtils.getTimesteamp());
+            user.setUpdateTime(DateStampUtils.getTimesteamp());
+            user.setStatus(1);//状态 1正常 2冻结
+            if(param.getGender() != null){
+                user.setGender(param.getGender());
+            }
+
+            userInfoMapper.insert(user);
+            //初始化用户第三方登录信息
+            userThirdParty = new UserThirdParty();
+            userThirdParty.setUserId(user.getId());
+            userThirdParty.setNickName(param.getThirdNickName());
+            userThirdParty.setHeadImgUrl(param.getThirdHeadImgUrl());
+            userThirdParty.setUnionId(param.getUnionId());
+            userThirdParty.setMiniOpenId(openid);
+             userThirdParty.setSessionKey(session_key);
+            userThirdParty.setType(1);//类型 1微信 2QQ 3微博
+            userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
+            userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
+            userThirdPartyMapper.insert(userThirdParty);
+            //用户扩展信息表
+            UserInfoExt userInfoExt = new UserInfoExt();
+            userInfoExt.setUserId(user.getId());
+            userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+            userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
+            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
+            userInfoExtMapper.insert(userInfoExt);
+            //用户会员系统
+            UserVip userVip = new UserVip();
+            userVip.setUserId(user.getId());
+            userVip.setStatus(2);//会员状态 1已开通 2未开通
+            userVip.setAddTime(DateStampUtils.getTimesteamp());
+            userVip.setUpdateTime(DateStampUtils.getTimesteamp());
+            userVipMapper.insert(userVip);
+            //TODO 注册通讯账户
+            //TODO 调用钱包系统初始化接口
+            UserDto userDto = setUserDtoByInfo(user);
+            return userDto;
+        }else{
+            UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
+            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
+            userInfoMapper.updateByPrimaryKey(userInfo);
+            userThirdParty.setSessionKey(session_key);
+            userThirdPartyMapper.updateByPrimaryKey(userThirdParty);
+            UserDto userDto = setUserDtoByInfo(userInfo);
+            return userDto;
+        }
+    }
+
+    @Override
+    public UserInfo getUserByUnionId(String unionId,Integer type) throws ServiceException {
+        UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(unionId,type);
+        if(userThirdParty == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
+            return userInfo;
         }
     }
 }

@@ -2,6 +2,9 @@ package com.fangyuanyouyue.user.model;
 
 import java.util.Date;
 
+/**
+ * 用户信息表
+ */
 public class UserInfo {
     private Integer id;
 
@@ -19,7 +22,7 @@ public class UserInfo {
 
     private String bgImgUrl;//背景图片地址
 
-    private Integer gender = 2;//性别，0女 1男 2不确定
+    private Integer gender = 0;//性别，1男 2女 0不确定
 
     private String signature;//个性签名
 

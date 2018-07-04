@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.user.service;
 
+import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.model.UserAddressInfo;
 import com.fangyuanyouyue.user.utils.ServiceException;
 
@@ -23,7 +24,7 @@ public interface UserAddressInfoService {
      * @return
      * @throws ServiceException
      */
-    List<UserAddressInfo> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException;
+    List<UserAddressDto> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException;
 
     /**
      * 修改收货地址
@@ -39,7 +40,7 @@ public interface UserAddressInfoService {
      * @param type
      * @return
      */
-    UserAddressInfo updateAddress(Integer userId,Integer addressId,String receiverName,String receiverPhone,String province,String city,String area,String address,String postCode,Integer type) throws ServiceException;
+    UserAddressDto updateAddress(Integer userId,Integer addressId,String receiverName,String receiverPhone,String province,String city,String area,String address,String postCode,Integer type) throws ServiceException;
 
     /**
      * 删除收货地址
@@ -48,7 +49,7 @@ public interface UserAddressInfoService {
      * @return
      * @throws ServiceException
      */
-    List<UserAddressInfo> deleteAddress(Integer userId,Integer addressId) throws ServiceException;
+    List<UserAddressDto> deleteAddress(Integer userId,Integer addressId) throws ServiceException;
 
     /**
      * 设置默认收货地址

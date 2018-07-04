@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.*;
+import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.model.UserAddressInfo;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.service.UserAddressInfoService;
@@ -10,6 +11,7 @@ import com.fangyuanyouyue.user.utils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service(value = "userAddressInfoService")
@@ -31,7 +33,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
 
 
     @Override
-    public List<UserAddressInfo> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+    public List<UserAddressDto> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -51,12 +53,16 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             }
             userAddressInfoMapper.insert(userAddressInfo);
             List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-            return userAddressInfos;
+            List<UserAddressDto> userAddressDtos = new ArrayList<>();
+            for(UserAddressInfo userAddress:userAddressInfos){
+                userAddressDtos.add(setAddressDtoByInfo(userAddress));
+            }
+            return userAddressDtos;
         }
     }
 
     @Override
-    public UserAddressInfo updateAddress(Integer userId, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+    public UserAddressDto updateAddress(Integer userId, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -75,13 +81,13 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 userAddressInfo.setType(type);
                 userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
-                return userAddressInfo;
+                return setAddressDtoByInfo(userAddressInfo);
             }
         }
     }
 
     @Override
-    public List<UserAddressInfo> deleteAddress(Integer userId, Integer addressId) throws ServiceException {
+    public List<UserAddressDto> deleteAddress(Integer userId, Integer addressId) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -92,7 +98,11 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             }else{
                 userAddressInfoMapper.deleteByPrimaryKey(addressId);
                 List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-                return userAddressInfos;
+                List<UserAddressDto> userAddressDtos = new ArrayList<>();
+                for(UserAddressInfo userAddress:userAddressInfos){
+                    userAddressDtos.add(setAddressDtoByInfo(userAddress));
+                }
+                return userAddressDtos;
             }
         }
     }
@@ -116,6 +126,33 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             userAddressInfo.setType(Integer.valueOf(Status.ISDEFAULT.getValue()));
             userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
+        }
+    }
+
+    /**
+     * 将userAddressInfo封装到userAddressDto中
+     * @param userAddressInfo
+     * @return
+     * @throws ServiceException
+     */
+    public UserAddressDto setAddressDtoByInfo(UserAddressInfo userAddressInfo) throws ServiceException{
+        if(userAddressInfo == null){
+            throw new ServiceException("收货地址错误！");
+        }else{
+            UserAddressDto userAddressDto = new UserAddressDto();
+            userAddressDto.setUserAddresId(userAddressInfo.getId());
+            userAddressDto.setUserId(userAddressInfo.getUserId());
+            userAddressDto.setReceiverName(userAddressInfo.getReceiverName());
+            userAddressDto.setReceiverPhone(userAddressInfo.getReceiverPhone());
+            userAddressDto.setProvince(userAddressInfo.getProvince());
+            userAddressDto.setCity(userAddressInfo.getCity());
+            userAddressDto.setArea(userAddressInfo.getArea());
+            userAddressDto.setAddress(userAddressInfo.getAddress());
+            userAddressDto.setPostCode(userAddressInfo.getPostCode());
+            userAddressDto.setAddressType(userAddressInfo.getType());
+            userAddressDto.setAddTime(userAddressInfo.getAddTime());
+            userAddressDto.setUpdateTime(userAddressInfo.getUpdateTime());
+            return userAddressDto;
         }
     }
 }
