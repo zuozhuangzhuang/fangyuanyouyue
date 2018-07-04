@@ -13,7 +13,7 @@ import java.util.Date;
 
 @SuppressWarnings("unchecked")
 public class DateUtil {
-
+	public static final String DATE_FORMT="yyyy-MM-dd HH:mm:ss";
 	private static Calendar calendar = Calendar.getInstance();
 
 	/**

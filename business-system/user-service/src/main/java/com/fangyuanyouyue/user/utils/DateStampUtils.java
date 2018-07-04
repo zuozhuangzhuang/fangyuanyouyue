@@ -11,10 +11,6 @@ import java.util.TimeZone;
  * 日期工具类(未特别说明的均为系统默认时区下的时间)
  * 
  * @ClassName: DateStampUtils
- * @Description: TODO
- * @author 杨启文 <a href="http://www.chuangshiyiming.com">深圳市创世易明科技有限公司</a>
- * @date 2015-1-15 下午8:31:34
- * 
  */
 public class DateStampUtils {
 	/** 1s==1000ms */
