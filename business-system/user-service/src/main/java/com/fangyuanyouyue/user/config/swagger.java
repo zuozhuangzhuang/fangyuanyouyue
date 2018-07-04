@@ -29,7 +29,7 @@ import springfox.documentation.swagger.web.UiConfiguration;
 // · query -->请求参数的获取：@RequestParam
 // · path（用于restful接口）--> 请求参数的获取：@PathVariable
 // · body（不常用）
-// · form（不常用）
+// · form --> 提交数据时使用
 // name：参数名
 // dataType：参数类型
 // required：参数是否必须传
