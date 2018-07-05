@@ -3,11 +3,8 @@ package com.fangyuanyouyue.user.controller;
 import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.UserInfo;
-import com.fangyuanyouyue.user.model.UserThirdParty;
-import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.*;
 import com.fangyuanyouyue.user.utils.ReCode;
-import com.fangyuanyouyue.user.utils.ServiceException;
 import com.fangyuanyouyue.user.utils.Status;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -26,7 +23,7 @@ import java.io.IOException;
 
 @Controller
 @RequestMapping(value = "/userFeign")
-@Api(description = "用户系统外部调用Controller")
+@Api(description = "用户系统外部调用Controller",hidden = true)
 @RefreshScope
 public class FeignController  extends BaseController {
 
@@ -43,7 +40,7 @@ public class FeignController  extends BaseController {
     private SchedualGoodsService schedualGoodsService;//调用其他service时用
 
 
-    @ApiOperation(value = "验证用户", notes = "验证用户")
+    @ApiOperation(value = "验证用户", notes = "验证用户",hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query")
     })
@@ -71,11 +68,11 @@ public class FeignController  extends BaseController {
         }
     }
 
-    @ApiOperation(value = "根据手机号验证用户", notes = "根据手机号验证用户")
+    @ApiOperation(value = "根据手机号验证用户", notes = "根据手机号验证用户",hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String", paramType = "query")
     })
-    @PostMapping(value = "/verifyUserById")
+    @PostMapping(value = "/verifyUserByPhone")
     @ResponseBody
     public String verifyUserByPhone(String phone) throws IOException {
         try {
@@ -100,12 +97,12 @@ public class FeignController  extends BaseController {
     }
 
 
-    @ApiOperation(value = "根据三方唯一识别号获取用户", notes = "根据三方唯一识别号获取用户")
+    @ApiOperation(value = "根据三方唯一识别号获取用户", notes = "根据三方唯一识别号获取用户",hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "unionId", value = "三方唯一识别号", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query")
     })
-    @PostMapping(value = "/verifyUserById")
+    @PostMapping(value = "/verifyUserByUnionId")
     @ResponseBody
     public String verifyUserByUnionId(String unionId,Integer type) throws IOException {
         try {
