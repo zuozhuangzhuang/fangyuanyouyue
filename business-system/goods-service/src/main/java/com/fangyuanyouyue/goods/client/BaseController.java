@@ -1,19 +1,20 @@
 package com.fangyuanyouyue.goods.client;
 
-import com.fangyuanyouyue.goods.utils.PageResults;
 import com.fangyuanyouyue.goods.utils.ReCode;
+import com.fangyuanyouyue.goods.utils.ResultUtil;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * 控制器基类
  *
  */
-public class BaseController{
+public class BaseController {
 
 	protected Logger log = Logger.getLogger(this.getClass());
 
@@ -24,11 +25,16 @@ public class BaseController{
 	 * @throws IOException
 	 */
 	public String toSuccess(String reMsg) throws IOException {
-		BaseClientResult result ;
-		result = new BaseClientResult(ReCode.SUCCESS.getValue(),reMsg);
-		return toJson(result.getMap());
+//		BaseClientResult result ;
+//		result = new BaseClientResult(ReCode.SUCCESS.getValue(),reMsg);
+		ResultUtil resultUtil = new ResultUtil(0,"请求成功",new Date(),reMsg);
+		return toJson(resultUtil);
 	}
-	
+
+	public String toSuccess(Object object,String reMsg) throws IOException{
+		ResultUtil resultUtil = new ResultUtil(0,"请求成功",new Date(),object,reMsg);
+		return toJson(resultUtil);
+	}
 	
 	/**
 	 * 操作失败
@@ -37,11 +43,12 @@ public class BaseController{
 	 * @return
 	 * @throws IOException
 	 */
-	public String toError(String reCode, String reMsg) throws IOException {
-		BaseClientResult result ;
-		result = new BaseClientResult(reCode,reMsg);
-		log.info("controller输出："+result.toString());
-		return toJson(result.getMap());
+	public String toError(Integer reCode, String reMsg) throws IOException {
+//		BaseClientResult result ;
+//		result = new BaseClientResult(reCode,reMsg);
+		ResultUtil resultUtil = new ResultUtil(reCode,"请求失败",new Date(),reMsg);
+//		log.info("controller输出："+resultUtil.toString());
+		return toJson(resultUtil);
 	}
 	
 	/**
@@ -73,22 +80,7 @@ public class BaseController{
 		return toSuccess("操作成功！");
 	}
 
-	
-	/**
-	 * 操作成功
-	 * @return
-	 * @throws IOException
-	 */
-	public String toPage(PageResults page, String dataKey) throws IOException {
-		BaseClientResult result ;
-		result = new BaseClientResult(ReCode.SUCCESS.getValue(),"");
-		if(page!=null)
-			result.put(dataKey, page.getResults());
-		return toJson(result.getMap());
-	}
-	
-	
-	
+
 	/**
 	 * 将对象转为json字符串
 	 * @param object
@@ -119,7 +111,7 @@ public class BaseController{
 	public String toResult(BaseClientResult result) throws IOException {
 		return toJson(result.getMap());
 	}
-	
+
 	/**
 	 * 将json转为加密后的字符串
 	 * @param str
@@ -148,6 +140,14 @@ public class BaseController{
         return mapper;  
     }
 
-    
+	/**
+	 * 返回数据
+	 * @param result
+	 * @return
+	 * @throws IOException
+	 */
+	public String toResult(ResultUtil result) throws IOException {
+		return toJson(result);
+	}
 
 }
