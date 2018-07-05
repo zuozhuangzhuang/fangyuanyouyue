@@ -29,3 +29,6 @@ zuul:
     goods-service:
       path: /goods/**
       serviceId: goods-service
+    sms-service:
+      path: /sms/**
+      serviceId: sms-service
