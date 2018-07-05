@@ -1,7 +1,7 @@
-package com.fangyuanyouyue.goods.client;
+package com.fangyuanyouyue.sms.client;
 
-import com.fangyuanyouyue.goods.utils.ReCode;
-import com.fangyuanyouyue.goods.utils.ResultUtil;
+import com.fangyuanyouyue.sms.utils.ReCode;
+import com.fangyuanyouyue.sms.utils.ResultUtil;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
