@@ -3,15 +3,68 @@ eureka:
     serviceUrl:
 #     服务注册中心的地址
       defaultZone: http://localhost:8761/eureka/
-#0 端口随机
+#为0 端口随机
 server:
   port: 0
+
+#zipkin
+  zipkin:
+    base-url: http://localhost:9411
 spring:
   application:
 #   服务与服务之间相互调用一般都是根据这个name
     name: sms-service
-#zipkin
-  zipkin:
-    base-url: http://localhost:9411
+  datasource:
+      name: test
+      url: jdbc:mysql://127.0.0.1:3306/auction?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+      username: root
+      password: 123456
+      # 使用druid数据源
+      type: com.alibaba.druid.pool.DruidDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      filters: stat
+      maxActive: 20
+      initialSize: 1
+      maxWait: 60000
+      minIdle: 1
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: select 'x'
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      maxOpenPreparedStatements: 20
+#bus
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+#springcloud-bus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ["health","info","bus-refresh"]
+  cloud:
+    bus:
+      trace:
+        enabled: true
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.fangyuanyouyue.user.model
 
+mapper:
+  mappers:  com.fangyuanyouyue.user.dao
+  not-empty: false
+  identity: MYSQL
 
+#pagehelper分页
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+    returnPageInfo: check
