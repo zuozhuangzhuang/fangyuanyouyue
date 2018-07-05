@@ -7,6 +7,7 @@ import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.service.SchedualGoodsService;
+import com.fangyuanyouyue.goods.service.SchedualUserService;
 import com.fangyuanyouyue.goods.utils.ResultUtil;
 import com.fangyuanyouyue.goods.utils.ServiceException;
 import io.swagger.annotations.Api;
@@ -32,7 +33,7 @@ public class GoodsController extends BaseController{
     @Autowired
     private GoodsInfoService goodsInfoService;
     @Autowired
-    private SchedualGoodsService schedualGoodsService;//调用其他service时用
+    private SchedualUserService schedualUserService;//调用其他service时用
 
 
     @ApiOperation(value = "获取商品列表", notes = "获取商品列表",response = ResultUtil.class)
@@ -87,7 +88,7 @@ public class GoodsController extends BaseController{
             if(param.getUserId() == null){
                 return toError("用户id不能为空！");
             }
-            String verifyUser = schedualGoodsService.verifyUser(param.getUserId());
+            String verifyUser = schedualUserService.verifyUserById(param.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
             if(user==null){
@@ -145,7 +146,7 @@ public class GoodsController extends BaseController{
             if(param.getUserId() == null){
                 return toError("用户id不能为空！");
             }
-            String verifyUser = schedualGoodsService.verifyUser(param.getUserId());
+            String verifyUser = schedualUserService.verifyUserById(param.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
             if(user==null){
@@ -179,9 +180,8 @@ public class GoodsController extends BaseController{
     @ApiOperation(value = "同类推荐", notes = "同类推荐")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "catalogId", value = "推荐类型", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/similarGoods")
     @ResponseBody
