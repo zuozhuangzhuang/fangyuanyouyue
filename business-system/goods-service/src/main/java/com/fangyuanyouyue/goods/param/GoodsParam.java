@@ -1,6 +1,5 @@
 package com.fangyuanyouyue.goods.param;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 

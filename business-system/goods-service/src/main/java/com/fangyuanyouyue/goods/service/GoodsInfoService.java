@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.goods.service;
 
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.utils.ServiceException;
@@ -21,7 +22,7 @@ public interface GoodsInfoService {
      * @param pageSize
      * @return
      */
-    List<GoodsInfo> getGoodsInfoList(int pageNum, int pageSize) throws ServiceException;
+    List<GoodsDto> getGoodsInfoList(int pageNum, int pageSize) throws ServiceException;
 
     /**
      * 新增商品
@@ -29,7 +30,7 @@ public interface GoodsInfoService {
      * @return
      * @throws ServiceException
      */
-    GoodsInfo addGoods(Integer userId,String nickName,GoodsParam param) throws ServiceException;
+    GoodsDto addGoods(Integer userId,String nickName,GoodsParam param) throws ServiceException;
 
     /**
      * 批量删除商品

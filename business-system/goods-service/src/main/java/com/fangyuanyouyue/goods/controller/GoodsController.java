@@ -1,23 +1,26 @@
 package com.fangyuanyouyue.goods.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fangyuanyouyue.goods.client.BaseClientResult;
 import com.fangyuanyouyue.goods.client.BaseController;
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.service.SchedualGoodsService;
+import com.fangyuanyouyue.goods.utils.ResultUtil;
 import com.fangyuanyouyue.goods.utils.ServiceException;
-import com.fangyuanyouyue.goods.utils.Status;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,7 +33,9 @@ public class GoodsController extends BaseController{
     private GoodsInfoService goodsInfoService;
     @Autowired
     private SchedualGoodsService schedualGoodsService;//调用其他service时用
-    @ApiOperation(value = "获取商品列表", notes = "获取商品列表")
+
+
+    @ApiOperation(value = "获取商品列表", notes = "获取商品列表",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "start", value = "起始页", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "限制页", required = true, dataType = "int", paramType = "query")
@@ -42,19 +47,8 @@ public class GoodsController extends BaseController{
             log.info("----》获取商品列表《----");
             log.info("参数：" + param.toString());
             //TODO 获取商品列表
-//            String verifyUser = schedualGoodsService.verifyUser(param.getUserId());
-//            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-//            JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
-//            if(user==null){
-//                return toError("999","登录超时，请重新登录！");
-//            }
-//            if((int)user.get("status") == 2){
-//                return toError("999","您的账号已被冻结，请联系管理员！");
-//            }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取商品列表成功！");
-            List<GoodsInfo> goodsList = goodsInfoService.getGoodsInfoList(param.getStart(),param.getLimit());
-            result.put("goodsList",goodsList);
-            return toResult(result);
+            List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param.getStart(),param.getLimit());
+            return toSuccess(goodsDtos,"获取商品列表成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
@@ -64,7 +58,7 @@ public class GoodsController extends BaseController{
         }
     }
 
-    @ApiOperation(value = "添加商品", notes = "添加商品")
+    @ApiOperation(value = "添加商品", notes = "添加商品",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId ", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "goodsInfoName", value = "商品名称", required = true, dataType = "String", paramType = "query"),
@@ -120,15 +114,12 @@ public class GoodsController extends BaseController{
             if(param.getType() == null){
                 return  toError("商品类型不能为空！");
             }
-            //
             if(param.getFile1() == null){
-                toError("请至少上传一张图片！");
+                return toError("请至少上传一张图片！");
             }
             //TODO 添加商品,返回值应当包含商品图片信息，这里只有商品信息
-            GoodsInfo goodsInfo = goodsInfoService.addGoods(param.getUserId(),user.getString("nickName"),param);
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加商品成功！");
-            result.put("goodsInfo",goodsInfo);
-            return toResult(result);
+            GoodsDto goodsDto = goodsInfoService.addGoods(param.getUserId(),user.getString("nickName"),param);
+            return toSuccess(goodsDto,"添加商品成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
@@ -139,7 +130,7 @@ public class GoodsController extends BaseController{
     }
 
 
-    @ApiOperation(value = "批量删除商品", notes = "批量删除商品")
+    @ApiOperation(value = "批量删除商品", notes = "批量删除商品",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId ", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "goodsInfoIds", value = "商品id数组", required = true, allowMultiple = true, dataType = "int", paramType = "query")
@@ -171,58 +162,55 @@ public class GoodsController extends BaseController{
                 GoodsInfo goodsInfo = goodsInfoService.selectByPrimaryKey(goodsId);
                 if(false){
 
-                    toError("商品"+goodsInfo.getName()+"存在未完成订单，请勿删除！");
+                    return toError("商品"+goodsInfo.getName()+"存在未完成订单，请勿删除！");
                 }
             }
             //TODO 批量删除商品
             goodsInfoService.deleteGoods(param.getGoodsInfoIds());
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "批量删除商品成功！");
-            return toResult(result);
+            return toSuccess("批量删除商品成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
         }
     }
 
-//
-//    //同类推荐
-//    @ApiOperation(value = "同类推荐", notes = "同类推荐")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "catalogId", value = "推荐类型", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "type", value = "区分商品是新分类还是旧分类，1是新分类", dataType = "string", paramType = "query")
-//    })
-//    @PostMapping(value = "/similarGoods")
-//    @ResponseBody
-//    public String similarGoods(GoodsParam param) throws IOException {
-//        try {
-//            log.info("----》同类推荐《----");
-//            log.info("参数："+param.toString());
-//
-//            if(param.getGoodsId()==null || param.getGoodsId().intValue()==0){
-//                return toError("商品id不能为空！");
-//            }
-//            if(param.getCatalogId()==null || param.getCatalogId().intValue()==0){
-//                return toError("推荐类型不能为空！");
-//            }
-//            if(param.getStart()==null){
-//                return toError("start不能为空！");
-//            }
-//            if(param.getLimit()==null){
-//                return toError("limit不能为空！");
-//            }
-//            //TODO 同类推荐
-//
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "同类推荐成功！");
-//            return toResult(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
-//        }
-//    }
-//
+
+    //同类推荐
+    @ApiOperation(value = "同类推荐", notes = "同类推荐")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "catalogId", value = "推荐类型", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query"),
+    })
+    @PostMapping(value = "/similarGoods")
+    @ResponseBody
+    public String similarGoods(GoodsParam param) throws IOException {
+        try {
+            log.info("----》同类推荐《----");
+            log.info("参数："+param.toString());
+
+            if(param.getGoodsId()==null || param.getGoodsId().intValue()==0){
+                return toError(1,"商品id不能为空！");
+            }
+            if(param.getGoodsInfoIds().length<1){
+                return toError(1,"推荐类型不能为空！");
+            }
+            if(param.getStart()==null){
+                return toError(1,"start不能为空！");
+            }
+            if(param.getLimit()==null){
+                return toError(1,"limit不能为空！");
+            }
+            //TODO 同类推荐
+            List<GoodsDto> goodsDtos = new ArrayList<>();
+            return toSuccess(goodsDtos,"同类推荐成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
 //    //查询商品
 //
 //    //我的商品
@@ -429,10 +417,10 @@ public class GoodsController extends BaseController{
 //            }
 ////            AUser user=userService.getByToken(param.getToken());
 ////            if(user==null){
-////                return toError("999","登录超时，请重新登录！");
+////                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
 ////            }
 ////            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
-////                return toError("999","您的账号已被冻结，请联系管理员！");
+////                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 ////            }
 //            if(StringUtils.isEmpty(param.getContent())){
 //                return toError("商品介绍不能为空!");
@@ -509,10 +497,10 @@ public class GoodsController extends BaseController{
 //
 ////            AUser user=userService.getByToken(param.getToken());
 ////            if(user==null){
-////                return toError("999","登录超时，请重新登录！");
+////                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
 ////            }
 ////            if(StringUtils.isNotEmpty(user.getStatus()) && "1".equals(user.getStatus())){
-////                return toError("999","您的账号已被冻结，请联系管理员！");
+////                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 ////            }
 ////            AGoods goods=goodsService.get(param.getGoodsId());
 ////            if(goods==null){

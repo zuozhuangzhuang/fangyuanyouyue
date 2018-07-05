@@ -3,6 +3,7 @@ package com.fangyuanyouyue.goods.service.impl;
 import com.fangyuanyouyue.goods.dao.GoodsCorrelationMapper;
 import com.fangyuanyouyue.goods.dao.GoodsImgMapper;
 import com.fangyuanyouyue.goods.dao.GoodsInfoMapper;
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.GoodsCorrelation;
 import com.fangyuanyouyue.goods.model.GoodsImg;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service(value = "goodsInfoService")
@@ -43,14 +45,19 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
 
     @Override
-    public List<GoodsInfo> getGoodsInfoList(int pageNum, int pageSize) {
+    public List<GoodsDto> getGoodsInfoList(int pageNum, int pageSize) throws ServiceException{
         //将参数传给这个方法就可以实现物理分页了，非常简单。
         PageHelper.startPage(pageNum, pageSize);
-        return goodsInfoMapper.getGoodsList(pageNum,pageSize);
+        List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(pageNum,pageSize);
+        List<GoodsDto> goodsDtos = new ArrayList<>();
+        for (GoodsInfo goodsInfo:goodsInfos) {
+            goodsDtos.add(setGoodsDtoByGoodsInfo(goodsInfo));
+        }
+        return goodsDtos;
     }
 
     @Override
-    public GoodsInfo addGoods(Integer userId,String nickName,GoodsParam param) throws ServiceException {
+    public GoodsDto addGoods(Integer userId,String nickName,GoodsParam param) throws ServiceException {
         //商品表 goods_info
         GoodsInfo goodsInfo = new GoodsInfo();
         goodsInfo.setUserId(param.getUserId());
@@ -101,7 +108,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(param.getFile6() != null){
             saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile6(),param.getType(),6);
         }
-        return goodsInfo;
+        return setGoodsDtoByGoodsInfo(goodsInfo);
     }
 
     /**
@@ -153,6 +160,31 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
             goodsInfo.setStatus(5);//状态 普通商品 1出售中 2已售出 5删除
             goodsInfoMapper.updateByPrimaryKey(goodsInfo);
+        }
+    }
+
+    /**
+     * 将goodsInfo赋值给goodsDto
+     * @param goodsInfo
+     * @return
+     * @throws ServiceException
+     */
+    public GoodsDto setGoodsDtoByGoodsInfo(GoodsInfo goodsInfo) throws ServiceException{
+        if(goodsInfo == null){
+            throw new ServiceException("商品异常！");
+        }else{
+            GoodsDto goodsDto = new GoodsDto();
+            goodsDto.setGoodsId(goodsInfo.getId());
+            goodsDto.setUserId(goodsInfo.getUserId());
+            goodsDto.setName(goodsInfo.getName());
+            goodsDto.setDescription(goodsInfo.getDescription());
+            goodsDto.setPrice(goodsInfo.getPrice());
+            goodsDto.setPostage(goodsInfo.getPostage());
+            goodsDto.setSort(goodsInfo.getSort());
+            goodsDto.setLabel(goodsInfo.getLabel());
+            goodsDto.setType(goodsInfo.getType());
+            goodsDto.setStatus(goodsInfo.getStatus());
+            return goodsDto;
         }
     }
 }
