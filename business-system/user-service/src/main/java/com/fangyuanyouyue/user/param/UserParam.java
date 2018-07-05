@@ -76,11 +76,11 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String",hidden = true)
 	private String payPwd;//支付密码，明文6位，MD5小写
 
-	@ApiModelProperty(name = "identityImgCover", value = "身份证封面图", dataType = "String",hidden = true)
-	private String identityImgCover;//身份证封面图
+	@ApiModelProperty(name = "identityImgCover", value = "身份证封面图", dataType = "file",hidden = true)
+	private MultipartFile identityImgCover;//身份证封面图
 
-	@ApiModelProperty(name = "identityImgBack", value = "身份证背面", dataType = "String",hidden = true)
-	private String identityImgBack;//身份证背面
+	@ApiModelProperty(name = "identityImgBack", value = "身份证背面", dataType = "file",hidden = true)
+	private MultipartFile identityImgBack;//身份证背面
 
 	@ApiModelProperty(name = "receiverName", value = "收货人", dataType = "String",hidden = true)
 	private String receiverName;//收货人
@@ -287,19 +287,19 @@ public class UserParam extends BaseParam {
 		this.identity = identity;
 	}
 
-	public String getIdentityImgCover() {
+	public MultipartFile getIdentityImgCover() {
 		return identityImgCover;
 	}
 
-	public void setIdentityImgCover(String identityImgCover) {
+	public void setIdentityImgCover(MultipartFile identityImgCover) {
 		this.identityImgCover = identityImgCover;
 	}
 
-	public String getIdentityImgBack() {
+	public MultipartFile getIdentityImgBack() {
 		return identityImgBack;
 	}
 
-	public void setIdentityImgBack(String identityImgBack) {
+	public void setIdentityImgBack(MultipartFile identityImgBack) {
 		this.identityImgBack = identityImgBack;
 	}
 
@@ -474,8 +474,8 @@ public class UserParam extends BaseParam {
 				", name='" + name + '\'' +
 				", identity='" + identity + '\'' +
 				", payPwd='" + payPwd + '\'' +
-				", identityImgCover='" + identityImgCover + '\'' +
-				", identityImgBack='" + identityImgBack + '\'' +
+				", identityImgCover=" + identityImgCover +
+				", identityImgBack=" + identityImgBack +
 				", receiverName='" + receiverName + '\'' +
 				", receiverPhone='" + receiverPhone + '\'' +
 				", province='" + province + '\'' +

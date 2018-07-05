@@ -252,8 +252,8 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "userId", value = "用户id", required = true,dataType = "Integer", paramType = "query"),
             @ApiImplicitParam(name = "name", value = "真实姓名", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "identity", value = "身份证号", required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "identity_img_cover", value = "身份证封面图",dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "identity_img_back", value = "身份证背面",dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "identity_img_cover", value = "身份证封面图",dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "identity_img_back", value = "身份证背面",dataType = "file", paramType = "form")
     })
     @PostMapping(value = "/certification")
     @ResponseBody
