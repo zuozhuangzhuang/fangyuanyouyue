@@ -15,11 +15,6 @@ public class GoodsParam extends BaseParam{
     private BigDecimal price;//价格
     @ApiModelProperty(name = "status", value = "状态", dataType = "Integer",hidden = true)
     private Integer status;//状态 GoodsComment：1正常 2隐藏 GoodsInfo：普通商品 1出售中 2已售出 5删除
-    @ApiModelProperty(name = "addTime", value = "添加时间", dataType = "Date",hidden = true)
-    private Date addTime;//添加时间
-    @ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "Integer",hidden = true)
-    private Date updateTime;//更新时间
-
 
 
 
@@ -322,21 +317,6 @@ public class GoodsParam extends BaseParam{
         this.status = status;
     }
 
-    public Date getAddTime() {
-        return addTime;
-    }
-
-    public void setAddTime(Date addTime) {
-        this.addTime = addTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
 
     public MultipartFile getFile1() {
         return file1;
@@ -408,8 +388,6 @@ public class GoodsParam extends BaseParam{
                 "imgUrl='" + imgUrl + '\'' +
                 ", price=" + price +
                 ", status=" + status +
-                ", addTime=" + addTime +
-                ", updateTime=" + updateTime +
                 ", goodsInfoId=" + goodsInfoId +
                 ", goodsInfoIds=" + Arrays.toString(goodsInfoIds) +
                 ", userId=" + userId +
