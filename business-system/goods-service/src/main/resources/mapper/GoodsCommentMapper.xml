@@ -174,4 +174,7 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="getCommentsByGoodsId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_comment where goods_id = #{goodsId,jdbcType=INTEGER} and status = 1
+  </select>
 </mapper>

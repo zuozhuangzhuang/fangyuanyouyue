@@ -103,4 +103,8 @@
       sort = #{sort,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getImgsByGoodsId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_img where goods_id = #{goodsId,jdbcType=INTEGER}
+  </select>
 </mapper>

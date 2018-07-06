@@ -138,4 +138,15 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="categoryParentList" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_category where status = 0 and ISNULL(parent_id)
+    <if test="type != null">
+      and type = #{type,jdbcType=INTEGER}
+    </if>
+    order by sort asc
+  </select>
+  <select id="getChildCategoryList" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_category where status = 0 and parent_id = #{parentId,jdbcType=INTEGER} order by sort asc
+  </select>
 </mapper>

@@ -195,6 +195,6 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="getGoodsList" parameterType="Integer" resultMap="BaseResultMap">
-  select * from goods_info
+  select * from goods_info where status = 1
 </select>
 </mapper>
