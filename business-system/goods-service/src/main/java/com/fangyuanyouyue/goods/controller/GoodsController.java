@@ -2,11 +2,11 @@ package com.fangyuanyouyue.goods.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.client.BaseController;
+import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
-import com.fangyuanyouyue.goods.service.SchedualGoodsService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
 import com.fangyuanyouyue.goods.utils.ResultUtil;
 import com.fangyuanyouyue.goods.utils.ServiceException;
@@ -47,6 +47,12 @@ public class GoodsController extends BaseController{
         try {
             log.info("----》获取商品列表《----");
             log.info("参数：" + param.toString());
+            if(param.getStart() == null){
+                return toError("起始页不能为空！");
+            }
+            if(param.getLimit() == null){
+                return toError("限制页不能为空！");
+            }
             //TODO 获取商品列表
             List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param.getStart(),param.getLimit());
             return toSuccess(goodsDtos,"获取商品列表成功！");
@@ -175,6 +181,26 @@ public class GoodsController extends BaseController{
         }
     }
 
+    //分类列表
+    @ApiOperation(value = "获取分类列表", notes = "获取分类列表")
+    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
+//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
+    })
+    @GetMapping(value = "/categoryList")
+    @ResponseBody
+    public String categoryList(GoodsParam param) throws IOException {
+        try {
+            log.info("----》获取分类列表《----");
+            log.info("参数："+param.toString());
+            //TODO 同类推荐
+            List<GoodsCategoryDto> categoryDtos = goodsInfoService.categoryList();
+            return toSuccess(categoryDtos,"获取分类列表成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
 
     //同类推荐
     @ApiOperation(value = "同类推荐", notes = "同类推荐")
@@ -204,6 +230,7 @@ public class GoodsController extends BaseController{
             }
             //TODO 同类推荐
             List<GoodsDto> goodsDtos = new ArrayList<>();
+
             return toSuccess(goodsDtos,"同类推荐成功！");
         } catch (Exception e) {
             e.printStackTrace();
