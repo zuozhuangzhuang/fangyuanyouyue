@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.goods.service;
 
+import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
@@ -38,4 +39,11 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     void deleteGoods(Integer[] goodsIds) throws ServiceException;
+
+    /**
+     * 获取分类列表
+     * @return
+     * @throws ServiceException
+     */
+    List<GoodsCategoryDto> categoryList() throws ServiceException;
 }

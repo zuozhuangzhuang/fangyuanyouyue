@@ -1,12 +1,9 @@
 package com.fangyuanyouyue.goods.service.impl;
 
-import com.fangyuanyouyue.goods.dao.GoodsCorrelationMapper;
-import com.fangyuanyouyue.goods.dao.GoodsImgMapper;
-import com.fangyuanyouyue.goods.dao.GoodsInfoMapper;
+import com.fangyuanyouyue.goods.dao.*;
+import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
-import com.fangyuanyouyue.goods.model.GoodsCorrelation;
-import com.fangyuanyouyue.goods.model.GoodsImg;
-import com.fangyuanyouyue.goods.model.GoodsInfo;
+import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.utils.*;
@@ -29,6 +26,10 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     private GoodsImgMapper goodsImgMapper;
     @Autowired
     private GoodsCorrelationMapper goodsCorrelationMapper;
+    @Autowired
+    private GoodsCategoryMapper goodsCategoryMapper;
+    @Autowired
+    private GoodsCommentMapper goodsCommentMapperl;
     @Value("${pic_server:errorPicServer}")
     private String PIC_SERVER;// 图片服务器
 
@@ -49,9 +50,15 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         //将参数传给这个方法就可以实现物理分页了，非常简单。
         PageHelper.startPage(pageNum, pageSize);
         List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(pageNum,pageSize);
+        List<GoodsCorrelation> goodsCorrelations;
+        List<GoodsImg> goodsImgs;
+        List<GoodsComment> goodsComments;
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
-            goodsDtos.add(setGoodsDtoByGoodsInfo(goodsInfo));
+            goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
+            goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
+            goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
+            goodsDtos.add(new GoodsDto(goodsInfo,goodsImgs,goodsCorrelations,goodsComments));
         }
         return goodsDtos;
     }
@@ -108,7 +115,10 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(param.getFile6() != null){
             saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile6(),param.getType(),6);
         }
-        return setGoodsDtoByGoodsInfo(goodsInfo);
+        List<GoodsImg> goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
+        List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
+        List<GoodsComment> goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
+        return new GoodsDto(goodsInfo,goodsImgs,goodsCorrelations,goodsComments);
     }
 
     /**
@@ -163,28 +173,13 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         }
     }
 
-    /**
-     * 将goodsInfo赋值给goodsDto
-     * @param goodsInfo
-     * @return
-     * @throws ServiceException
-     */
-    public GoodsDto setGoodsDtoByGoodsInfo(GoodsInfo goodsInfo) throws ServiceException{
-        if(goodsInfo == null){
-            throw new ServiceException("商品异常！");
-        }else{
-            GoodsDto goodsDto = new GoodsDto();
-            goodsDto.setGoodsId(goodsInfo.getId());
-            goodsDto.setUserId(goodsInfo.getUserId());
-            goodsDto.setName(goodsInfo.getName());
-            goodsDto.setDescription(goodsInfo.getDescription());
-            goodsDto.setPrice(goodsInfo.getPrice());
-            goodsDto.setPostage(goodsInfo.getPostage());
-            goodsDto.setSort(goodsInfo.getSort());
-            goodsDto.setLabel(goodsInfo.getLabel());
-            goodsDto.setType(goodsInfo.getType());
-            goodsDto.setStatus(goodsInfo.getStatus());
-            return goodsDto;
+    @Override
+    public List<GoodsCategoryDto> categoryList() throws ServiceException{
+        List<GoodsCategory> goodsCategories = goodsCategoryMapper.categoryParentList(null);
+        List<GoodsCategoryDto> categoryDtos = GoodsCategoryDto.toDtoList(goodsCategories);
+        for(GoodsCategoryDto categoryDto:categoryDtos){
+            categoryDto.setChildList(GoodsCategoryDto.toDtoList(goodsCategoryMapper.getChildCategoryList(categoryDto.getCategoryId())));
         }
+        return categoryDtos;
     }
 }

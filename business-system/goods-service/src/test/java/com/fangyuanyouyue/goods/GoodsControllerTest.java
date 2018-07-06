@@ -59,7 +59,7 @@ public class GoodsControllerTest {
     @Test
     @Transactional
     public void addGoods() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.fileUpload("/goods/addGoods")
+        mvc.perform(MockMvcRequestBuilders.multipart("/goods/addGoods")
                 .file(new MockMultipartFile("file1", "1.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
                 .param("userId","1")
                 .param("goodsInfoName","123")
@@ -114,4 +114,16 @@ public class GoodsControllerTest {
 //                .andReturn();
 //    }
 
+    /**
+     * 获取分类列表
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void categoryList() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/categoryList")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
 }
