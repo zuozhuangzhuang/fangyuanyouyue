@@ -3,6 +3,8 @@ package com.fangyuanyouyue.goods.dao;
 import com.fangyuanyouyue.goods.model.GoodsCategory;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface GoodsCategoryMapper {
     int deleteByPrimaryKey(Integer id);
@@ -16,4 +18,18 @@ public interface GoodsCategoryMapper {
     int updateByPrimaryKeySelective(GoodsCategory record);
 
     int updateByPrimaryKey(GoodsCategory record);
+
+    /**
+     * 获取父级分类
+     * @param type
+     * @return
+     */
+    List<GoodsCategory> categoryParentList(Integer type);
+
+    /**
+     * 根据父级分类获取分类列表
+     * @param parentId
+     * @return
+     */
+    List<GoodsCategory> getChildCategoryList(Integer parentId);
 }
