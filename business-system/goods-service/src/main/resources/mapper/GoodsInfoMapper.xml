@@ -195,6 +195,23 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="getGoodsList" parameterType="Integer" resultMap="BaseResultMap">
-  select * from goods_info where status = 1
+  select * from goods_info
+  <where>
+    1=1
+    <if test="status != null">
+      and status = #{status,jdbcType=INTEGER}
+    </if>
+    <if test="userId != null">
+      and user_id = #{userId,jdbcType=INTEGER}
+    </if>
+  </where>
 </select>
+  <select id="getGoodsByGoodsIds" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_info
+    <where>
+      <foreach collection="goodsIds" open=" and id in(" close=")" item="id" separator=",">
+        #{id,jdbcType=INTEGER}
+      </foreach>
+    </where>
+  </select>
 </mapper>

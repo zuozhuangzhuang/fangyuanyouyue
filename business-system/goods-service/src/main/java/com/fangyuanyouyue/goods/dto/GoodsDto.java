@@ -1,11 +1,13 @@
 package com.fangyuanyouyue.goods.dto;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.model.GoodsComment;
 import com.fangyuanyouyue.goods.model.GoodsCorrelation;
 import com.fangyuanyouyue.goods.model.GoodsImg;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,6 +18,10 @@ public class GoodsDto {
     private Integer goodsId;//商品ID
 
     private Integer userId;//发布用户id
+
+    private String nickName;//昵称
+
+    private String headImgUrl;//头像图片地址
 
     private String name;//商品名称
 
@@ -36,7 +42,7 @@ public class GoodsDto {
     private String mainUrl;//商品主图
 
     //GoodsCorrelation
-    private List<GoodsCorrelationDto> goodsCorrelations;///商品分类
+    private List<GoodsCorrelationDto> goodsCorrelations;//商品分类
 
     //GoodsComment
     private List<GoodsCommentDto> goodsCommentDtos;//商品评论列表
@@ -48,7 +54,11 @@ public class GoodsDto {
 
     }
 
-    public GoodsDto(GoodsInfo goodsInfo, List<GoodsImg> goodsImgs, List<GoodsCorrelation> goodsCorrelations,List<GoodsComment> goodsComments) {
+    public GoodsDto(JSONObject user,GoodsInfo goodsInfo, List<GoodsImg> goodsImgs, List<GoodsCorrelation> goodsCorrelations, List<GoodsComment> goodsComments) {
+        if(user != null){
+            this.nickName = user.getString("nickName");
+            this.headImgUrl = user.getString("headImgUrl");
+        }
         if(goodsInfo != null){
             //GoodsInfo
             this.goodsId = goodsInfo.getId();
@@ -193,5 +203,21 @@ public class GoodsDto {
 
     public void setGoodsCommentDtos(List<GoodsCommentDto> goodsCommentDtos) {
         this.goodsCommentDtos = goodsCommentDtos;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
     }
 }

@@ -1,11 +1,13 @@
 package com.fangyuanyouyue.goods.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
+import com.fangyuanyouyue.goods.service.SchedualUserService;
 import com.fangyuanyouyue.goods.utils.*;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     private GoodsCategoryMapper goodsCategoryMapper;
     @Autowired
     private GoodsCommentMapper goodsCommentMapperl;
+    @Autowired
+    private SchedualUserService schedualUserService;//调用其他service时用
     @Value("${pic_server:errorPicServer}")
     private String PIC_SERVER;// 图片服务器
 
@@ -40,25 +44,19 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     public GoodsInfo selectByPrimaryKey(Integer id) {
         GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(id);
         if(goodsInfo == null){
-            throw new SecurityException("商品不存在！");
+            throw new SecurityException("获取商品失败！");
         }
         return goodsInfo;
     }
 
     @Override
-    public List<GoodsDto> getGoodsInfoList(int pageNum, int pageSize) throws ServiceException{
+    public List<GoodsDto> getGoodsInfoList(Integer userId,Integer status,Integer pageNum, Integer pageSize) throws ServiceException{
         //将参数传给这个方法就可以实现物理分页了，非常简单。
         PageHelper.startPage(pageNum, pageSize);
-        List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(pageNum,pageSize);
-        List<GoodsCorrelation> goodsCorrelations;
-        List<GoodsImg> goodsImgs;
-        List<GoodsComment> goodsComments;
+        List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(userId,status,pageNum,pageSize);
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
-            goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
-            goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
-            goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
-            goodsDtos.add(new GoodsDto(goodsInfo,goodsImgs,goodsCorrelations,goodsComments));
+            goodsDtos.add(setDtoByGoodsInfo(goodsInfo));
         }
         return goodsDtos;
     }
@@ -115,12 +113,31 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(param.getFile6() != null){
             saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile6(),param.getType(),6);
         }
-        List<GoodsImg> goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
-        List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
-        List<GoodsComment> goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
-        return new GoodsDto(goodsInfo,goodsImgs,goodsCorrelations,goodsComments);
+
+        return setDtoByGoodsInfo(goodsInfo);
     }
 
+    /**
+     * 给GoodsDto赋值
+     * @param goodsInfo
+     * @return
+     * @throws ServiceException
+     */
+    public GoodsDto setDtoByGoodsInfo(GoodsInfo goodsInfo) throws ServiceException{
+        if(goodsInfo == null){
+            throw new ServiceException("获取商品失败！");
+        }else{
+            List<GoodsImg> goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
+            List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
+            List<GoodsComment> goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
+            //获取卖家信息
+            String verifyUser = schedualUserService.verifyUserById(goodsInfo.getUserId());
+            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+            JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
+            GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsComments);
+            return goodsDto;
+        }
+    }
     /**
      * 添加商品图片
      * @param userId
@@ -181,5 +198,34 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             categoryDto.setChildList(GoodsCategoryDto.toDtoList(goodsCategoryMapper.getChildCategoryList(categoryDto.getCategoryId())));
         }
         return categoryDtos;
+    }
+
+    @Override
+    public GoodsDto goodsInfo(Integer goodsId) throws ServiceException {
+        GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
+        return setDtoByGoodsInfo(goodsInfo);
+    }
+
+    @Override
+    public List<GoodsDto> similarGoods(Integer goodsId,Integer pageNum, Integer pageSize) throws ServiceException {
+        GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
+        //根据商品
+        if(goodsInfo == null){
+            throw new ServiceException("获取商品失败！");
+        }else{
+            //获取商品的分类集合
+            List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsId);
+            List<Integer> goodsIds = new ArrayList<>();
+            for(GoodsCorrelation goodsCorrelation:goodsCorrelations){
+                goodsIds.add(goodsCorrelation.getGoodsId());
+            }
+            PageHelper.startPage(pageNum, pageSize);
+            List<GoodsInfo> goodsInfos = goodsInfoMapper.getGoodsByGoodsIds(goodsIds,pageNum,pageSize);
+            List<GoodsDto> goodsDtos = new ArrayList<>();
+            for(GoodsInfo model:goodsInfos){
+                goodsDtos.add(setDtoByGoodsInfo(model));
+            }
+            return goodsDtos;
+        }
     }
 }

@@ -5,25 +5,24 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 
 public class GoodsParam extends BaseParam{
     //公用
+    @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "int",hidden = true)
+    private Integer goodsId;//商品id
     @ApiModelProperty(name = "imgUrl", value = "图片地址", dataType = "String",hidden = true)
     private String imgUrl;//图片地址
     @ApiModelProperty(name = "price", value = "价格", dataType = "BigDecimal",hidden = true)
     private BigDecimal price;//价格
-    @ApiModelProperty(name = "status", value = "状态", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "status", value = "状态", dataType = "int",hidden = true)
     private Integer status;//状态 GoodsComment：1正常 2隐藏 GoodsInfo：普通商品 1出售中 2已售出 5删除
 
 
 
     //GoodsInfo
-    @ApiModelProperty(name = "goodsInfoId", value = "商品表ID", dataType = "Integer",hidden = true)
-    private Integer goodsInfoId;//商品表ID
-    @ApiModelProperty(name = "goodsInfoIds", value = "商品id数组", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "goodsInfoIds", value = "商品id数组", dataType = "int",hidden = true)
     private Integer[] goodsInfoIds;//商品id数组
-    @ApiModelProperty(name = "userId", value = "发布用户id", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "userId", value = "发布用户id", dataType = "int",hidden = true)
     private Integer userId;//发布用户id
     @ApiModelProperty(name = "goodsInfoName", value = "商品名称", dataType = "String",hidden = true)
     private String goodsInfoName;//商品名称
@@ -33,17 +32,15 @@ public class GoodsParam extends BaseParam{
     private BigDecimal postage;//运费
     @ApiModelProperty(name = "label", value = "标签", dataType = "String",hidden = true)
     private String label;//标签
-    @ApiModelProperty(name = "sort", value = "排序", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "sort", value = "排序", dataType = "int",hidden = true)
     private Integer sort;//排序
 
 
 
 
     //GoodsImg
-    @ApiModelProperty(name = "goodsImgId", value = "商品图片表ID", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "goodsImgId", value = "商品图片表ID", dataType = "int",hidden = true)
     private Integer goodsImgId;//商品图片表ID
-    @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "Integer",hidden = true)
-    private Integer goodsId;//商品id
     @ApiModelProperty(name = "file1", value = "图片文件1", dataType = "file",hidden = true)
     private MultipartFile file1;//图片文件1
     @ApiModelProperty(name = "file2", value = "图片文件2", dataType = "file",hidden = true)
@@ -61,13 +58,13 @@ public class GoodsParam extends BaseParam{
 
 
    //GoodsComment
-    @ApiModelProperty(name = "goodsCommentId", value = "商品评论表ID", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "goodsCommentId", value = "商品评论表ID", dataType = "int",hidden = true)
     private Integer goodsCommentId;//商品评论表ID
-    @ApiModelProperty(name = "commentId", value = "回复评论id", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "commentId", value = "回复评论id", dataType = "int",hidden = true)
     private Integer commentId;//回复评论id
     @ApiModelProperty(name = "content", value = "评论内容", dataType = "String",hidden = true)
     private String content;//评论内容
-    @ApiModelProperty(name = "likesCount", value = "点赞次数", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "likesCount", value = "点赞次数", dataType = "int",hidden = true)
     private Integer likesCount;//点赞次数
     @ApiModelProperty(name = "img1Url", value = "图片地址1", dataType = "String",hidden = true)
     private String img1Url;//图片地址1
@@ -80,11 +77,11 @@ public class GoodsParam extends BaseParam{
 
 
     //GoodsCategory
-    @ApiModelProperty(name = "goodsCategoryId", value = "商品类目表ID", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "goodsCategoryId", value = "商品类目表ID", dataType = "int",hidden = true)
     private Integer goodsCategoryId;//商品类目表ID
-    @ApiModelProperty(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）", dataType = "int",hidden = true)
     private Integer[] goodsCategoryIds;//商品分类数组（同一商品可多种分类）
-    @ApiModelProperty(name = "parentId", value = "上级id", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "parentId", value = "上级id", dataType = "int",hidden = true)
     private Integer parentId;//上级id
     @ApiModelProperty(name = "goodsCategoryName", value = "类目名称", dataType = "String",hidden = true)
     private String goodsCategoryName;//类目名称
@@ -93,28 +90,58 @@ public class GoodsParam extends BaseParam{
 
 
     //CartInfo
-    @ApiModelProperty(name = "cartInfoId", value = "购物车表ID", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "cartInfoId", value = "购物车表ID", dataType = "int",hidden = true)
     private Integer cartInfoId;//购物车表ID
 
 
 
 
     //CartDetail
-    @ApiModelProperty(name = "cartDetailId", value = "购物车明细表ID", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "cartDetailId", value = "购物车明细表ID", dataType = "int",hidden = true)
     private Integer cartDetailId;//购物车明细表ID
-    @ApiModelProperty(name = "cartId", value = "购物车id", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "cartId", value = "购物车id", dataType = "int",hidden = true)
     private Integer cartId;//购物车id
-    @ApiModelProperty(name = "count", value = "数量", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "count", value = "数量", dataType = "int",hidden = true)
     private Integer count;//数量
 
-
-
-    public Integer getGoodsInfoId() {
-        return goodsInfoId;
+    public Integer getGoodsId() {
+        return goodsId;
     }
 
-    public void setGoodsInfoId(Integer goodsInfoId) {
-        this.goodsInfoId = goodsInfoId;
+    public void setGoodsId(Integer goodsId) {
+        this.goodsId = goodsId;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Integer[] getGoodsInfoIds() {
+        return goodsInfoIds;
+    }
+
+    public void setGoodsInfoIds(Integer[] goodsInfoIds) {
+        this.goodsInfoIds = goodsInfoIds;
     }
 
     public Integer getUserId() {
@@ -157,6 +184,14 @@ public class GoodsParam extends BaseParam{
         this.label = label;
     }
 
+    public Integer getSort() {
+        return sort;
+    }
+
+    public void setSort(Integer sort) {
+        this.sort = sort;
+    }
+
     public Integer getGoodsImgId() {
         return goodsImgId;
     }
@@ -165,12 +200,52 @@ public class GoodsParam extends BaseParam{
         this.goodsImgId = goodsImgId;
     }
 
-    public Integer getGoodsId() {
-        return goodsId;
+    public MultipartFile getFile1() {
+        return file1;
     }
 
-    public void setGoodsId(Integer goodsId) {
-        this.goodsId = goodsId;
+    public void setFile1(MultipartFile file1) {
+        this.file1 = file1;
+    }
+
+    public MultipartFile getFile2() {
+        return file2;
+    }
+
+    public void setFile2(MultipartFile file2) {
+        this.file2 = file2;
+    }
+
+    public MultipartFile getFile3() {
+        return file3;
+    }
+
+    public void setFile3(MultipartFile file3) {
+        this.file3 = file3;
+    }
+
+    public MultipartFile getFile4() {
+        return file4;
+    }
+
+    public void setFile4(MultipartFile file4) {
+        this.file4 = file4;
+    }
+
+    public MultipartFile getFile5() {
+        return file5;
+    }
+
+    public void setFile5(MultipartFile file5) {
+        this.file5 = file5;
+    }
+
+    public MultipartFile getFile6() {
+        return file6;
+    }
+
+    public void setFile6(MultipartFile file6) {
+        this.file6 = file6;
     }
 
     public Integer getGoodsCommentId() {
@@ -237,6 +312,14 @@ public class GoodsParam extends BaseParam{
         this.goodsCategoryId = goodsCategoryId;
     }
 
+    public Integer[] getGoodsCategoryIds() {
+        return goodsCategoryIds;
+    }
+
+    public void setGoodsCategoryIds(Integer[] goodsCategoryIds) {
+        this.goodsCategoryIds = goodsCategoryIds;
+    }
+
     public Integer getParentId() {
         return parentId;
     }
@@ -285,110 +368,13 @@ public class GoodsParam extends BaseParam{
         this.count = count;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    public Integer getSort() {
-        return sort;
-    }
-
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-
-    public MultipartFile getFile1() {
-        return file1;
-    }
-
-    public void setFile1(MultipartFile file1) {
-        this.file1 = file1;
-    }
-
-    public MultipartFile getFile2() {
-        return file2;
-    }
-
-    public void setFile2(MultipartFile file2) {
-        this.file2 = file2;
-    }
-
-    public MultipartFile getFile3() {
-        return file3;
-    }
-
-    public void setFile3(MultipartFile file3) {
-        this.file3 = file3;
-    }
-
-    public MultipartFile getFile4() {
-        return file4;
-    }
-
-    public void setFile4(MultipartFile file4) {
-        this.file4 = file4;
-    }
-
-    public MultipartFile getFile5() {
-        return file5;
-    }
-
-    public void setFile5(MultipartFile file5) {
-        this.file5 = file5;
-    }
-
-    public MultipartFile getFile6() {
-        return file6;
-    }
-
-    public void setFile6(MultipartFile file6) {
-        this.file6 = file6;
-    }
-
-    public Integer[] getGoodsCategoryIds() {
-        return goodsCategoryIds;
-    }
-
-    public void setGoodsCategoryIds(Integer[] goodsCategoryIds) {
-        this.goodsCategoryIds = goodsCategoryIds;
-    }
-
-    public Integer[] getGoodsInfoIds() {
-        return goodsInfoIds;
-    }
-
-    public void setGoodsInfoIds(Integer[] goodsInfoIds) {
-        this.goodsInfoIds = goodsInfoIds;
-    }
-
     @Override
     public String toString() {
         return "GoodsParam{" +
-                "imgUrl='" + imgUrl + '\'' +
+                "goodsId=" + goodsId +
+                ", imgUrl='" + imgUrl + '\'' +
                 ", price=" + price +
                 ", status=" + status +
-                ", goodsInfoId=" + goodsInfoId +
                 ", goodsInfoIds=" + Arrays.toString(goodsInfoIds) +
                 ", userId=" + userId +
                 ", goodsInfoName='" + goodsInfoName + '\'' +
@@ -397,7 +383,6 @@ public class GoodsParam extends BaseParam{
                 ", label='" + label + '\'' +
                 ", sort=" + sort +
                 ", goodsImgId=" + goodsImgId +
-                ", goodsId=" + goodsId +
                 ", file1=" + file1 +
                 ", file2=" + file2 +
                 ", file3=" + file3 +

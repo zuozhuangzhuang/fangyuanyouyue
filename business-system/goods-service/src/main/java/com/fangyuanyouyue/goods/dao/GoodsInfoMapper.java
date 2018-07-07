@@ -21,6 +21,18 @@ public interface GoodsInfoMapper {
 
     int updateByPrimaryKey(GoodsInfo record);
 
-    List<GoodsInfo> getGoodsList(int pageNum, int pageSize);
+    /**
+     * 分页获取商品列表
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    List<GoodsInfo> getGoodsList(@Param("userId") Integer userId,@Param("status") Integer status,Integer pageNum, Integer pageSize);
 
+    /**
+     * 根据商品ID集合获取商品
+     * @param goodsIds
+     * @return
+     */
+    List<GoodsInfo> getGoodsByGoodsIds(@Param("goodsIds") List<Integer> goodsIds,int pageNum, int pageSize);
 }

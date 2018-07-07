@@ -23,7 +23,7 @@ public interface GoodsInfoService {
      * @param pageSize
      * @return
      */
-    List<GoodsDto> getGoodsInfoList(int pageNum, int pageSize) throws ServiceException;
+    List<GoodsDto> getGoodsInfoList(Integer userId,Integer status,Integer pageNum, Integer pageSize) throws ServiceException;
 
     /**
      * 新增商品
@@ -46,4 +46,20 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     List<GoodsCategoryDto> categoryList() throws ServiceException;
+
+    /**
+     * 商品详情
+     * @param goodsId
+     * @return
+     * @throws ServiceException
+     */
+    GoodsDto goodsInfo(Integer goodsId) throws ServiceException;
+
+    /**
+     * 同类推荐
+     * @param goodsId
+     * @return
+     * @throws ServiceException
+     */
+    List<GoodsDto> similarGoods(Integer goodsId,Integer pageNum, Integer pageSize) throws ServiceException;
 }
