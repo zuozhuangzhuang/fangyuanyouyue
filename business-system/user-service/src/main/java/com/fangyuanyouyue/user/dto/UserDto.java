@@ -1,5 +1,9 @@
 package com.fangyuanyouyue.user.dto;
 
+import com.fangyuanyouyue.user.model.*;
+
+import java.util.List;
+
 /**
  * 用户信息
  */
@@ -30,6 +34,12 @@ public class UserDto {
     private String levelDesc;//等级描述
 
 
+    //UserExamine
+//    private String oldNickname;//申请前昵称
+//
+//    private String newNickname;//待审核昵称
+//
+//    private Integer examineStatus;//审核状态 0申请中 1申请通过 2已拒绝
 
     //UserInfoExt 用户扩展表
     private String identity;//身份证号码
@@ -67,8 +77,6 @@ public class UserDto {
 
 
 
-
-
     //UserVip
     private Integer vipLevel;//会员等级
 
@@ -78,7 +86,69 @@ public class UserDto {
 
     private Integer vipStatus;//会员状态1已开通 2未开通
 
+    //UserAddressDto
+//    private List<UserAddressDto> userAddressDtos;//用户收货地址
 
+    public UserDto() {
+    }
+
+    public UserDto(UserInfo userInfo, UserVip userVip, IdentityAuthApply identityAuthApply, UserInfoExt userInfoExt, UserExamine userExamine,UserThirdParty userThirdParty) {
+        //UserInfo
+        if(userInfo != null){
+            this.userId = userInfo.getId();
+            this.phone = userInfo.getPhone();
+            this.email = userInfo.getEmail();
+            this.userAddress = userInfo.getAddress();
+            this.nickName = userInfo.getNickName();
+            this.headImgUrl = userInfo.getHeadImgUrl();
+            this.bgImgUrl = userInfo.getBgImgUrl();
+            this.gender = userInfo.getGender();
+            this.signature = userInfo.getSignature();
+            this.contact = userInfo.getContact();
+            this.level = userInfo.getLevel();
+            this.levelDesc = userInfo.getLevelDesc();
+        }
+        //UserInfoExt
+        if(userInfoExt != null){
+            this.extStatus = userInfoExt.getStatus();
+        }
+        //IdentityAuthApply
+        if(identityAuthApply != null){
+            this.identity = identityAuthApply.getIdentity();
+            this.name = identityAuthApply.getName();
+            this.identityImgCover = identityAuthApply.getIdentityImgCover();
+            this.identityImgBack = identityAuthApply.getIdentityImgBack();
+            this.identityRejectDesc = identityAuthApply.getRejectDesc();
+            this.identityStatus = identityAuthApply.getStatus();
+        }
+        //UserThirdParty
+        if(userThirdParty != null){
+            this.thirdType = userThirdParty.getType();
+            this.unionId = userThirdParty.getUnionId();
+            this.appOpenId = userThirdParty.getAppOpenId();
+            this.mpOpenId = userThirdParty.getMpOpenId();
+            this.miniOpenId = userThirdParty.getMiniOpenId();
+            this.thirdNickName = userThirdParty.getNickName();
+            this.thirdHeadImgUrl = userThirdParty.getHeadImgUrl();
+        }
+        //UserVip
+        if(userVip != null){
+            this.vipLevel = userVip.getVipLevel();
+            this.vipLevelDesc = userVip.getLevelDesc();
+            this.vipType = userVip.getVipType();
+            this.vipStatus = userVip.getStatus();
+        }
+        //UserExamine
+//        if(userExamine != null ){
+//            this.oldNickname = userExamine.getOldNickname();
+//            this.newNickname = userExamine.getNewNickname();
+//            this.examineStatus = userExamine.getStatus();
+//        }
+        //UserAddressInfo
+//        if(userAddressInfos != null && userAddressInfos.size()>0){
+//            this.userAddressDtos = UserAddressDto.toDtoList(userAddressInfos);
+//        }
+    }
 
     public Integer getUserId() {
         return userId;
@@ -319,4 +389,5 @@ public class UserDto {
     public void setIdentityStatus(Integer identityStatus) {
         this.identityStatus = identityStatus;
     }
+
 }
