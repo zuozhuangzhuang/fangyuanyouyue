@@ -16,4 +16,6 @@ public interface UserVipMapper {
     int updateByPrimaryKeySelective(UserVip record);
 
     int updateByPrimaryKey(UserVip record);
+
+    UserVip getUserVipByUserId(Integer userId);
 }

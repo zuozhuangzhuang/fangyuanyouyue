@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -17,12 +18,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.FileInputStream;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = UserServiceApplication.class)
 @WebAppConfiguration
 @ContextConfiguration
 @Rollback
-public class TestController {
+public class UserControllerTest {
     @Autowired
     private WebApplicationContext context;
 
@@ -177,17 +180,21 @@ public class TestController {
     @Test
     @Transactional
     public void modify() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/modify")
+        FileInputStream headImg = new FileInputStream("E:\\pic\\1.jpg");
+        FileInputStream bgImg = new FileInputStream("E:\\pic\\2.jpg");
+        mvc.perform(MockMvcRequestBuilders.multipart("/user/modify")
+//                .file(new MockMultipartFile("headImg", "E:\\pic\\1.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
+//                .file(new MockMultipartFile("bgImg", "E:\\pic\\2.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
+                .file(new MockMultipartFile("headImg",headImg))
+                .file(new MockMultipartFile("bgImg",bgImg))
                 .param("userId","1")
                 .param("phone","18103966057")
                 .param("email","zuozhuang_zzz@163.com")
                 .param("nickName","偷看看哟")
-                .param("headImgUrl","")
-                .param("bgImgUrl","")
                 .param("gender","1")
                 .param("signature","个性签名")
                 .param("contact","13333333333")
-                .param("identity","41282419940411771X")
+                .param("identity","41282419940411772X")
                 .param("name","左壮壮")
                 .param("payPwd","123456")
                 .accept(MediaType.APPLICATION_JSON))

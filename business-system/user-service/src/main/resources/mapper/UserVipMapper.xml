@@ -150,4 +150,7 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="getUserVipByUserId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from user_vip where user_id = #{userId,jdbcType=INTEGER}
+  </select>
 </mapper>

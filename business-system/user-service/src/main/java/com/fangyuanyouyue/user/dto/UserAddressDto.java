@@ -1,6 +1,9 @@
 package com.fangyuanyouyue.user.dto;
 
-import java.util.Date;
+import com.fangyuanyouyue.user.model.UserAddressInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户地址
@@ -27,9 +30,32 @@ public class UserAddressDto {
 
     private Integer addressType;//类型 1默认地址 2其他
 
-    private Date addTime;//添加时间
 
-    private Date updateTime;//更新时间
+    public UserAddressDto() {
+    }
+
+    public UserAddressDto(UserAddressInfo userAddressInfo) {
+        this.userAddresId = userAddressInfo.getId();
+        this.userId = userAddressInfo.getUserId();
+        this.receiverName = userAddressInfo.getReceiverName();
+        this.receiverPhone = userAddressInfo.getReceiverPhone();
+        this.province = userAddressInfo.getProvince();
+        this.city = userAddressInfo.getCity();
+        this.area = userAddressInfo.getArea();
+        this.address = userAddressInfo.getAddress();
+        this.postCode = userAddressInfo.getPostCode();
+        this.addressType = userAddressInfo.getType();
+    }
+    public static List<UserAddressDto> toDtoList(List<UserAddressInfo> list) {
+        if (list == null)
+            return null;
+        List<UserAddressDto> dtolist = new ArrayList<>();
+        for (UserAddressInfo model : list) {
+            UserAddressDto dto = new UserAddressDto(model);
+            dtolist.add(dto);
+        }
+        return dtolist;
+    }
 
     public Integer getUserAddresId() {
         return userAddresId;
@@ -109,21 +135,5 @@ public class UserAddressDto {
 
     public void setAddressType(Integer addressType) {
         this.addressType = addressType;
-    }
-
-    public Date getAddTime() {
-        return addTime;
-    }
-
-    public void setAddTime(Date addTime) {
-        this.addTime = addTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
     }
 }

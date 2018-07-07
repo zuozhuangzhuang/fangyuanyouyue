@@ -55,7 +55,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
             List<UserAddressDto> userAddressDtos = new ArrayList<>();
             for(UserAddressInfo userAddress:userAddressInfos){
-                userAddressDtos.add(setAddressDtoByInfo(userAddress));
+                userAddressDtos.add(new UserAddressDto(userAddressInfo));
             }
             return userAddressDtos;
         }
@@ -81,7 +81,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 userAddressInfo.setType(type);
                 userAddressInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userAddressInfoMapper.updateByPrimaryKey(userAddressInfo);
-                return setAddressDtoByInfo(userAddressInfo);
+                return new UserAddressDto(userAddressInfo);
             }
         }
     }
@@ -100,7 +100,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
                 List<UserAddressDto> userAddressDtos = new ArrayList<>();
                 for(UserAddressInfo userAddress:userAddressInfos){
-                    userAddressDtos.add(setAddressDtoByInfo(userAddress));
+                    userAddressDtos.add(new UserAddressDto(userAddressInfo));
                 }
                 return userAddressDtos;
             }
@@ -129,30 +129,4 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
         }
     }
 
-    /**
-     * 将userAddressInfo封装到userAddressDto中
-     * @param userAddressInfo
-     * @return
-     * @throws ServiceException
-     */
-    public UserAddressDto setAddressDtoByInfo(UserAddressInfo userAddressInfo) throws ServiceException{
-        if(userAddressInfo == null){
-            throw new ServiceException("收货地址错误！");
-        }else{
-            UserAddressDto userAddressDto = new UserAddressDto();
-            userAddressDto.setUserAddresId(userAddressInfo.getId());
-            userAddressDto.setUserId(userAddressInfo.getUserId());
-            userAddressDto.setReceiverName(userAddressInfo.getReceiverName());
-            userAddressDto.setReceiverPhone(userAddressInfo.getReceiverPhone());
-            userAddressDto.setProvince(userAddressInfo.getProvince());
-            userAddressDto.setCity(userAddressInfo.getCity());
-            userAddressDto.setArea(userAddressInfo.getArea());
-            userAddressDto.setAddress(userAddressInfo.getAddress());
-            userAddressDto.setPostCode(userAddressInfo.getPostCode());
-            userAddressDto.setAddressType(userAddressInfo.getType());
-            userAddressDto.setAddTime(userAddressInfo.getAddTime());
-            userAddressDto.setUpdateTime(userAddressInfo.getUpdateTime());
-            return userAddressDto;
-        }
-    }
 }

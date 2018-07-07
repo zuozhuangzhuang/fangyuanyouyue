@@ -178,4 +178,7 @@
   <select id="getUserByThirdNoType" resultMap="BaseResultMap">
     select * from user_third_party where union_id = #{unionId,jdbcType=VARCHAR} and type = #{type,jdbcType=INTEGER}
   </select>
+  <select id="getUserThirdByUserId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from user_third_party where user_id = #{userId,jdbcType=INTEGER}
+  </select>
 </mapper>

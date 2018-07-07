@@ -25,4 +25,11 @@ public interface UserThirdPartyMapper {
      * @return
      */
     UserThirdParty getUserByThirdNoType(@Param("unionId") String unionId, @Param("type") int type);
+
+    /**
+     * 根据用户ID获取用户第三方信息
+     * @param userId
+     * @return
+     */
+    UserThirdParty getUserThirdByUserId(Integer userId);
 }
