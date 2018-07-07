@@ -38,10 +38,12 @@ public class GoodsController extends BaseController{
 
     @ApiOperation(value = "获取商品列表", notes = "获取商品列表",response = ResultUtil.class)
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "商品状态 普通商品 1出售中 2已售出 5删除", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start", value = "起始页", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "限制页", required = true, dataType = "int", paramType = "query")
     })
-    @GetMapping(value = "/goodsList")
+    @PostMapping(value = "/goodsList")
     @ResponseBody
     public String goodsList(GoodsParam param) throws IOException {
         try {
@@ -54,7 +56,7 @@ public class GoodsController extends BaseController{
                 return toError("限制页不能为空！");
             }
             //TODO 获取商品列表
-            List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param.getStart(),param.getLimit());
+            List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param.getUserId(),param.getStatus(),param.getStart(),param.getLimit());
             return toSuccess(goodsDtos,"获取商品列表成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -182,18 +184,13 @@ public class GoodsController extends BaseController{
     }
 
     //分类列表
-    @ApiOperation(value = "获取分类列表", notes = "获取分类列表")
-    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
-    })
+    @ApiOperation(value = "获取分类列表", notes = "获取分类列表",response = ResultUtil.class)
     @GetMapping(value = "/categoryList")
     @ResponseBody
-    public String categoryList(GoodsParam param) throws IOException {
+    public String categoryList() throws IOException {
         try {
             log.info("----》获取分类列表《----");
-            log.info("参数："+param.toString());
-            //TODO 同类推荐
+            //TODO 获取分类列表
             List<GoodsCategoryDto> categoryDtos = goodsInfoService.categoryList();
             return toSuccess(categoryDtos,"获取分类列表成功！");
         } catch (Exception e) {
@@ -203,33 +200,29 @@ public class GoodsController extends BaseController{
     }
 
     //同类推荐
-    @ApiOperation(value = "同类推荐", notes = "同类推荐")
+    @ApiOperation(value = "同类推荐", notes = "同类推荐",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
-    @PostMapping(value = "/similarGoods")
+    @GetMapping(value = "/similarGoods")
     @ResponseBody
     public String similarGoods(GoodsParam param) throws IOException {
         try {
             log.info("----》同类推荐《----");
             log.info("参数："+param.toString());
-
-            if(param.getGoodsId()==null || param.getGoodsId().intValue()==0){
+            if(param.getGoodsId() == null){
                 return toError(1,"商品id不能为空！");
             }
-            if(param.getGoodsInfoIds().length<1){
-                return toError(1,"推荐类型不能为空！");
-            }
-            if(param.getStart()==null){
+            if(param.getStart() == null){
                 return toError(1,"start不能为空！");
             }
-            if(param.getLimit()==null){
+            if(param.getLimit() == null){
                 return toError(1,"limit不能为空！");
             }
             //TODO 同类推荐
-            List<GoodsDto> goodsDtos = new ArrayList<>();
+            List<GoodsDto> goodsDtos = goodsInfoService.similarGoods(param.getGoodsId(),param.getStart(),param.getLimit());
 
             return toSuccess(goodsDtos,"同类推荐成功！");
         } catch (Exception e) {
@@ -238,7 +231,31 @@ public class GoodsController extends BaseController{
         }
     }
 
-//    //查询商品
+    //商品详情
+    @ApiOperation(value = "商品详情", notes = "商品详情",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query")
+    })
+    @GetMapping(value = "/goodsInfo")
+    @ResponseBody
+    public String goodsInfo(GoodsParam param) throws IOException{
+        try {
+            log.info("----》商品详情《----");
+            log.info("参数："+param.toString());
+
+            if(param.getGoodsId() == null){
+                return toError(1,"商品id不能为空！");
+            }
+            //TODO 商品详情
+            GoodsDto goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
+
+            return toSuccess(goodsDto,"商品详情成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError("系统繁忙，请稍后再试！");
+        }
+    }
+
 //
 //    //我的商品
 //    @ApiOperation(value = "我的商品", notes = "我的商品")
@@ -276,43 +293,8 @@ public class GoodsController extends BaseController{
 //            return toError("系统繁忙，请稍后再试！");
 //        }
 //    }
-//
-//    //我拍下的商品
-//    @ApiOperation(value = "我拍下的商品", notes = "我拍下的商品")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "token  ", value = "用户token", required = true, dataType = "string", paramType = "query"),
-//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "search", value = "搜索内容（标题和内容）", dataType = "string", paramType = "query")
-//    })
-//    @PostMapping(value = "/buyGoods")
-//    @ResponseBody
-//    public String buyGoods(GoodsParam param) throws IOException {
-//        try {
-//            log.info("----》我拍下的商品《----");
-//            log.info("参数："+param.toString());
-//
-//            if(param.getGoodsId()==null || param.getGoodsId().intValue()==0){
-//                return toError("商品id不能为空！");
-//            }
-//            if(param.getCatalogId()==null || param.getCatalogId().intValue()==0){
-//                return toError("推荐类型不能为空！");
-//            }
-//            if(param.getStart()==null){
-//                return toError("start不能为空！");
-//            }
-//            if(param.getLimit()==null){
-//                return toError("limit不能为空！");
-//            }
-//            //TODO 我拍下的商品
-//
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我拍下的商品成功！");
-//            return toResult(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
-//        }
-//    }
+
+    //我拍下的商品
 //
 //    //我卖出的商品
 //    @ApiOperation(value = "我卖出的商品", notes = "我卖出的商品")

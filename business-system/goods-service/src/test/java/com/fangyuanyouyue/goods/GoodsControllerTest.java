@@ -44,7 +44,9 @@ public class GoodsControllerTest {
     @Test
     @Transactional
     public void goodsList() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.get("/goods/goodsList")
+        mvc.perform(MockMvcRequestBuilders.post("/goods/goodsList")
+                .param("userId","1")
+                .param("status","1")
                 .param("start","0")
                 .param("limit","10")
                 .accept(MediaType.APPLICATION_JSON))
@@ -90,6 +92,20 @@ public class GoodsControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
+    /**
+     * 商品详情
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void goodsInfo() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/goodsInfo")
+                .param("goodsId","6")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
 //    /**
 //     *
 //     * @throws Exception
@@ -122,6 +138,22 @@ public class GoodsControllerTest {
     @Transactional
     public void categoryList() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/categoryList")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 同类推荐
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void similarGoods() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/similarGoods")
+                .param("goodsId","6")
+                .param("start","0")
+                .param("limit","10")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
