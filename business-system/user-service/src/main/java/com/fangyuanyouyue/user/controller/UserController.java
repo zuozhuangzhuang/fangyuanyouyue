@@ -82,11 +82,8 @@ public class UserController extends BaseController {
             if (userInfo != null) {
                 return toError(ReCode.FAILD.getValue(),"手机号码已被注册！");
             }
-            //TODO 注册
+            //注册
             UserDto userDto = userInfoService.regist(param);
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "注册成功！");
-//            result.put("userDto",userDto);
-
             return toSuccess(userDto,"注册成功");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -119,8 +116,8 @@ public class UserController extends BaseController {
                 return toError(ReCode.FAILD.getValue(),"登录平台不能为空！");
             }
             //MD5加密
-            param.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
-            //TODO 用户登录
+//            param.setLoginPwd(MD5Util.generate(MD5Util.MD5(param.getLoginPwd())));
+            //用户登录
             UserDto userDto = userInfoService.login(param.getPhone(),param.getLoginPwd(),param.getLoginPlatform());
             return toSuccess(userDto,"登录成功");
         } catch (ServiceException e) {
@@ -163,7 +160,7 @@ public class UserController extends BaseController {
             if(param.getType() == null){
                 return toError("注册类型不能为空！");
             }
-            //TODO 三方注册：先注册用户，再添加第三方登录信息
+            //三方注册：先注册用户，再添加第三方登录信息
             UserDto userDto = userInfoService.thirdRegister(param);
             return toSuccess(userDto,"三方注册成功");
         } catch (ServiceException e) {
@@ -197,7 +194,7 @@ public class UserController extends BaseController {
             if(param.getType() == null){
                 return toError("注册类型不能为空！");
             }
-            //TODO APP三方登录
+            //APP三方登录
             UserDto userDto = userInfoService.thirdLogin(param.getUnionId(),param.getType(),param.getLoginPlatform());
             return toSuccess(userDto,"APP三方登录成功");
         } catch (ServiceException e) {
@@ -232,7 +229,7 @@ public class UserController extends BaseController {
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 三方绑定
+            //三方绑定
             //三方绑定是为了将微信号与手机号绑定到一个账户，如果用户用手机号注册过，又用微信号登录了第二个账号，将没有绑定功能，而是合并账号，以手机号为主，
             // 如果用户已经存在手机号账号，并登录手机号账户，进行三方绑定，则将微信号绑定到此用户账户上
             UserDto userDto = userInfoService.thirdBind(param.getUserId(),param.getUnionId(),param.getType());
@@ -277,8 +274,7 @@ public class UserController extends BaseController {
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 实名认证
-            //TODO 需要身份证正反照片
+            //实名认证
             userInfoExtService.certification(param.getUserId(),param.getName(),param.getIdentity(),param.getIdentityImgCover(),param.getIdentityImgBack());
             return toSuccess("实名认证成功");
         } catch (ServiceException e) {
@@ -440,7 +436,8 @@ public class UserController extends BaseController {
                 return toError("第三方用户不可修改密码！");
             }
             //判断旧密码是否正确
-            if(!MD5Util.getMD5String(param.getLoginPwd()).equals(user.getLoginPwd())){
+//            if(!MD5Util.MD5(param.getLoginPwd()).equals(user.getLoginPwd())){
+            if(!MD5Util.verify(MD5Util.MD5(param.getLoginPwd()),user.getLoginPwd())){
                 return toError("旧密码不正确！");
             }
             //TODO 修改密码
@@ -460,9 +457,9 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "receiverName", value = "收货人姓名",  required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "province", value = "省",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "city", value = "市",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "area", value = "区",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "address", value = "详细收货地址",  required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "postCode", value = "邮编",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1默认地址 2其他",dataType = "String", paramType = "query")
@@ -763,8 +760,9 @@ public class UserController extends BaseController {
                     byte[] aeskey = Base64.decodeBase64(session_key);
                     // 偏移量
                     byte[] ivByte = Base64.decodeBase64(weChatSession.getIv());
-                    String newuserInfo = "";
+                    String newuserInfo;
                     try {
+                        //AES解密
                         AES aes = new AES();
                         byte[] resultByte = aes.decrypt(dataByte, aeskey, ivByte);
                         if (null != resultByte && resultByte.length > 0) {
@@ -785,7 +783,6 @@ public class UserController extends BaseController {
                 }else{
                     //已注册过，登录
                     param.setUnionId(unionid);
-                    //进行注册操作，和正常用户具有相同功能：用户同用，通讯功能，钱包系统
                     UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
                     //最后要返回一个自定义的登录态,用来做后续数据传输的验证
                     return toSuccess(userDto,"小程序登录成功！");

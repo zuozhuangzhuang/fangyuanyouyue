@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.*;
+import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.*;
 import com.fangyuanyouyue.user.param.UserParam;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service(value = "userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
@@ -71,7 +74,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setAddTime(DateStampUtils.getTimesteamp());
         user.setUpdateTime(DateStampUtils.getTimesteamp());
         user.setPhone(param.getPhone());
-        user.setLoginPwd(MD5Util.getMD5String(param.getLoginPwd()));
+        user.setLoginPwd(MD5Util.generate(MD5Util.MD5(param.getLoginPwd())));
         user.setNickName(param.getNickName());
         user.setStatus(1);//状态 1正常 2冻结
         user.setGender(param.getGender());
@@ -104,7 +107,8 @@ public class UserInfoServiceImpl implements UserInfoService {
         if(user == null){
             throw new ServiceException("账号不正确！");
         }else{
-            if(!user.getLoginPwd().equals(loginPwd)){
+//            if(!user.getLoginPwd().equals(loginPwd)){
+            if(!MD5Util.verify(MD5Util.MD5(loginPwd),user.getLoginPwd())){
                 //密码错误次数
                 if(user.getPwdErrCount() == null || user.getPwdErrCount() == 0){
                     user.setPwdErrCount(1);
@@ -280,7 +284,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userInfoExt.setName(param.getName());
             }
             if(StringUtils.isNotEmpty(param.getPayPwd())){
-                userInfoExt.setPayPwd(MD5Util.getMD5String(param.getPayPwd()));
+                userInfoExt.setPayPwd(MD5Util.generate(MD5Util.MD5(param.getPayPwd())));
             }
             userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.updateByPrimaryKey(userInfoExt);
@@ -335,19 +339,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         if(user == null){
             throw new ServiceException("用户错误！");
         }else{
-            UserDto userDto = new UserDto();
-            userDto.setUserId(user.getId());
-            userDto.setPhone(user.getPhone());
-            userDto.setEmail(user.getEmail());
-            userDto.setUserAddress(user.getAddress());
-            userDto.setNickName(user.getNickName());
-            userDto.setHeadImgUrl(user.getHeadImgUrl());
-            userDto.setBgImgUrl(user.getBgImgUrl());
-            userDto.setGender(user.getGender());
-            userDto.setSignature(user.getSignature());
-            userDto.setContact(user.getContact());
-            userDto.setLevel(user.getLevel());
-            userDto.setLevelDesc(user.getLevelDesc());
+            UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(user.getId());
+//            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(user.getId());
+            UserThirdParty userThirdParty = userThirdPartyMapper.getUserThirdByUserId(user.getId());
+            UserVip userVip = userVipMapper.getUserVipByUserId(user.getId());
+            IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(user.getId());
+            UserExamine userExamine = userExamineMapper.getUserExamineByUserId(user.getId());
+            UserDto userDto = new UserDto(user,userVip,identityAuthApply,userInfoExt,userExamine,userThirdParty);
             return userDto;
         }
     }
@@ -416,10 +414,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
         }else{
-            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
+//            if(MD5Util.getMD5String(newPwd).equals(userInfo.getLoginPwd())){
+            if(MD5Util.verify(MD5Util.MD5(newPwd),userInfo.getLoginPwd())){
                 throw new ServiceException("不能和旧密码相同！");
             }else{
-                userInfo.setLoginPwd(MD5Util.getMD5String(newPwd));
+                userInfo.setLoginPwd(MD5Util.generate(MD5Util.MD5(newPwd)));
                 userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
             }
