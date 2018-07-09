@@ -1,4 +1,4 @@
-package com.fangyuanyouyue.goods.param;
+package com.fangyuanyouyue.order.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

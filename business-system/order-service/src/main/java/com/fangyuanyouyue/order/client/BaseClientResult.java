@@ -1,4 +1,4 @@
-package com.fangyuanyouyue.goods.client;
+package com.fangyuanyouyue.order.client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
