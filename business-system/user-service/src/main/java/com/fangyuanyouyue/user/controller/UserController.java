@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -53,7 +52,7 @@ public class UserController extends BaseController {
     @Autowired
     private SchedualGoodsService schedualGoodsService;//调用goods-service
     @Autowired
-    private SchedualSmsService schedualSmsService;//调用sms-service
+    private SchedualMessageService schedualMessageService;//message-service
 
 
     @ApiOperation(value = "注册", notes = "注册",response = ResultUtil.class)
@@ -850,7 +849,7 @@ public class UserController extends BaseController {
 				}*/
             }
             //调用短信系统发送短信
-            JSONObject jsonObject = JSONObject.parseObject(schedualSmsService.sendCode(param.getPhone(),param.getType()));
+            JSONObject jsonObject = JSONObject.parseObject(schedualMessageService.sendCode(param.getPhone(),param.getType()));
             String code = jsonObject.getString("data");
             log.info("code:"+code);
 
