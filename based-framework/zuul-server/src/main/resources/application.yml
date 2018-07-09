@@ -10,7 +10,7 @@ server:
 spring:
   application:
     name: service-zuul
-
+#zuul.routes.api-a.sensitiveHeaders="*"\
 zuul:
   host:
     socket-timeout-millis: 60000
@@ -29,6 +29,7 @@ zuul:
     goods-service:
       path: /goods/**
       serviceId: goods-service
-    sms-service:
-      path: /sms/**
-      serviceId: sms-service
+    message-service:
+      path: /message/**
+      serviceId: message-service
+  sensitive-headers: "*"
