@@ -1,4 +1,4 @@
-package com.fangyuanyouyue.user.client;//package com.fangyuanyouyue.auth.client;
+//package com.fangyuanyouyue.order.client;
 //
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Component;
