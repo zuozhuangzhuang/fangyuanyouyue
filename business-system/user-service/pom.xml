@@ -156,6 +156,15 @@
 			<artifactId>jose4j</artifactId>
 			<version>0.4.0</version>
 		</dependency>
+
+		<!-- 整合redis -->
+		<!--redis-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-redis</artifactId>
+			<version>1.4.7.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 
 	<dependencyManagement>
