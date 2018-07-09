@@ -1,12 +1,22 @@
 package com.fangyuanyouyue.user.param;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
-//@ApiModel(value = "用户相关参数")
-public class UserParam extends BaseParam {
+@ApiModel(value = "用户相关参数")
+public class UserParam{
+	//公用
+	@ApiModelProperty(name = "start", value = "起始页", dataType = "Integer",hidden = true)
+	private Integer start; // 起始页
+	@ApiModelProperty(name = "limit", value = "限制页", dataType = "Integer",hidden = true)
+	private Integer limit; // 限制页
+	@ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
+	private Integer type;//类型
+
+	//UserInfo
 	@ApiModelProperty(name = "phone", value = "手机号码", dataType = "String",hidden = true)
 	private String phone;//手机号码
 
@@ -125,6 +135,30 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "iv", value = "加密算法的初始向量", dataType = "String",hidden = true)
 	private String iv;//加密算法的初始向量
 
+	public Integer getStart() {
+		return start;
+	}
+
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
 	public String getPhone() {
 		return phone;
 	}
@@ -173,12 +207,28 @@ public class UserParam extends BaseParam {
 		this.headImgUrl = headImgUrl;
 	}
 
+	public MultipartFile getHeadImg() {
+		return headImg;
+	}
+
+	public void setHeadImg(MultipartFile headImg) {
+		this.headImg = headImg;
+	}
+
 	public String getBgImgUrl() {
 		return bgImgUrl;
 	}
 
 	public void setBgImgUrl(String bgImgUrl) {
 		this.bgImgUrl = bgImgUrl;
+	}
+
+	public MultipartFile getBgImg() {
+		return bgImg;
+	}
+
+	public void setBgImg(MultipartFile bgImg) {
+		this.bgImg = bgImg;
 	}
 
 	public Integer getGender() {
@@ -269,12 +319,10 @@ public class UserParam extends BaseParam {
 		this.birth = birth;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -285,6 +333,14 @@ public class UserParam extends BaseParam {
 
 	public void setIdentity(String identity) {
 		this.identity = identity;
+	}
+
+	public String getPayPwd() {
+		return payPwd;
+	}
+
+	public void setPayPwd(String payPwd) {
+		this.payPwd = payPwd;
 	}
 
 	public MultipartFile getIdentityImgCover() {
@@ -391,31 +447,6 @@ public class UserParam extends BaseParam {
 		this.thirdHeadImgUrl = thirdHeadImgUrl;
 	}
 
-
-	public String getPayPwd() {
-		return payPwd;
-	}
-
-	public void setPayPwd(String payPwd) {
-		this.payPwd = payPwd;
-	}
-
-	public MultipartFile getHeadImg() {
-		return headImg;
-	}
-
-	public void setHeadImg(MultipartFile headImg) {
-		this.headImg = headImg;
-	}
-
-	public MultipartFile getBgImg() {
-		return bgImg;
-	}
-
-	public void setBgImg(MultipartFile bgImg) {
-		this.bgImg = bgImg;
-	}
-
 	public Integer getLoginPlatform() {
 		return loginPlatform;
 	}
@@ -451,7 +482,10 @@ public class UserParam extends BaseParam {
 	@Override
 	public String toString() {
 		return "UserParam{" +
-				"phone='" + phone + '\'' +
+				"start=" + start +
+				", limit=" + limit +
+				", type=" + type +
+				", phone='" + phone + '\'' +
 				", email='" + email + '\'' +
 				", userAddress='" + userAddress + '\'' +
 				", loginPwd='" + loginPwd + '\'' +
