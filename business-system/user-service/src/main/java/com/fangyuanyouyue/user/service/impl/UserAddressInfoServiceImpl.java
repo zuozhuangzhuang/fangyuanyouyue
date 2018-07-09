@@ -9,6 +9,7 @@ import com.fangyuanyouyue.user.utils.DateStampUtils;
 import com.fangyuanyouyue.user.utils.ServiceException;
 import com.fangyuanyouyue.user.utils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,10 +31,12 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     private UserVipMapper userVipMapper;
     @Autowired
     private UserExamineMapper userExamineMapper;
-
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     @Override
-    public List<UserAddressDto> addAddress(Integer userId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+    public List<UserAddressDto> addAddress(String token, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -62,7 +65,8 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     }
 
     @Override
-    public UserAddressDto updateAddress(Integer userId, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+    public UserAddressDto updateAddress(String token, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -87,7 +91,8 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     }
 
     @Override
-    public List<UserAddressDto> deleteAddress(Integer userId, Integer addressId) throws ServiceException {
+    public List<UserAddressDto> deleteAddress(String token, Integer addressId) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -108,7 +113,8 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     }
 
     @Override
-    public void defaultAddress(Integer userId, Integer addressId) throws ServiceException {
+    public void defaultAddress(String token, Integer addressId) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");

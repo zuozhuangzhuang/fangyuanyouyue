@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class UserDto {
     //UserInfo 用户基本信息表
-    private Integer userId;//用户id
+    private String token;//用户token
 
     private String phone;//手机号码
 
@@ -92,10 +92,12 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(UserInfo userInfo, UserVip userVip, IdentityAuthApply identityAuthApply, UserInfoExt userInfoExt, UserExamine userExamine,UserThirdParty userThirdParty) {
+    public UserDto(String token,UserInfo userInfo, UserVip userVip, IdentityAuthApply identityAuthApply, UserInfoExt userInfoExt, UserExamine userExamine,UserThirdParty userThirdParty) {
+        if(token != null && !token.equals("")){
+            this.token = token;
+        }
         //UserInfo
         if(userInfo != null){
-            this.userId = userInfo.getId();
             this.phone = userInfo.getPhone();
             this.email = userInfo.getEmail();
             this.userAddress = userInfo.getAddress();
@@ -150,12 +152,12 @@ public class UserDto {
 //        }
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getToken() {
+        return token;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPhone() {

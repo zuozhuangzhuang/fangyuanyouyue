@@ -10,6 +10,7 @@ import com.fangyuanyouyue.user.utils.FileUtil;
 import com.fangyuanyouyue.user.utils.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,10 +37,12 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
     private UserVipMapper userVipMapper;
     @Autowired
     private UserExamineMapper userExamineMapper;
-
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     @Override
-    public void certification(Integer userId, String name, String identity, MultipartFile identityImgCover, MultipartFile identityImgBack) throws ServiceException {
+    public void certification(String token, String name, String identity, MultipartFile identityImgCover, MultipartFile identityImgBack) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(userId);
         if(identityAuthApply != null){
             if(identityAuthApply.getStatus() == 1){

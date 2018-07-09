@@ -10,7 +10,13 @@ import com.fangyuanyouyue.user.utils.ServiceException;
  */
 public interface UserInfoService {
 
-
+    /**
+     * 根据用户token获取用户信息
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
+    UserInfo getUserByToken(String token) throws ServiceException;
     /**
      * 根据ID获取用户
      * @param id
@@ -68,13 +74,13 @@ public interface UserInfoService {
 
     /**
      * 三方绑定
-     * @param userId
+     * @param token
      * @param unionId
      * @param type
      * @return
      * @throws ServiceException
      */
-    UserDto thirdBind(Integer userId,String unionId,Integer type) throws ServiceException;
+    UserDto thirdBind(String token,String unionId,Integer type) throws ServiceException;
 
 
 
@@ -96,28 +102,28 @@ public interface UserInfoService {
 
     /**
      * 修改密码
-     * @param userId
+     * @param token
      * @param newPwd
      * @throws ServiceException
      */
-    void updatePwd(Integer userId,String newPwd) throws ServiceException;
+    void updatePwd(String token,String newPwd) throws ServiceException;
 
     /**
      * 修改绑定手机
-     * @param userId
+     * @param token
      * @param phone
      * @throws ServiceException
      */
-    UserDto updatePhone(Integer userId,String phone) throws ServiceException;
+    UserDto updatePhone(String token,String phone) throws ServiceException;
 
     /**
      * 合并账号
-     * @param userId
+     * @param token
      * @param phone
      * @return
      * @throws ServiceException
      */
-    UserDto accountMerge(Integer userId,String phone) throws ServiceException;
+    UserDto accountMerge(String token,String phone) throws ServiceException;
 
     /**
      * 小程序登录

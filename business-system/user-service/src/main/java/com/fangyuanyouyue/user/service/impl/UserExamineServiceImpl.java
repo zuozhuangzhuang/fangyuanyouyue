@@ -6,6 +6,7 @@ import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.service.UserExamineService;
 import com.fangyuanyouyue.user.utils.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service(value = "userExamineService")
@@ -25,10 +26,12 @@ public class UserExamineServiceImpl implements UserExamineService{
     private UserVipMapper userVipMapper;
     @Autowired
     private UserExamineMapper userExamineMapper;
-
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     @Override
-    public UserExamine getUserExamineByUserId(Integer userId) throws ServiceException {
+    public UserExamine getUserExamineByUserId(String token) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");

@@ -9,9 +9,9 @@ import com.fangyuanyouyue.user.utils.ServiceException;
 public interface UserExamineService {
     /**
      * 根据用户ID获取昵称申请记录
-     * @param userId
+     * @param token
      * @return
      * @throws ServiceException
      */
-    UserExamine getUserExamineByUserId(Integer userId) throws ServiceException;
+    UserExamine getUserExamineByUserId(String token) throws ServiceException;
 }

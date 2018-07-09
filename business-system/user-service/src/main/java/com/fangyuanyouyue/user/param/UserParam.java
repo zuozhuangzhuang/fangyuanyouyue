@@ -68,8 +68,8 @@ public class UserParam{
 	@ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "int",hidden = true)
 	private Date updateTime;//更新时间
 
-	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "int",hidden = true)
-	private Integer userId;//用户ID
+	@ApiModelProperty(name = "token", value = "用户token", dataType = "String",hidden = true)
+	private String token;//用户token
 
 	@ApiModelProperty(name = "newPwd", value = "新密码", dataType = "String",hidden = true)
 	private String newPwd;//新密码
@@ -295,13 +295,6 @@ public class UserParam{
 		this.updateTime = updateTime;
 	}
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
 
 	public String getNewPwd() {
 		return newPwd;
@@ -479,6 +472,14 @@ public class UserParam{
 		this.iv = iv;
 	}
 
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
@@ -502,7 +503,7 @@ public class UserParam{
 				", levelDesc='" + levelDesc + '\'' +
 				", status=" + status +
 				", updateTime=" + updateTime +
-				", userId=" + userId +
+				", token='" + token + '\'' +
 				", newPwd='" + newPwd + '\'' +
 				", birth='" + birth + '\'' +
 				", name='" + name + '\'' +

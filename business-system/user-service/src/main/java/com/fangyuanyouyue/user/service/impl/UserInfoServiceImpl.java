@@ -10,6 +10,7 @@ import com.fangyuanyouyue.user.utils.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,12 +33,20 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserVipMapper userVipMapper;
     @Autowired
     private UserExamineMapper userExamineMapper;
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     @Value("${pic_server:errorPicServer}")
     private String PIC_SERVER;// 图片服务器
 
     @Value("${pic_path:errorPicPath}")
     private String PIC_PATH;// 图片存放路径
+
+    @Override
+    public UserInfo getUserByToken(String token) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        return userInfoMapper.selectByPrimaryKey(userId);
+    }
 
     @Override
     public UserInfo selectByPrimaryKey(Integer id) {
@@ -79,6 +88,9 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setStatus(1);//状态 1正常 2冻结
         user.setGender(param.getGender());
         userInfoMapper.insert(user);
+        //生成用户token，存到Redis
+        String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+        redisTemplate.opsForValue().set(token,user.getId());
         //用户扩展信息表
         UserInfoExt userInfoExt = new UserInfoExt();
         userInfoExt.setUserId(user.getId());
@@ -96,7 +108,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         //TODO 注册通讯账户
         //TODO 调用钱包系统初始化接口
         //初始化用户钱包
-        UserDto userDto = setUserDtoByInfo(user);
+        UserDto userDto = setUserDtoByInfo(token,user);
         return userDto;
     }
 
@@ -123,9 +135,12 @@ public class UserInfoServiceImpl implements UserInfoService {
                 user.setLastLoginTime(DateStampUtils.getTimesteamp());
                 user.setLastLoginPlatform(lastLoginPlatform);
                 userInfoMapper.updateByPrimaryKey(user);
+                //登录时重新生成用户token，存到Redis
+                String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+                redisTemplate.opsForValue().set(token,user.getId());
                 //TODO 注册通讯账户
                 //TODO 获取用户的相关信息：商品列表、钱包系统、好友列表
-                UserDto userDto = setUserDtoByInfo(user);
+                UserDto userDto = setUserDtoByInfo(token,user);
                 return userDto;
             }
         }
@@ -150,6 +165,9 @@ public class UserInfoServiceImpl implements UserInfoService {
                 user.setGender(param.getGender());
             }
             userInfoMapper.insert(user);
+            //生成用户token，存到Redis
+            String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+            redisTemplate.opsForValue().set(token,user.getId());
             //初始化用户第三方登录信息
             userThirdParty = new UserThirdParty();
             userThirdParty.setUserId(user.getId());
@@ -177,7 +195,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             //TODO 注册通讯账户
             //TODO 调用钱包系统初始化接口
 
-            UserDto userDto = setUserDtoByInfo(user);
+            UserDto userDto = setUserDtoByInfo(token,user);
             return userDto;
 
         }
@@ -195,13 +213,17 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
             userInfo.setLastLoginPlatform(lastLoginPlatform);
             userInfoMapper.updateByPrimaryKey(userInfo);
-            UserDto userDto = setUserDtoByInfo(userInfo);
+            //登录时重新生成用户token，存到Redis
+            String token = 10000+userInfo.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+            redisTemplate.opsForValue().set(token,userInfo.getId());
+            UserDto userDto = setUserDtoByInfo(token,userInfo);
             return userDto;
         }
     }
 
     @Override
-    public UserDto thirdBind(Integer userId,String unionId,Integer type) throws ServiceException {
+    public UserDto thirdBind(String token,String unionId,Integer type) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         //根据用户ID获取用户，生成新的三方登陆信息
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
@@ -223,7 +245,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
                 userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
                 userThirdPartyMapper.insert(userThirdParty);
-                UserDto userDto = setUserDtoByInfo(userInfo);
+                UserDto userDto = setUserDtoByInfo(token,userInfo);
                 return userDto;
             }
         }
@@ -236,14 +258,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Override
-    public void updatePwd(Integer userId, String newPwd) throws ServiceException {
+    public void updatePwd(String token, String newPwd) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         updatePwd(newPwd, userInfo);
     }
 
     @Override
     public UserDto modify(UserParam param) throws ServiceException {
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(param.getUserId());
+        Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
         }else{
@@ -276,7 +300,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             //用户扩展信息表
-            UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(param.getUserId());
+            UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(userId);
             if(StringUtils.isNotEmpty(param.getIdentity())){
                 userInfoExt.setIdentity(param.getIdentity());
             }
@@ -288,14 +312,15 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
             userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.updateByPrimaryKey(userInfoExt);
-            UserDto userDto = setUserDtoByInfo(userInfo);
+            UserDto userDto = setUserDtoByInfo(param.getToken(),userInfo);
             return userDto;
         }
     }
 
 
     @Override
-    public UserDto updatePhone(Integer userId, String phone) throws ServiceException {
+    public UserDto updatePhone(String token, String phone) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -303,13 +328,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfo.setPhone(phone);
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
-            UserDto userDto = setUserDtoByInfo(userInfo);
+            UserDto userDto = setUserDtoByInfo(token,userInfo);
             return userDto;
         }
     }
 
     @Override
-    public UserDto accountMerge(Integer userId, String phone) throws ServiceException {
+    public UserDto accountMerge(String token, String phone) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("第三方用户不存在！");
@@ -323,7 +349,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
                 userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
-                UserDto userDto = setUserDtoByInfo(userInfo);
+                UserDto userDto = setUserDtoByInfo(token,userInfo);
                 return userDto;
             }
         }
@@ -335,7 +361,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      * @throws ServiceException
      */
-    public UserDto setUserDtoByInfo(UserInfo user) throws ServiceException{
+    public UserDto setUserDtoByInfo(String token,UserInfo user) throws ServiceException{
         if(user == null){
             throw new ServiceException("用户错误！");
         }else{
@@ -345,7 +371,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserVip userVip = userVipMapper.getUserVipByUserId(user.getId());
             IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(user.getId());
             UserExamine userExamine = userExamineMapper.getUserExamineByUserId(user.getId());
-            UserDto userDto = new UserDto(user,userVip,identityAuthApply,userInfoExt,userExamine,userThirdParty);
+            UserDto userDto = new UserDto(token,user,userVip,identityAuthApply,userInfoExt,userExamine,userThirdParty);
             return userDto;
         }
     }
@@ -446,6 +472,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
 
             userInfoMapper.insert(user);
+            //生成用户token，存到Redis
+            String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+            redisTemplate.opsForValue().set(token,user.getId());
             //初始化用户第三方登录信息
             userThirdParty = new UserThirdParty();
             userThirdParty.setUserId(user.getId());
@@ -474,15 +503,18 @@ public class UserInfoServiceImpl implements UserInfoService {
             userVipMapper.insert(userVip);
             //TODO 注册通讯账户
             //TODO 调用钱包系统初始化接口
-            UserDto userDto = setUserDtoByInfo(user);
+            UserDto userDto = setUserDtoByInfo(token,user);
             return userDto;
         }else{
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
+            //登录重新生成用户token，存到Redis
+            String token = 10000+userInfo.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+            redisTemplate.opsForValue().set(token,userInfo.getId());
             userThirdParty.setSessionKey(session_key);
             userThirdPartyMapper.updateByPrimaryKey(userThirdParty);
-            UserDto userDto = setUserDtoByInfo(userInfo);
+            UserDto userDto = setUserDtoByInfo(token,userInfo);
             return userDto;
         }
     }
