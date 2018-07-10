@@ -8,6 +8,7 @@ import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
+import com.fangyuanyouyue.goods.utils.ReCode;
 import com.fangyuanyouyue.goods.utils.ResultUtil;
 import com.fangyuanyouyue.goods.utils.ServiceException;
 import io.swagger.annotations.Api;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -34,14 +36,22 @@ public class GoodsController extends BaseController{
     private GoodsInfoService goodsInfoService;
     @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
-
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     @ApiOperation(value = "获取商品列表", notes = "获取商品列表",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "用户ID", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token，不为空则为：我的商品", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "userId", value = "卖家id，不为空则为：他的商品", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "status", value = "商品状态 普通商品 1出售中 2已售出 5删除", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "start", value = "起始页", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "limit", value = "限制页", required = true, dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "start", value = "起始页数", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "每页个数", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "search", value = "搜索词条", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "synthesize", value = "综合 1：综合排序 2：信用排序 3：价格升序 4：价格降序", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "priceMin", value = "最小价格", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "priceMax", value = "最大价格", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "quality", value = "品质 1：认证店铺 2：官方保真 3：高信誉度", dataType = "int", paramType = "query")
+
     })
     @PostMapping(value = "/goodsList")
     @ResponseBody
@@ -55,8 +65,18 @@ public class GoodsController extends BaseController{
             if(param.getLimit() == null){
                 return toError("限制页不能为空！");
             }
+            if(StringUtils.isNotEmpty(param.getToken())){//如果token不为空，则是我的商品
+                //根据用户token获取userId
+                Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+                String verifyUser = schedualUserService.verifyUserById(userId);
+                JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+                if((Integer)jsonObject.get("code") != 0){
+                    return toError(jsonObject.getString("report"));
+                }
+                param.setUserId(userId);
+            }
             //TODO 获取商品列表
-            List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param.getUserId(),param.getStatus(),param.getStart(),param.getLimit());
+            List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param);
             return toSuccess(goodsDtos,"获取商品列表成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -69,7 +89,7 @@ public class GoodsController extends BaseController{
 
     @ApiOperation(value = "添加商品", notes = "添加商品",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId ", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsInfoName", value = "商品名称", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）", required = true,allowMultiple = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "description", value = "商品描述(详情)", required = true, dataType = "String", paramType = "query"),
@@ -93,18 +113,16 @@ public class GoodsController extends BaseController{
             log.info("----》发布商品《----");
             log.info("参数："+param.toString());
             //验证用户
-            if(param.getUserId() == null){
-                return toError("用户id不能为空！");
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError("用户token不能为空！");
             }
-            String verifyUser = schedualUserService.verifyUserById(param.getUserId());
+            Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+            String verifyUser = schedualUserService.verifyUserById(userId);
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
-            if(user==null){
-                return toError("登录超时，请重新登录！");
+            if((Integer)jsonObject.get("code") != 0){
+                return toError(jsonObject.getString("report"));
             }
-            if((int)user.get("status") == 2){
-                return toError("您的账号已被冻结，请联系管理员！");
-            }
+            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(StringUtils.isEmpty(param.getGoodsInfoName())){
                 return toError("商品名称不能为空！");
             }
@@ -126,8 +144,7 @@ public class GoodsController extends BaseController{
             if(param.getFile1() == null){
                 return toError("请至少上传一张图片！");
             }
-            //TODO 添加商品,返回值应当包含商品图片信息，这里只有商品信息
-            GoodsDto goodsDto = goodsInfoService.addGoods(param.getUserId(),user.getString("nickName"),param);
+            GoodsDto goodsDto = goodsInfoService.addGoods(userId,user.getString("nickName"),param);
             return toSuccess(goodsDto,"添加商品成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -141,7 +158,7 @@ public class GoodsController extends BaseController{
 
     @ApiOperation(value = "批量删除商品", notes = "批量删除商品",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId ", value = "用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "token", value = "用户token", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsInfoIds", value = "商品id数组", required = true, allowMultiple = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/deleteGoods")
@@ -156,7 +173,7 @@ public class GoodsController extends BaseController{
             }
             String verifyUser = schedualUserService.verifyUserById(param.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
+            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(user==null){
                 return toError("登录超时，请重新登录！");
             }
@@ -202,7 +219,7 @@ public class GoodsController extends BaseController{
     //同类推荐
     @ApiOperation(value = "同类推荐", notes = "同类推荐",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "goodsId", value = "商品id", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query")
     })
@@ -234,7 +251,7 @@ public class GoodsController extends BaseController{
     //商品详情
     @ApiOperation(value = "商品详情", notes = "商品详情",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodsId ", value = "商品id", required = true, dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "goodsId", value = "商品id", required = true, dataType = "int", paramType = "query")
     })
     @GetMapping(value = "/goodsInfo")
     @ResponseBody

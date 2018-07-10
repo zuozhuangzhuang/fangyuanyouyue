@@ -45,10 +45,15 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsList() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/goodsList")
-                .param("userId","1")
-                .param("status","1")
+//                .param("userId","1")
+//                .param("status","1")
                 .param("start","0")
                 .param("limit","10")
+                .param("search","小宝")
+                .param("synthesize","3")
+                .param("priceMin","10")
+                .param("priceMax","1000")
+//                .param("quality","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

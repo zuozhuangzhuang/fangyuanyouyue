@@ -33,6 +33,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     @Autowired
     private GoodsCommentMapper goodsCommentMapperl;
     @Autowired
+    private HotSearchMapper hotSearchMapper;
+    @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
     @Value("${pic_server:errorPicServer}")
     private String PIC_SERVER;// 图片服务器
@@ -50,10 +52,32 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
 
     @Override
-    public List<GoodsDto> getGoodsInfoList(Integer userId,Integer status,Integer pageNum, Integer pageSize) throws ServiceException{
+    public List<GoodsDto> getGoodsInfoList(GoodsParam param) throws ServiceException{
+        if(StringUtils.isNotEmpty(param.getSearch())){
+            //TODO 搜索表
+            HotSearch hotSearch = hotSearchMapper.selectByName(param.getSearch());
+            if(hotSearch == null){
+                hotSearch = new HotSearch();
+                hotSearch.setAddTime(DateStampUtils.getTimesteamp());
+                hotSearch.setUpdateTime(DateStampUtils.getTimesteamp());
+                hotSearch.setName(param.getSearch());
+                hotSearch.setCount(1);
+                hotSearchMapper.insert(hotSearch);
+            }else{
+                hotSearch.setCount(hotSearch.getCount()+1);
+                hotSearch.setUpdateTime(DateStampUtils.getTimesteamp());
+                hotSearchMapper.updateByPrimaryKey(hotSearch);
+            }
+            //根据search搜索商品（名字或详情）
+
+        }
+        if(param.getPriceMin() != null || param.getPriceMax() != null){
+            //价格区间
+        }
         //将参数传给这个方法就可以实现物理分页了，非常简单。
-        PageHelper.startPage(pageNum, pageSize);
-        List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(userId,status,pageNum,pageSize);
+        PageHelper.startPage(param.getStart(), param.getLimit());
+        List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(param.getUserId(),param.getStatus(),param.getSearch(),
+                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit());
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
             goodsDtos.add(setDtoByGoodsInfo(goodsInfo));

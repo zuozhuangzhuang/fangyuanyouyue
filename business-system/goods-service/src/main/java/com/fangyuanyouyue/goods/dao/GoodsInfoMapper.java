@@ -4,6 +4,7 @@ import com.fangyuanyouyue.goods.model.GoodsInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface GoodsInfoMapper {
@@ -27,7 +28,10 @@ public interface GoodsInfoMapper {
      * @param pageSize
      * @return
      */
-    List<GoodsInfo> getGoodsList(@Param("userId") Integer userId,@Param("status") Integer status,Integer pageNum, Integer pageSize);
+    List<GoodsInfo> getGoodsList(@Param("userId") Integer userId, @Param("status") Integer status,@Param("search") String search,
+                                 @Param("priceMin") BigDecimal priceMin,@Param("priceMax") BigDecimal priceMax,
+                                 @Param("synthesize")Integer synthesize,@Param("quality")Integer quality,
+                                 Integer pageNum, Integer pageSize);
 
     /**
      * 根据商品ID集合获取商品

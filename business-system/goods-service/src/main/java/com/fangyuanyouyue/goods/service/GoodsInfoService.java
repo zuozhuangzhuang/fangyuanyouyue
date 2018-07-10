@@ -19,11 +19,10 @@ public interface GoodsInfoService {
 
     /**
      * 获取商品列表
-     * @param pageNum
-     * @param pageSize
+     * @param param
      * @return
      */
-    List<GoodsDto> getGoodsInfoList(Integer userId,Integer status,Integer pageNum, Integer pageSize) throws ServiceException;
+    List<GoodsDto> getGoodsInfoList(GoodsParam param) throws ServiceException;
 
     /**
      * 新增商品

@@ -24,7 +24,7 @@
     description
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
+    select
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -194,18 +194,53 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
   <select id="getGoodsList" parameterType="Integer" resultMap="BaseResultMap">
-  select * from goods_info
-  <where>
-    1=1
-    <if test="status != null">
-      and status = #{status,jdbcType=INTEGER}
+    select * from goods_info
+    <where>
+      1=1
+      <if test="status != null">
+        and status = #{status,jdbcType=INTEGER}
+      </if>
+      <if test="userId != null">
+        and user_id = #{userId,jdbcType=INTEGER}
+      </if>
+      <if test="priceMin != null">
+        and price <![CDATA[ >= ]]> #{priceMin,jdbcType=DECIMAL}
+      </if>
+      <if test="priceMax != null">
+        and price <![CDATA[ <= ]]> #{priceMax,jdbcType=DECIMAL}
+      </if>
+      <if test="search != null and search != ''">
+        and name like "%"#{search}"%" or description like "%"#{search}"%"
+      </if>
+    </where>
+    <if test="synthesize != null">
+      <if test="synthesize == 1">
+
+      </if>
+      <if test="synthesize == 2">
+
+      </if>
+      <if test="synthesize == 3">
+        group by price
+      </if>
+      <if test="synthesize == 4">
+        group by price desc
+      </if>
+      <if test="quality != null">
+        <if test="quality == 1">
+
+        </if>
+        <if test="quality == 2">
+
+        </if>
+        <if test="quality == 3">
+
+        </if>
+      </if>
     </if>
-    <if test="userId != null">
-      and user_id = #{userId,jdbcType=INTEGER}
-    </if>
-  </where>
-</select>
+  </select>
   <select id="getGoodsByGoodsIds" parameterType="Integer" resultMap="BaseResultMap">
     select * from goods_info
     <where>
