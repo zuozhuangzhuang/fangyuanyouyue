@@ -3,6 +3,9 @@ package com.fangyuanyouyue.goods.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 购物车明细表
+ */
 public class CartDetail {
     private Integer id;
 

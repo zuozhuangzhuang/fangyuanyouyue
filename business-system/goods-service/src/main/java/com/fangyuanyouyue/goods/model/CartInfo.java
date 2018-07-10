@@ -2,6 +2,9 @@ package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
 
+/**
+ * 购物车表
+ */
 public class CartInfo {
     private Integer id;
 

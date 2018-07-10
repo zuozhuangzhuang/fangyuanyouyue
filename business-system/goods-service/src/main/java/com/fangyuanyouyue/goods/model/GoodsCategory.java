@@ -2,6 +2,9 @@ package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
 
+/**
+ * 商品类目表
+ */
 public class GoodsCategory {
     private Integer id;
 

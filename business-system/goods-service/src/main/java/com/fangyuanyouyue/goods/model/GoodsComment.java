@@ -2,6 +2,9 @@ package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
 
+/**
+ * 商品评论表
+ */
 public class GoodsComment {
     private Integer id;
 

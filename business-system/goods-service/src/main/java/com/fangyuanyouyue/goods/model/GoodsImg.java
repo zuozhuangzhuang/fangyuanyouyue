@@ -1,36 +1,9 @@
 package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
-/*
-private Integer userId;//发布用户id
 
-    private String name;//商品名称
-
-    private String description;//商品详情
-
-    private BigDecimal price;//商品价格
-
-    private BigDecimal postage;//运费
-
-    private Integer sort;//排序
-
-    private String label;//标签
-
-    private Integer type;//类型 1普通商品 2秒杀商品
-
-    private Integer status;//状态
-
-    private Date addTime;//添加时间
-
-    private Date updateTime;//更新时间
-
-    private Integer catalogid;//商品分类ID
-
-    List<GoodsInfo> getGoodsList(int pageNum, int pageSize);
-
-    <select id="getGoodsList" parameterType="Integer" resultMap="BaseResultMap">
-    select * from goods_info
-  </select>
+/**
+ * 商品图片表
  */
 public class GoodsImg {
     private Integer id;
