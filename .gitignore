@@ -18,3 +18,6 @@
 /based-framework/config-client/config-client.iml
 /hs_err_pid62808.log
 /fangyuanyouyue.iml
+/based-business/sms-service/target/
+/business-system/forum-service/forum-service.iml
+/based-business/message-service/message-service.iml
