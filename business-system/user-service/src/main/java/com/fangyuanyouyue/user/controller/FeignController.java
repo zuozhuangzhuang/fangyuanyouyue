@@ -59,9 +59,9 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "验证用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "验证用户成功！");
+//            result.put("userInfo",userInfo);
+            return toSuccess(userInfo,"验证用户成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -87,9 +87,10 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据手机号验证用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据手机号验证用户成功！");
+//            result.put("userInfo",userInfo);
+//            return toResult(result);
+            return toSuccess(userInfo,"根据手机号验证用户成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -117,9 +118,10 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据三方唯一识别号获取用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据三方唯一识别号获取用户成功！");
+//            result.put("userInfo",userInfo);
+//            return toResult(result);
+            return toSuccess(userInfo,"根据三方唯一识别号获取用户成功!");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
