@@ -157,7 +157,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             //获取卖家信息
             String verifyUser = schedualUserService.verifyUserById(goodsInfo.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("userInfo"));
+            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsComments);
             return goodsDto;
         }
