@@ -18,7 +18,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/message")
-@Api(description = "商品系统Controller")
+@Api(description = "消息系统Controller")
 @RefreshScope
 public class MessageController extends BaseController{
     protected Logger log = Logger.getLogger(this.getClass());
