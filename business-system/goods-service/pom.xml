@@ -150,6 +150,12 @@
 			<version>1.2.47</version>
 		</dependency>
 
+		<!-- 整合redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-redis</artifactId>
+			<version>1.4.7.RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
