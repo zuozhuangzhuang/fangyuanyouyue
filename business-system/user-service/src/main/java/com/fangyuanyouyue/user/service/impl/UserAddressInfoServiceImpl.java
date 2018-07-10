@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service(value = "userAddressInfoService")
 public class UserAddressInfoServiceImpl implements UserAddressInfoService{
@@ -37,6 +38,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Override
     public List<UserAddressDto> addAddress(String token, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7, TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -67,6 +69,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Override
     public UserAddressDto updateAddress(String token, Integer addressId, String receiverName, String receiverPhone, String province, String city, String area, String address, String postCode, Integer type) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -93,6 +96,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Override
     public List<UserAddressDto> deleteAddress(String token, Integer addressId) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
@@ -115,6 +119,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Override
     public void defaultAddress(String token, Integer addressId) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");

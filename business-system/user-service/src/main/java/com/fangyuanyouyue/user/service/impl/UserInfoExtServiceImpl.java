@@ -14,6 +14,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.concurrent.TimeUnit;
+
 @Service(value = "userInfoExtService")
 public class UserInfoExtServiceImpl implements UserInfoExtService {
     @Value("${pic_server:errorPicServer}")
@@ -43,6 +45,7 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
     @Override
     public void certification(String token, String name, String identity, MultipartFile identityImgCover, MultipartFile identityImgBack) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7, TimeUnit.DAYS);
         IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(userId);
         if(identityAuthApply != null){
             if(identityAuthApply.getStatus() == 1){

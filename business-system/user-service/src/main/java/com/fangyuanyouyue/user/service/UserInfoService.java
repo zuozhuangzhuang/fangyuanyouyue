@@ -57,20 +57,12 @@ public interface UserInfoService {
     UserDto login(String phone,String logingPwd,Integer lastLoginPlatform) throws ServiceException;
 
     /**
-     * 三方注册
+     * 三方登录
      * @param param
-     * @return
-     */
-    UserDto thirdRegister(UserParam param) throws ServiceException;
-
-    /**
-     * 三方登陆
-     * @param unionId
-     * @param type
      * @return
      * @throws ServiceException
      */
-    UserDto thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException;
+    UserDto thirdLogin(UserParam param) throws ServiceException;
 
     /**
      * 三方绑定

@@ -1,7 +1,6 @@
 package com.fangyuanyouyue.user.service;
 
 import com.fangyuanyouyue.user.dto.UserAddressDto;
-import com.fangyuanyouyue.user.model.UserAddressInfo;
 import com.fangyuanyouyue.user.utils.ServiceException;
 
 import java.util.List;
@@ -58,4 +57,5 @@ public interface UserAddressInfoService {
      * @throws ServiceException
      */
     void defaultAddress(String token,Integer addressId) throws ServiceException;
+
 }

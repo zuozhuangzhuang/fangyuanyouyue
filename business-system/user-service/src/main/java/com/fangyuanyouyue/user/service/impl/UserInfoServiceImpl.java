@@ -1,24 +1,24 @@
 package com.fangyuanyouyue.user.service.impl;
 
 import com.fangyuanyouyue.user.dao.*;
-import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.*;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.service.UserInfoService;
 import com.fangyuanyouyue.user.utils.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service(value = "userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
-
+    protected Logger log = Logger.getLogger(this.getClass());
     @Autowired
     private UserInfoMapper userInfoMapper;
     @Autowired
@@ -88,9 +88,8 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setStatus(1);//状态 1正常 2冻结
         user.setGender(param.getGender());
         userInfoMapper.insert(user);
-        //生成用户token，存到Redis
-        String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-        redisTemplate.opsForValue().set(token,user.getId());
+        //设置用户token到Redis
+        String token = setToken("",user.getId());
         //用户扩展信息表
         UserInfoExt userInfoExt = new UserInfoExt();
         userInfoExt.setUserId(user.getId());
@@ -135,9 +134,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                 user.setLastLoginTime(DateStampUtils.getTimesteamp());
                 user.setLastLoginPlatform(lastLoginPlatform);
                 userInfoMapper.updateByPrimaryKey(user);
-                //登录时重新生成用户token，存到Redis
-                String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-                redisTemplate.opsForValue().set(token,user.getId());
+                //设置用户token到Redis
+                String token = setToken("",user.getId());
                 //TODO 注册通讯账户
                 //TODO 获取用户的相关信息：商品列表、钱包系统、好友列表
                 UserDto userDto = setUserDtoByInfo(token,user);
@@ -146,18 +144,28 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
+
     @Override
-    public UserDto thirdRegister(UserParam param)  throws ServiceException{
+    public UserDto thirdLogin(UserParam param) throws ServiceException {
+        //根据第三方唯一ID和类型获取第三方登录信息
         UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(param.getUnionId(),param.getType());
-        if(userThirdParty != null){
-            throw new ServiceException("用户已注册！");
-        }else{
+        if(userThirdParty == null){
+            log.info("三方注册");
+            //TODO 注册
             //初始化用户信息
             UserInfo user = new UserInfo();
-            user.setNickName(param.getThirdNickName());
+            if(StringUtils.isEmpty(param.getThirdNickName())){
+                throw new ServiceException("第三方账号昵称不能为空！");
+            }else{
+                user.setNickName(param.getThirdNickName());
+            }
             user.setHeadImgUrl(param.getThirdHeadImgUrl());
             user.setRegType(param.getRegType());
-            user.setRegPlatform(param.getRegPlatform());
+            if(param.getRegPlatform() == null){
+                throw new ServiceException("注册平台不能为空！");
+            }else{
+                user.setRegPlatform(param.getRegPlatform());
+            }
             user.setAddTime(DateStampUtils.getTimesteamp());
             user.setUpdateTime(DateStampUtils.getTimesteamp());
             user.setStatus(1);//状态 1正常 2冻结
@@ -165,9 +173,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                 user.setGender(param.getGender());
             }
             userInfoMapper.insert(user);
-            //生成用户token，存到Redis
-            String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-            redisTemplate.opsForValue().set(token,user.getId());
+            //设置用户token到Redis
+            String token = setToken("",user.getId());
             //初始化用户第三方登录信息
             userThirdParty = new UserThirdParty();
             userThirdParty.setUserId(user.getId());
@@ -197,25 +204,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 
             UserDto userDto = setUserDtoByInfo(token,user);
             return userDto;
-
-        }
-    }
-
-    @Override
-    public UserDto thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException {
-        //根据第三方唯一ID和类型获取第三方登录信息
-        UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(unionId,type);
-        if(userThirdParty == null){
-            throw new ServiceException("用户不存在！");
         }else{
             //TODO 记录用户登录时间，登录平台，最后一次登录
+            log.info("三方登录");
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
             userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
-            userInfo.setLastLoginPlatform(lastLoginPlatform);
+            userInfo.setLastLoginPlatform(param.getLoginPlatform());
             userInfoMapper.updateByPrimaryKey(userInfo);
-            //登录时重新生成用户token，存到Redis
-            String token = 10000+userInfo.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-            redisTemplate.opsForValue().set(token,userInfo.getId());
+            String token = setToken("",userInfo.getId());
             UserDto userDto = setUserDtoByInfo(token,userInfo);
             return userDto;
         }
@@ -224,22 +220,28 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserDto thirdBind(String token,String unionId,Integer type) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         //根据用户ID获取用户，生成新的三方登陆信息
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
         }else{
             UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(unionId,type);
+            //校验是否绑定三方账号
             if(userThirdParty != null){
                 if(userThirdParty.getUserId() == userId){
                     throw new ServiceException("请勿重复绑定！");
                 }else{
-                    throw new ServiceException("已绑定其他用户！");
+                    UserInfo user = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
+                    if(StringUtils.isEmpty(user.getPhone())){
+                        //TODO 是否合并
+                        throw new ServiceException("是否合并用户！");
+                    }else{
+                        throw new ServiceException("已绑定其他用户！");
+                    }
                 }
             }else{
                 userThirdParty.setUserId(userInfo.getId());
-    //            userThirdParty.setNickName(userInfo.getNickName());
-    //            userThirdParty.setHeadImgUrl(userInfo.getHeadImgUrl());
                 userThirdParty.setType(type);
                 userThirdParty.setUnionId(unionId);
                 userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
@@ -260,6 +262,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public void updatePwd(String token, String newPwd) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         updatePwd(newPwd, userInfo);
     }
@@ -267,6 +270,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserDto modify(UserParam param) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+        redisTemplate.expire(param.getToken(),7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -321,6 +325,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserDto updatePhone(String token, String phone) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("用户不存在！");
@@ -336,6 +341,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserDto accountMerge(String token, String phone) throws ServiceException {
         Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
             throw new ServiceException("第三方用户不存在！");
@@ -344,7 +350,8 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(userInfoByPhone == null){
                 throw new ServiceException("手机号用户不存在！");
             }else{
-                //TODO 合并余额、粉丝、关注、收藏、商品、收货地址、好友、会员时间、
+                //TODO 合并余额、粉丝、关注、收藏、商品、收货地址、好友、会员时间
+                //TODO 清除旧token
                 //第三方登录账号在未绑定手机号时拥有功能：
 
                 userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
@@ -470,11 +477,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(param.getGender() != null){
                 user.setGender(param.getGender());
             }
-
             userInfoMapper.insert(user);
-            //生成用户token，存到Redis
-            String token = 10000+user.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-            redisTemplate.opsForValue().set(token,user.getId());
+            //设置用户token到Redis
+            String token = setToken("",user.getId());
             //初始化用户第三方登录信息
             userThirdParty = new UserThirdParty();
             userThirdParty.setUserId(user.getId());
@@ -507,11 +512,11 @@ public class UserInfoServiceImpl implements UserInfoService {
             return userDto;
         }else{
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
+            userInfo.setLastLoginPlatform(3);//最后登录平台 1安卓 2IOS 3小程序
+            userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
             userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
-            //登录重新生成用户token，存到Redis
-            String token = 10000+userInfo.getId()+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
-            redisTemplate.opsForValue().set(token,userInfo.getId());
+            String token = setToken("",userInfo.getId());
             userThirdParty.setSessionKey(session_key);
             userThirdPartyMapper.updateByPrimaryKey(userThirdParty);
             UserDto userDto = setUserDtoByInfo(token,userInfo);
@@ -528,5 +533,25 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
             return userInfo;
         }
+    }
+
+    /**
+     * 设置token
+     * @param token
+     * @param userId
+     */
+    public String setToken(String token,Integer userId){
+        //生成用户token，存到Redis
+        token = 10000+userId+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
+        redisTemplate.opsForValue().set(token,userId);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
+        if(redisTemplate.opsForValue().get(userId) != null){
+            //更新userId:token的value，同时使旧token失效
+            redisTemplate.opsForValue().set(redisTemplate.opsForValue().get(userId),null);
+        }
+        //存入userId:token，用来在更新token时确保旧token失效，时效7天
+        redisTemplate.opsForValue().set(userId,token);
+        redisTemplate.expire(userId,7,TimeUnit.DAYS);
+        return token;
     }
 }

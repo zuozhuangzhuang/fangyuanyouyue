@@ -53,7 +53,8 @@ public class UserController extends BaseController {
     private SchedualGoodsService schedualGoodsService;//调用goods-service
     @Autowired
     private SchedualMessageService schedualMessageService;//message-service
-
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @ApiOperation(value = "注册", notes = "注册",response = ResultUtil.class)
     @ApiImplicitParams({
@@ -134,74 +135,33 @@ public class UserController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "三方注册", notes = "三方注册",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "unionId", value = "第三方唯一ID",required = true,  dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2iOS 3小程序",required = true,  dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博",required = true,  dataType = "int", paramType = "query")
-    })
-    @PostMapping(value = "/thirdRegister")
-    @ResponseBody
-    public String thirdRegister(UserParam param) throws IOException {
-        try {
-            log.info("----》三方注册《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getUnionId())){
-                return toError("第三方唯一ID不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getThirdNickName())){
-                return toError("第三方账号昵称不能为空！");
-            }
-            if(param.getRegType() == null){
-                return toError("注册来源不能为空！");
-            }
-            if(param.getRegPlatform() == null){
-                return toError("注册平台不能为空！");
-            }
-            if(param.getType() == null){
-                return toError("注册类型不能为空！");
-            }
-            //三方注册：先注册用户，再添加第三方登录信息
-            UserDto userDto = userInfoService.thirdRegister(param);
-            return toSuccess(userDto,"三方注册成功");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
-        }
-    }
 
-    @ApiOperation(value = "APP三方登录", notes = "APP三方登录",response = ResultUtil.class)
+    @ApiOperation(value = "APP三方注册/登录", notes = "APP三方注册/登录",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "regType", value = "注册来源 1app 2微信小程序",required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "thirdNickName", value = "第三方账号昵称", required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "thirdHeadImgUrl", value = "第三方账号头像地址",required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", required = true,dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "loginPlatform", value = "登录平台 1安卓 2iOS 3小程序",required = true,  dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2iOS 3小程序",required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query"),
     })
     @PostMapping(value = "/thirdLogin")
     @ResponseBody
     public String thirdLogin(UserParam param) throws IOException {
         try {
-            log.info("----》APP三方登录《----");
+            log.info("----》APP三方注册/登录《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getUnionId())){
                 return toError("第三方唯一ID不能为空！");
             }
             if(param.getType() == null){
-                return toError("注册类型不能为空！");
+                return toError("三方类型不能为空！");
             }
-            //APP三方登录
-            UserDto userDto = userInfoService.thirdLogin(param.getUnionId(),param.getType(),param.getLoginPlatform());
-            return toSuccess(userDto,"APP三方登录成功");
+            //APP三方注册/登录
+            param.setRegType(1);//注册来源 1app 2微信小程序
+            UserDto userDto = userInfoService.thirdLogin(param);
+            return toSuccess(userDto,"APP三方注册/登录成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
@@ -629,6 +589,7 @@ public class UserController extends BaseController {
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
             //TODO 设置默认收货地址
+            userAddressInfoService.defaultAddress(param.getToken(),param.getAddressId());
             return toSuccess("设置默认收货地址成功！");
 //        } catch (ServiceException e) {
 //            e.printStackTrace();
@@ -746,7 +707,6 @@ public class UserController extends BaseController {
             //根据返回值进行后续操作
             if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK){
                 String sessionData = responseEntity.getBody();
-                System.out.println("sessionData："+sessionData);
                 //解析从微信服务器获得的openid和session_key;
                 WeChatSession weChatSession = JSONObject.parseObject(sessionData,WeChatSession.class);
                 if(weChatSession == null){
@@ -756,12 +716,11 @@ public class UserController extends BaseController {
                 String openid = weChatSession.getOpenid();
                 //获取会话秘钥
                 String session_key = weChatSession.getSession_key();
-                System.out.println("session_key:"+session_key);
                 //TODO 正常情况只返回openID和session_key，注册过的用户会额外返回unionID
                 //微信用户的固定唯一识别号
                 String unionid = weChatSession.getUnionid();
                 if(StringUtils.isEmpty(unionid)){
-                    //新用户，去注册，根据算法解密得到unionID
+                    //获取不到unionId，根据算法解密得到unionID
                     // 被加密的数据
                     byte[] dataByte = Base64.decodeBase64(weChatSession.getEncryptedData());
                     // 加密秘钥
@@ -779,7 +738,7 @@ public class UserController extends BaseController {
                             JSONObject jsonObject = JSONObject.parseObject(newuserInfo);
                             unionid = jsonObject.getString("unionid");
                             param.setUnionId(unionid);
-                            UserDto userDto = userInfoService.thirdRegister(param);
+                            UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
                             return toSuccess(userDto,"小程序登录成功！");
                         }else{
                             return toError("解密异常!");
@@ -789,7 +748,7 @@ public class UserController extends BaseController {
                         return toError("解密异常!检查解密数据！");
                     }
                 }else{
-                    //已注册过，登录
+                    //获取到unionId，注册/登录
                     param.setUnionId(unionid);
                     UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
                     //最后要返回一个自定义的登录态,用来做后续数据传输的验证
@@ -854,7 +813,7 @@ public class UserController extends BaseController {
             log.info("code:"+code);
 
             redisTemplate.opsForValue().set(param.getPhone(),code);
-            redisTemplate.expire(param.getPhone(),60,TimeUnit.SECONDS);
+            redisTemplate.expire(param.getPhone(),1,TimeUnit.DAYS);
             return toSuccess("发送验证码成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -1100,27 +1059,5 @@ public class UserController extends BaseController {
         }
     }
 
-    @Autowired
-    protected RedisTemplate redisTemplate;
-
-    @ApiOperation(value = "测试redis", notes = "测试redis",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "userId", required = true, dataType = "int", paramType = "query")
-    })
-    @PostMapping(value = "/testRedis")
-    @ResponseBody
-    public String testRedis(Integer userId) throws IOException{
-        //从缓存中获取城市信息
-        log.info("测试redis");
-        String redisSet = "hello";
-        redisTemplate.opsForValue().set("redisSet",redisSet);
-        UserInfo user = new UserInfo();
-        user.setId(userId);
-        Object obj = redisTemplate.opsForValue().get("redisSet");
-        user.setNickName(obj.toString());
-        ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        log.info("operations:"+operations);
-        return toSuccess(user,"测试redis");
-    }
 
 }

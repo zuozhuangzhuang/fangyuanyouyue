@@ -11,10 +11,14 @@ public class UserParam{
 	//公用
 	@ApiModelProperty(name = "start", value = "起始页", dataType = "Integer",hidden = true)
 	private Integer start; // 起始页
+
 	@ApiModelProperty(name = "limit", value = "限制页", dataType = "Integer",hidden = true)
 	private Integer limit; // 限制页
+
 	@ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
 	private Integer type;//类型
+
+
 
 	//UserInfo
 	@ApiModelProperty(name = "phone", value = "手机号码", dataType = "String",hidden = true)
@@ -128,10 +132,15 @@ public class UserParam{
 	@ApiModelProperty(name = "loginPlatform", value = "最后登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
 	private Integer loginPlatform;//最后登录平台 1安卓 2IOS 3小程序
 
+
+
+	//小程序
 	@ApiModelProperty(name = "code", value = "微信获取的code", dataType = "String",hidden = true)
 	private String code;//微信获取的code
+
 	@ApiModelProperty(name = "encryptedData", value = "包括敏感数据在内的完整用户信息的加密数据", dataType = "String",hidden = true)
 	private String encryptedData;//包括敏感数据在内的完整用户信息的加密数据
+
 	@ApiModelProperty(name = "iv", value = "加密算法的初始向量", dataType = "String",hidden = true)
 	private String iv;//加密算法的初始向量
 
