@@ -129,8 +129,8 @@ public class UserParam{
 	@ApiModelProperty(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String",hidden = true)
 	private String thirdHeadImgUrl;//第三方账号头像地址
 
-	@ApiModelProperty(name = "loginPlatform", value = "最后登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
-	private Integer loginPlatform;//最后登录平台 1安卓 2IOS 3小程序
+	@ApiModelProperty(name = "loginPlatform", value = "登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
+	private Integer loginPlatform;//登录平台 1安卓 2IOS 3小程序
 
 
 
