@@ -2,6 +2,8 @@ package com.fangyuanyouyue.goods.service;
 
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
+import com.fangyuanyouyue.goods.dto.SearchDto;
+import com.fangyuanyouyue.goods.model.BannerIndex;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.utils.ServiceException;
@@ -61,4 +63,34 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     List<GoodsDto> similarGoods(Integer goodsId,Integer pageNum, Integer pageSize) throws ServiceException;
+
+    /**
+     * 获取首页轮播图
+     * @return
+     * @throws ServiceException
+     */
+    List<BannerIndex> getBanner() throws ServiceException;
+
+    /**
+     * 新增首页轮播图
+     * @param param
+     * @return
+     * @throws ServiceException
+     */
+    BannerIndex addBanner(GoodsParam param) throws ServiceException;
+
+    /**
+     * 修改首页轮播图
+     * @param param
+     * @return
+     * @throws ServiceException
+     */
+    BannerIndex updateBanner(GoodsParam param) throws ServiceException;
+
+    /**
+     * 热门搜索
+     * @return
+     * @throws ServiceException
+     */
+    List<SearchDto> hotSearch() throws ServiceException;
 }

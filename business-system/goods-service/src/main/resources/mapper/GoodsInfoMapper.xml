@@ -212,9 +212,10 @@
         and price <![CDATA[ <= ]]> #{priceMax,jdbcType=DECIMAL}
       </if>
       <if test="search != null and search != ''">
-        and name like "%"#{search}"%" or description like "%"#{search}"%"
+        and name like "%"#{search}"%" or description like "%"#{search}"%" or user_id in (select id from user_info where nick_name like "%"#{search}"%")
       </if>
     </where>
+    order by update_time
     <if test="synthesize != null">
       <if test="synthesize == 1">
 
@@ -223,10 +224,10 @@
 
       </if>
       <if test="synthesize == 3">
-        group by price
+        ,price
       </if>
       <if test="synthesize == 4">
-        group by price desc
+        ,price desc
       </if>
       <if test="quality != null">
         <if test="quality == 1">

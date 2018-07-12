@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
+import com.fangyuanyouyue.goods.dto.SearchDto;
 import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
@@ -34,6 +35,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     private GoodsCommentMapper goodsCommentMapperl;
     @Autowired
     private HotSearchMapper hotSearchMapper;
+    @Autowired
+    private BannerIndexMapper bannerIndexMapper;
     @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
     @Value("${pic_server:errorPicServer}")
@@ -89,13 +92,13 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     public GoodsDto addGoods(Integer userId,String nickName,GoodsParam param) throws ServiceException {
         //商品表 goods_info
         GoodsInfo goodsInfo = new GoodsInfo();
-        goodsInfo.setUserId(param.getUserId());
+        goodsInfo.setUserId(userId);
         goodsInfo.setName(param.getGoodsInfoName());
         goodsInfo.setDescription(param.getDescription());
         goodsInfo.setPrice(param.getPrice());
         goodsInfo.setPostage(param.getPostage());
         //排序：是否置顶
-        goodsInfo.setSort(param.getSort());
+//        goodsInfo.setSort(param.getSort());
         if(StringUtils.isNotEmpty(param.getLabel())){
             goodsInfo.setLabel(param.getLabel());
         }
@@ -137,7 +140,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(param.getFile6() != null){
             saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile6(),param.getType(),6);
         }
-
         return setDtoByGoodsInfo(goodsInfo);
     }
 
@@ -251,5 +253,64 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             }
             return goodsDtos;
         }
+    }
+
+    @Override
+    public List<BannerIndex> getBanner() throws ServiceException {
+        List<BannerIndex> banner = bannerIndexMapper.getBanner();
+        return banner;
+    }
+
+    @Override
+    public BannerIndex addBanner(GoodsParam param) throws ServiceException {
+        BannerIndex bannerIndex = new BannerIndex();
+        bannerIndex.setAddTime(DateStampUtils.getTimesteamp());
+        bannerIndex.setUpdateTime(DateStampUtils.getTimesteamp());
+        bannerIndex.setType(param.getType());
+        bannerIndex.setBusinessId(param.getBusinessId());
+        bannerIndex.setImgUrl(param.getImgUrl());
+        bannerIndex.setJumpType(param.getJumpType());
+        if(StringUtils.isNotEmpty(param.getTitle())){
+            bannerIndex.setTitle(param.getTitle());
+        }
+        if(param.getSort() != null){
+            bannerIndex.setSort(param.getSort());
+        }
+        bannerIndex.setStatus(0);//是否下架，0未下架 1下架
+        bannerIndexMapper.insert(bannerIndex);
+        return bannerIndex;
+    }
+
+    @Override
+    public BannerIndex updateBanner(GoodsParam param) throws ServiceException {
+        BannerIndex bannerIndex = bannerIndexMapper.selectByPrimaryKey(param.getBannerIndexId());
+        if(bannerIndex == null){
+            throw new ServiceException("获取轮播图失败！");
+        }else{
+            bannerIndex.setUpdateTime(DateStampUtils.getTimesteamp());
+            bannerIndex.setType(param.getType());
+            bannerIndex.setBusinessId(param.getBusinessId());
+            bannerIndex.setImgUrl(param.getImgUrl());
+            bannerIndex.setJumpType(param.getJumpType());
+            if(StringUtils.isNotEmpty(param.getTitle())){
+                bannerIndex.setTitle(param.getTitle());
+            }
+            if(param.getSort() != null){
+                bannerIndex.setSort(param.getSort());
+            }
+            if(param.getStatus() != null){
+                bannerIndex.setStatus(param.getStatus());
+            }
+            bannerIndexMapper.updateByPrimaryKey(bannerIndex);
+            return bannerIndex;
+        }
+    }
+
+    @Override
+    public List<SearchDto> hotSearch() throws ServiceException {
+        PageHelper.startPage(0,10);
+        List<HotSearch> hotSearchList = hotSearchMapper.getHotSearchList();
+        List<SearchDto> searchDtos = SearchDto.toDtoList(hotSearchList);
+        return searchDtos;
     }
 }
