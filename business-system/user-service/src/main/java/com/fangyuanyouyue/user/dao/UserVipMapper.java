@@ -17,5 +17,10 @@ public interface UserVipMapper {
 
     int updateByPrimaryKey(UserVip record);
 
+    /**
+     * 根据用户ID获取用户会员信息
+     * @param userId
+     * @return
+     */
     UserVip getUserVipByUserId(Integer userId);
 }
