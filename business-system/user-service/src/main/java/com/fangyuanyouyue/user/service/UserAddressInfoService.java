@@ -58,4 +58,11 @@ public interface UserAddressInfoService {
      */
     void defaultAddress(String token,Integer addressId) throws ServiceException;
 
+    /**
+     * 获取收货地址列表
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
+    List<UserAddressDto> getAddressList(String token,Integer addressId) throws ServiceException;
 }
