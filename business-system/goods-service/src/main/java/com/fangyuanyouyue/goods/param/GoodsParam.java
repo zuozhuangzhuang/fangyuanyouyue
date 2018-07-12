@@ -17,7 +17,7 @@ public class GoodsParam{
     private Integer limit; // 限制页
 
     @ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
-    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsCategory：1主图 2次图 goodsCategory：1普通 2热门
+    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsCategory：1主图 2次图 goodsCategory：1普通 2热门 bannerIndex：业务类型,0:商品 1：个人
 
     @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "int",hidden = true)
     private Integer goodsId;//商品id
@@ -139,7 +139,7 @@ public class GoodsParam{
     private Integer count;//数量
 
 
-    //查询
+    //条件查询
     @ApiModelProperty(name = "search", value = "搜索词条", dataType = "String",hidden = true)
     private String search;//搜索词条
 
@@ -154,6 +154,19 @@ public class GoodsParam{
 
     @ApiModelProperty(name = "quality", value = "品质", dataType = "int",hidden = true)
     private Integer quality;//品质 1：认证店铺 2：官方保真 3：高信誉度
+
+    //轮播图 BannerIndex
+    @ApiModelProperty(name = "bannerIndexId", value = "轮播图ID", dataType = "int",hidden = true)
+    private Integer bannerIndexId;//轮播图ID
+
+    @ApiModelProperty(name = "businessId", value = "业务ID:商品ID/用户ID", dataType = "int",hidden = true)
+    private Integer businessId;//业务ID:商品ID/用户ID
+
+    @ApiModelProperty(name = "jumpType", value = "跳转类型,0:商品 1：个人", dataType = "int",hidden = true)
+    private Integer jumpType;//跳转类型,0:商品 1：个人
+
+    @ApiModelProperty(name = "title", value = "描述标题", dataType = "String",hidden = true)
+    private String title;//描述标题
 
     public Integer getStart() {
         return start;
@@ -492,6 +505,38 @@ public class GoodsParam{
         this.quality = quality;
     }
 
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public Integer getJumpType() {
+        return jumpType;
+    }
+
+    public void setJumpType(Integer jumpType) {
+        this.jumpType = jumpType;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Integer getBannerIndexId() {
+        return bannerIndexId;
+    }
+
+    public void setBannerIndexId(Integer bannerIndexId) {
+        this.bannerIndexId = bannerIndexId;
+    }
+
     @Override
     public String toString() {
         return "GoodsParam{" +
@@ -537,6 +582,10 @@ public class GoodsParam{
                 ", priceMin=" + priceMin +
                 ", priceMax=" + priceMax +
                 ", quality=" + quality +
+                ", bannerIndexId=" + bannerIndexId +
+                ", businessId=" + businessId +
+                ", jumpType=" + jumpType +
+                ", title='" + title + '\'' +
                 '}';
     }
 }
