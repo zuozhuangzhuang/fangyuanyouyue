@@ -1,11 +1,9 @@
 package com.fangyuanyouyue.user.controller;
 
-import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.service.*;
 import com.fangyuanyouyue.user.utils.ReCode;
-import com.fangyuanyouyue.user.utils.Status;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -32,8 +30,6 @@ public class FeignController  extends BaseController {
     private UserInfoService userInfoService;
     @Autowired
     private UserInfoExtService userInfoExtService;
-    @Autowired
-    private UserExamineService userExamineService;
     @Autowired
     private UserAddressInfoService userAddressInfoService;
     @Autowired
