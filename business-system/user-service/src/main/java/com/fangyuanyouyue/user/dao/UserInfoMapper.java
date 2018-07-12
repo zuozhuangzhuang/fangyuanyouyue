@@ -4,6 +4,9 @@ import com.fangyuanyouyue.user.model.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+import java.util.Map;
+
 @Mapper
 public interface UserInfoMapper {
     int deleteByPrimaryKey(Integer id);
@@ -22,4 +25,5 @@ public interface UserInfoMapper {
 
     UserInfo getUserByNickName(String nickName);
 
+    List<Map<String,Object>> shopList(@Param("nickName") String nickName,@Param("start") Integer start,@Param("limit") Integer limit);
 }

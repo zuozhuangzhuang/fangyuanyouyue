@@ -1,9 +1,12 @@
 package com.fangyuanyouyue.user.service;
 
+import com.fangyuanyouyue.user.dto.ShopDto;
 import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.utils.ServiceException;
+
+import java.util.List;
 
 /**
  * 用户相关接口
@@ -132,4 +135,14 @@ public interface UserInfoService {
      * @throws ServiceException
      */
     UserInfo getUserByUnionId(String unionId,Integer type) throws ServiceException;
+
+    /**
+     * 获取个人店铺列表
+     * @param type
+     * @param start
+     * @param limit
+     * @return
+     * @throws ServiceException
+     */
+    List<ShopDto> shopList(String nickName,Integer type,Integer start,Integer limit) throws ServiceException;
 }

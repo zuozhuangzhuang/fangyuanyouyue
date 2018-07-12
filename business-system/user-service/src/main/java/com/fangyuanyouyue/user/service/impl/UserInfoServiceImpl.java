@@ -1,11 +1,16 @@
 package com.fangyuanyouyue.user.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.user.dao.*;
+import com.fangyuanyouyue.user.dto.ShopDto;
 import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.*;
 import com.fangyuanyouyue.user.param.UserParam;
+import com.fangyuanyouyue.user.service.SchedualGoodsService;
 import com.fangyuanyouyue.user.service.UserInfoService;
 import com.fangyuanyouyue.user.utils.*;
+import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +19,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service(value = "userInfoService")
@@ -32,9 +39,10 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private UserVipMapper userVipMapper;
     @Autowired
-    private UserExamineMapper userExamineMapper;
-    @Autowired
     protected RedisTemplate redisTemplate;
+
+    @Autowired
+    private SchedualGoodsService schedualGoodsService;
 
     @Value("${pic_server:errorPicServer}")
     private String PIC_SERVER;// 图片服务器
@@ -61,11 +69,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserInfo getUserByNickName(String nickName) throws ServiceException{
         UserInfo userInfo = userInfoMapper.getUserByNickName(nickName);
-        if(userInfo == null){
-            throw new ServiceException("用户不存在！");
-        }else{
-            return userInfo;
-        }
+        return userInfo;
     }
 
     @Override
@@ -84,6 +88,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         user.setUpdateTime(DateStampUtils.getTimesteamp());
         user.setPhone(param.getPhone());
         user.setLoginPwd(MD5Util.generate(MD5Util.MD5(param.getLoginPwd())));
+        //TODO 昵称筛选敏感字
         user.setNickName(param.getNickName());
         user.setStatus(1);//状态 1正常 2冻结
         user.setGender(param.getGender());
@@ -94,6 +99,8 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoExt userInfoExt = new UserInfoExt();
         userInfoExt.setUserId(user.getId());
         userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+        //TODO 信誉度待定
+        userInfoExt.setCredit(100);
         userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
         userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
         userInfoExtMapper.insert(userInfoExt);
@@ -157,15 +164,13 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(StringUtils.isEmpty(param.getThirdNickName())){
                 throw new ServiceException("第三方账号昵称不能为空！");
             }else{
-                user.setNickName(param.getThirdNickName());
+                //TODO 第三方昵称末尾加随机数
+                user.setNickName(param.getThirdNickName()+"-"+((int)(Math.random() * 9000) + 1000));
             }
             user.setHeadImgUrl(param.getThirdHeadImgUrl());
             user.setRegType(param.getRegType());
-            if(param.getRegPlatform() == null){
-                throw new ServiceException("注册平台不能为空！");
-            }else{
-                user.setRegPlatform(param.getRegPlatform());
-            }
+            user.setRegPlatform(param.getLoginPlatform());
+            user.setLastLoginPlatform(param.getLoginPlatform());
             user.setAddTime(DateStampUtils.getTimesteamp());
             user.setUpdateTime(DateStampUtils.getTimesteamp());
             user.setStatus(1);//状态 1正常 2冻结
@@ -189,6 +194,8 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserInfoExt userInfoExt = new UserInfoExt();
             userInfoExt.setUserId(user.getId());
             userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+            //TODO 信誉度待定
+            userInfoExt.setCredit(100);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
             userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
@@ -374,11 +381,10 @@ public class UserInfoServiceImpl implements UserInfoService {
         }else{
             UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(user.getId());
 //            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(user.getId());
-            UserThirdParty userThirdParty = userThirdPartyMapper.getUserThirdByUserId(user.getId());
+//            UserThirdParty userThirdParty = userThirdPartyMapper.getUserThirdByUserId(user.getId());
             UserVip userVip = userVipMapper.getUserVipByUserId(user.getId());
             IdentityAuthApply identityAuthApply = identityAuthApplyMapper.selectByUserId(user.getId());
-            UserExamine userExamine = userExamineMapper.getUserExamineByUserId(user.getId());
-            UserDto userDto = new UserDto(token,user,userVip,identityAuthApply,userInfoExt,userExamine,userThirdParty);
+            UserDto userDto = new UserDto(token,user,userVip,userInfoExt,identityAuthApply);
             return userDto;
         }
     }
@@ -467,7 +473,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             //TODO 如果用户为空，注册
             //初始化用户信息
             UserInfo user = new UserInfo();
-            user.setNickName(param.getThirdNickName());
+            user.setNickName(param.getThirdNickName()+"-"+((int)(Math.random() * 9000) + 1000));
             user.setHeadImgUrl(param.getThirdHeadImgUrl());
             user.setRegType(2);//注册来源 1app 2微信小程序
             user.setRegPlatform(3);//注册平台 1安卓 2iOS 3小程序
@@ -496,6 +502,8 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserInfoExt userInfoExt = new UserInfoExt();
             userInfoExt.setUserId(user.getId());
             userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+            //TODO 信誉度待定
+            userInfoExt.setCredit(100);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
             userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
@@ -553,5 +561,46 @@ public class UserInfoServiceImpl implements UserInfoService {
         redisTemplate.opsForValue().set(userId,token);
         redisTemplate.expire(userId,7,TimeUnit.DAYS);
         return token;
+    }
+
+    @Override
+    public List<ShopDto> shopList(String nickName,Integer type, Integer start, Integer limit) throws ServiceException {
+        //分页
+//        PageHelper.startPage(start,limit);
+        //TODO 个人店铺排序：1.会员等级 2.认证店铺 3.信誉度 4.发布商品时间
+        List<Map<String, Object>> maps = userInfoMapper.shopList(nickName,start,limit);
+        List<ShopDto> shopDtos = ShopDto.toDtoList(maps);
+        for(ShopDto shopDto:shopDtos){
+            //根据用户ID获取前三个商品
+            String goodsLists = schedualGoodsService.goodsList(shopDto.getUserId(), 0, 3);
+            System.out.println("goodsLists:"+goodsLists);
+            JSONObject jsonObject = JSONObject.parseObject(goodsLists);
+            System.out.println("jsonObject:"+jsonObject);
+            JSONArray goodsList = JSONArray.parseArray(jsonObject.getString("data"));
+            for(int i=0;i<goodsList.size();i++){
+                System.out.println("goods:"+goodsList.get(i));
+//            for(JSONArray goods:goodsList.toArray()){
+                JSONObject goods = JSONObject.parseObject(goodsList.get(i).toString());
+                if(i == 0){
+                    shopDto.setImgUrl1(goods.getString("mainUrl"));
+                }else if(i == 1){
+                    shopDto.setImgUrl2(goods.getString("mainUrl"));
+                }else if(i == 2){
+                    shopDto.setImgUrl3(goods.getString("mainUrl"));
+
+                }
+            }
+        }
+        return shopDtos;
+    }
+
+    public static void main(String[] args) {
+        SchedualGoodsService schedualGoodsService = new SchedualGoodsServiceImpl();
+        String goodsLists = schedualGoodsService.goodsList(16, 0, 3);
+        System.out.println("goodsLists:"+goodsLists);
+        JSONObject jsonObject = JSONObject.parseObject(goodsLists);
+        System.out.println("jsonObject:"+jsonObject);
+        JSONObject goodsList = JSONArray.parseObject(jsonObject.getString("data"));
+        System.out.println("goodsList:"+goodsList);
     }
 }
