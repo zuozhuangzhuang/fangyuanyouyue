@@ -38,8 +38,6 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
     @Autowired
     private UserVipMapper userVipMapper;
     @Autowired
-    private UserExamineMapper userExamineMapper;
-    @Autowired
     protected RedisTemplate redisTemplate;
 
     @Override
@@ -60,7 +58,8 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
             userInfoExt.setIdentity(identity);
             userInfoExt.setName(name);
             userInfoExt.setUserId(userId);
-            userInfoExt.setStatus(2);
+            userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
+            userInfoExt.setCredit(100);
             userInfoExtMapper.insert(userInfoExt);
 
             //实名认证申请表
@@ -68,7 +67,7 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
             identityAuthApply.setUpdateTime(DateStampUtils.getTimesteamp());
             identityAuthApply.setIdentity(identity);
             identityAuthApply.setName(name);
-            identityAuthApply.setStatus(1);
+            identityAuthApply.setStatus(1);//状态 1申请 2通过 3拒绝
             if(identityImgCover != null && !identityImgCover.equals("")){
                 String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
                 FileUtil util = new FileUtil();
