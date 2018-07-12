@@ -12,8 +12,6 @@ public class UserAddressDto {
     //UserAddressInfo
     private Integer userAddresId;//收货地址ID
 
-    private Integer userId;//用户id
-
     private String receiverName;//收货人
 
     private String receiverPhone;//收货人手机号码
@@ -36,7 +34,6 @@ public class UserAddressDto {
 
     public UserAddressDto(UserAddressInfo userAddressInfo) {
         this.userAddresId = userAddressInfo.getId();
-        this.userId = userAddressInfo.getUserId();
         this.receiverName = userAddressInfo.getReceiverName();
         this.receiverPhone = userAddressInfo.getReceiverPhone();
         this.province = userAddressInfo.getProvince();
@@ -63,14 +60,6 @@ public class UserAddressDto {
 
     public void setUserAddresId(Integer userAddresId) {
         this.userAddresId = userAddresId;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public String getReceiverName() {
