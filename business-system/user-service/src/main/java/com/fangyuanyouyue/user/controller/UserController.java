@@ -2,9 +2,9 @@ package com.fangyuanyouyue.user.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.user.client.BaseController;
+import com.fangyuanyouyue.user.dto.ShopDto;
 import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.dto.UserDto;
-import com.fangyuanyouyue.user.model.UserExamine;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.model.WeChatSession;
 import com.fangyuanyouyue.user.param.UserParam;
@@ -20,18 +20,17 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -45,8 +44,6 @@ public class UserController extends BaseController {
     private UserInfoService userInfoService;
     @Autowired
     private UserInfoExtService userInfoExtService;
-    @Autowired
-    private UserExamineService userExamineService;
     @Autowired
     private UserAddressInfoService userAddressInfoService;
     @Autowired
@@ -84,6 +81,10 @@ public class UserController extends BaseController {
             if (StringUtils.isEmpty(param.getNickName())) {
                 return toError(ReCode.FAILD.getValue(),"用户昵称不能为空！");
             }
+            UserInfo userInfoByName = userInfoService.getUserByNickName(param.getNickName());
+            if(userInfoByName != null){
+                return toError(ReCode.FAILD.getValue(),"用户昵称已存在！");
+            }
             UserInfo userInfo = userInfoService.getUserByPhone(param.getPhone());
             if (userInfo != null) {
                 return toError(ReCode.FAILD.getValue(),"手机号码已被注册！");
@@ -96,7 +97,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -131,7 +132,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -143,7 +144,6 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", required = true,dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "loginPlatform", value = "登录平台 1安卓 2iOS 3小程序",required = true,  dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "第三方唯一ID", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2iOS 3小程序",required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1微信 2QQ 3微博", required = true, dataType = "int", paramType = "query"),
     })
     @PostMapping(value = "/thirdLogin")
@@ -153,21 +153,21 @@ public class UserController extends BaseController {
             log.info("----》APP三方注册/登录《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getUnionId())){
-                return toError("第三方唯一ID不能为空！");
+                return toError(ReCode.FAILD.getValue(),"第三方唯一ID不能为空！");
             }
             if(param.getType() == null){
-                return toError("三方类型不能为空！");
+                return toError(ReCode.FAILD.getValue(),"三方类型不能为空！");
             }
             //APP三方注册/登录
             param.setRegType(1);//注册来源 1app 2微信小程序
             UserDto userDto = userInfoService.thirdLogin(param);
-            return toSuccess(userDto,"APP三方注册/登录成功");
+            return toSuccess(userDto,"APP三方登录成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -184,10 +184,10 @@ public class UserController extends BaseController {
             log.info("----》三方绑定《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getUnionId())){
-                return toError("三方识别号不能为空！");
+                return toError(ReCode.FAILD.getValue(),"三方识别号不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             //验证用户
             UserInfo user=userInfoService.getUserByToken(param.getToken());
@@ -207,7 +207,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -227,13 +227,13 @@ public class UserController extends BaseController {
             log.info("----》实名认证《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getName())){
-                return toError("用户真实姓名不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户真实姓名不能为空！");
             }
             if(StringUtils.isEmpty(param.getIdentity())){
-                return toError("用户身份照号码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户身份照号码不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -250,7 +250,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -276,7 +276,7 @@ public class UserController extends BaseController {
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 
@@ -303,7 +303,7 @@ public class UserController extends BaseController {
             log.info("----》完善资料《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -316,24 +316,20 @@ public class UserController extends BaseController {
             if(StringUtils.isNotEmpty(param.getPhone())){
                 UserInfo userByPhone = userInfoService.getUserByPhone(param.getPhone());
                 if(userByPhone != null){
-                    return toError("此手机号已被注册！");
+                    return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
                 }
             }
             //用户昵称不可以重复
             if(StringUtils.isNotEmpty(param.getNickName())){
                 UserInfo userByNickName = userInfoService.getUserByNickName(param.getNickName());
                 if(userByNickName != null){
-                    return toError("昵称已存在！");
+                    return toError(ReCode.FAILD.getValue(),"昵称已存在！");
                 }
                 if(!param.getNickName().equals(user.getNickName())) {//用户修改了昵称
-                    //查询此用户申请中的昵称
-                    //如果有正在审批昵称，不可以提交修改昵称 TODO 4.修改昵称需要审批
-                    UserExamine userExamine = userExamineService.getUserExamineByUserId(param.getToken());
-                    if(userExamine != null){
-                        if(userExamine.getStatus() == 0){
-                            return toError("此昵称已在申请中，请勿重复提交");
-                        }
-                    }
+                    //TODO 昵称筛选
+//                    if(param){
+//
+//                    }
                 }
             }
             //TODO 完善资料
@@ -344,7 +340,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -360,10 +356,10 @@ public class UserController extends BaseController {
             log.info("----》找回密码《----");
             log.info("参数："+param.getPhone()+"---"+param.getNewPwd());
             if(param.getPhone() == null){
-                return toError("用户手机不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户手机不能为空！");
             }
             if(StringUtils.isEmpty(param.getNewPwd())){
-                return toError("新密码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"新密码不能为空！");
             }
             //TODO 找回密码
             //修改密码
@@ -374,7 +370,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -391,7 +387,7 @@ public class UserController extends BaseController {
             log.info("----》修改密码《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -401,12 +397,12 @@ public class UserController extends BaseController {
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
             if(StringUtils.isEmpty(user.getPhone())){
-                return toError("第三方用户不可修改密码！");
+                return toError(ReCode.FAILD.getValue(),"第三方用户不可修改密码！");
             }
             //判断旧密码是否正确
 //            if(!MD5Util.MD5(param.getLoginPwd()).equals(user.getLoginPwd())){
             if(!MD5Util.verify(MD5Util.MD5(param.getLoginPwd()),user.getLoginPwd())){
-                return toError("旧密码不正确！");
+                return toError(ReCode.FAILD.getValue(),"旧密码不正确！");
             }
             //TODO 修改密码
             userInfoService.updatePwd(param.getToken(),param.getNewPwd());
@@ -416,7 +412,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -439,19 +435,19 @@ public class UserController extends BaseController {
             log.info("----》添加收货地址《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getReceiverName())){
-                return toError("收货人不能为空！");
+                return toError(ReCode.FAILD.getValue(),"收货人不能为空！");
             }
             if(StringUtils.isEmpty(param.getReceiverPhone())){
-                return toError("联系电话不能为空！");
+                return toError(ReCode.FAILD.getValue(),"联系电话不能为空！");
             }
             if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
-                return toError("省市区不能为空！");
+                return toError(ReCode.FAILD.getValue(),"省市区不能为空！");
             }
             if(StringUtils.isEmpty(param.getAddress())){
-                return toError("详细收货地址不能为空！");
+                return toError(ReCode.FAILD.getValue(),"详细收货地址不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -462,21 +458,21 @@ public class UserController extends BaseController {
             }
             //TODO 添加收货地址
             List<UserAddressDto> userAddressDtos = userAddressInfoService.addAddress(param.getToken(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
-            ResultUtil resultUtil = new ResultUtil(0,"请求成功",new Date(),userAddressDtos,"添加收货地址成功");
-            return toResult(resultUtil);
+            return toSuccess(userAddressDtos,"添加收货地址成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
+
 
     @ApiOperation(value = "修改收货地址", notes = "修改收货地址",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "addressId", value = "收货地址ID", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "receiverName", value = "收货人姓名", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
@@ -491,22 +487,22 @@ public class UserController extends BaseController {
             log.info("----》修改收货地址《----");
             log.info("参数："+param.toString());
             if(param.getAddressId()==null || param.getAddressId().intValue()==0){
-                return toError("收货地址ID不能为空！");
+                return toError(ReCode.FAILD.getValue(),"收货地址ID不能为空！");
             }
             if(StringUtils.isEmpty(param.getReceiverName())){
-                return toError("收货人不能为空！");
+                return toError(ReCode.FAILD.getValue(),"收货人不能为空！");
             }
             if(StringUtils.isEmpty(param.getReceiverPhone())){
-                return toError("联系电话不能为空！");
+                return toError(ReCode.FAILD.getValue(),"联系电话不能为空！");
             }
             if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
-                return toError("省市区不能为空！");
+                return toError(ReCode.FAILD.getValue(),"省市区不能为空！");
             }
             if(StringUtils.isEmpty(param.getAddress())){
-                return toError("详细收货地址不能为空！");
+                return toError(ReCode.FAILD.getValue(),"详细收货地址不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -523,7 +519,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -539,10 +535,10 @@ public class UserController extends BaseController {
             log.info("----》删除收货地址《----");
             log.info("参数："+param.toString());
             if(param.getAddressId()==null){
-                return toError("收货地址ID不能为空！");
+                return toError(ReCode.FAILD.getValue(),"收货地址ID不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user==null){
@@ -553,17 +549,48 @@ public class UserController extends BaseController {
             }
             //TODO 删除收货地址
             List<UserAddressDto> userAddressDtos = userAddressInfoService.deleteAddress(param.getToken(),param.getAddressId());
-            ResultUtil resultUtil = new ResultUtil(0,"请求成功",new Date(),userAddressDtos,"删除收货地址成功");
-            return toResult(resultUtil);
+            return toSuccess(userAddressDtos,"删除收货地址成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
+    @ApiOperation(value = "获取收货地址列表", notes = "获取收货地址列表",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "addressId", value = "地址id",dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/getAddressList")
+    @ResponseBody
+    public String getAddressList(UserParam param) throws IOException {
+        try {
+            log.info("----》获取收货地址列表《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            UserInfo user=userInfoService.getUserByToken(param.getToken());
+            if(user == null){
+                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
+            }
+            if(user.getStatus() == 2){
+                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
+            }
+            //TODO 获取收货地址列表
+            List<UserAddressDto> userAddressDtos = userAddressInfoService.getAddressList(param.getToken(),param.getAddressId());
+            return toSuccess(userAddressDtos,"获取收货地址列表成功");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
 
 
@@ -579,7 +606,7 @@ public class UserController extends BaseController {
             log.info("----》设置默认收货地址《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user = userInfoService.getUserByToken(param.getToken());
             if(user == null){
@@ -596,7 +623,7 @@ public class UserController extends BaseController {
 //            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -612,10 +639,10 @@ public class UserController extends BaseController {
             log.info("----》修改绑定手机《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getPhone())){
-                return toError("新的手机号码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"新的手机号码不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user == null){
@@ -626,12 +653,12 @@ public class UserController extends BaseController {
             }
             if(user.getPhone() != null && !user.getPhone().equals("")){
                 if(user.getPhone().equals(param.getPhone())){
-                    return toError("不能与旧手机号相同！");
+                    return toError(ReCode.FAILD.getValue(),"不能与旧手机号相同！");
                 }
             }
             UserInfo oldUser = userInfoService.getUserByPhone(param.getPhone());
             if(oldUser != null){
-                return toError("该手机已被其他帐号绑定，请不要重复绑定！");
+                return toError(ReCode.FAILD.getValue(),"该手机已被其他帐号绑定，请不要重复绑定！");
             }
             //TODO 修改绑定手机
             UserDto userDto = userInfoService.updatePhone(param.getToken(),param.getPhone());
@@ -641,7 +668,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -657,10 +684,10 @@ public class UserController extends BaseController {
             log.info("----》合并账号《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getPhone())){
-                return toError("手机号码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"手机号码不能为空！");
             }
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             UserInfo user=userInfoService.getUserByToken(param.getToken());
             if(user == null){
@@ -677,7 +704,7 @@ public class UserController extends BaseController {
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -741,11 +768,11 @@ public class UserController extends BaseController {
                             UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
                             return toSuccess(userDto,"小程序登录成功！");
                         }else{
-                            return toError("解密异常!");
+                            return toError(ReCode.FAILD.getValue(),"解密异常!");
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        return toError("解密异常!检查解密数据！");
+                        return toError(ReCode.FAILD.getValue(),"解密异常!检查解密数据！");
                     }
                 }else{
                     //获取到unionId，注册/登录
@@ -759,7 +786,7 @@ public class UserController extends BaseController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -782,18 +809,18 @@ public class UserController extends BaseController {
                 return toError(ReCode.FAILD.getValue(),"手机号码不能为空！");
             }
             if(param.getType() == null){
-                return toError("类型不能为空！");
+                return toError(ReCode.FAILD.getValue(),"类型不能为空！");
             }
             //验证用户
             //根据手机号获取用户，如果存在，则说明为旧手机号,调用user-service
             UserInfo userInfo=userInfoService.getUserByPhone(param.getPhone());
             if(PhoneCode.TYPE_REGIST.getCode() == param.getType()){//使用手机号注册新用户
                 if(userInfo != null){
-                    return toError("此手机号已被注册！");
+                    return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
                 }
             }else if(PhoneCode.TYPE_NEW_PHONE.getCode() == param.getType()){//TODO 未启用 绑定新手机
                 if(userInfo != null){
-                    return toError("此手机号已被注册！");
+                    return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
                 }
             }else if(PhoneCode.TYPE_OLD_PHONE.getCode() == param.getType()){//为3验证旧手机
                 if(userInfo != null){//已存在此手机号
@@ -804,7 +831,7 @@ public class UserController extends BaseController {
                 }
             }else{
 				/*if(count == 0){
-					return toError("此手机号尚未注册！");
+					return toError(ReCode.FAILD.getValue(),"此手机号尚未注册！");
 				}*/
             }
             //调用短信系统发送短信
@@ -817,7 +844,7 @@ public class UserController extends BaseController {
             return toSuccess("发送验证码成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -834,24 +861,53 @@ public class UserController extends BaseController {
             log.info("----》验证验证码《----");
             log.info("参数："+param.toString());
             if(StringUtils.isEmpty(param.getPhone())){
-                return toError("手机号码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"手机号码不能为空！");
             }
             if(StringUtils.isEmpty(param.getCode())){
-                return toError("验证码不能为空！");
+                return toError(ReCode.FAILD.getValue(),"验证码不能为空！");
             }
             String code = (String) redisTemplate.opsForValue().get(param.getPhone());
             log.info("验证码:1."+code+" 2."+param.getCode());
             if(StringUtils.isEmpty(code) || !code.equals(param.getCode())){
-                return toError("验证码错误！");
+                return toError(ReCode.FAILD.getValue(),"验证码错误！");
             }
 
 
             return toSuccess("验证验证码成功");
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
+
+    @ApiOperation(value = "获取个人店铺列表", notes = "获取个人店铺列表",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "nickName", value = "用户昵称", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "start", value = "起始页数", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "每页个数", required = true, dataType = "int", paramType = "query")
+    })
+    @GetMapping(value = "/shopList")
+    @ResponseBody
+    public String shopList(UserParam param) throws IOException {
+        try {
+            log.info("----》获取个人店铺列表《----");
+            log.info("参数："+param.toString());
+            if(param.getStart() == null){
+                return toError(ReCode.FAILD.getValue(),"起始页数不能为空！");
+            }
+            if(param.getLimit() == null){
+                return toError(ReCode.FAILD.getValue(),"每页个数不能为空！");
+            }
+
+            List<ShopDto> shopDtos = userInfoService.shopList(param.getNickName(),param.getType(), param.getStart(), param.getLimit());
+            return toSuccess(shopDtos,"获取个人店铺列表成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+
 //    @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
@@ -865,10 +921,10 @@ public class UserController extends BaseController {
 //            log.info("----》我的粉丝《----");
 //            log.info("参数："+param.toString());
 //            if(param.getStart()==null){
-//                return toError("分页start不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页start不能为空！");
 //            }
 //            if(param.getLimit()==null){
-//                return toError("分页limit不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页limit不能为空！");
 //            }
 //            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
 //            if(user==null){
@@ -882,7 +938,7 @@ public class UserController extends BaseController {
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //
@@ -900,7 +956,7 @@ public class UserController extends BaseController {
 //            log.info("----》添加关注/取消关注《----");
 //            log.info("参数："+param.toString());
 //            if(param.getUserId()==null || param.getUserId().intValue()==0){
-//                return toError("用户id不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"用户id不能为空！");
 //            }
 //            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
 //            if(user==null){
@@ -910,14 +966,14 @@ public class UserController extends BaseController {
 //                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 //            }
 //            if(user.getId().intValue()==param.getUserId().intValue()){
-//                return toError("不能关注自己");
+//                return toError(ReCode.FAILD.getValue(),"不能关注自己");
 //            }
 //            //TODO 添加/取消关注
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加/取消关注成功！");
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //
@@ -934,17 +990,17 @@ public class UserController extends BaseController {
 //            log.info("----》我的关注《----");
 //            log.info("参数："+param.toString());
 //            if(param.getStart()==null){
-//                return toError("分页start不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页start不能为空！");
 //            }
 //            if(param.getLimit()==null){
-//                return toError("分页limit不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页limit不能为空！");
 //            }
 //            //TODO 我的关注
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的关注列表成功！");
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //
@@ -961,10 +1017,10 @@ public class UserController extends BaseController {
 //            log.info("----》好友列表《----");
 //            log.info("参数："+param.toString());
 //            if(param.getStart()==null){
-//                return toError("分页start不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页start不能为空！");
 //            }
 //            if(param.getLimit()==null){
-//                return toError("分页limit不能为空！");
+//                return toError(ReCode.FAILD.getValue(),"分页limit不能为空！");
 //            }
 //            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
 //            if(user==null){
@@ -978,7 +1034,7 @@ public class UserController extends BaseController {
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //
@@ -1004,7 +1060,7 @@ public class UserController extends BaseController {
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 
