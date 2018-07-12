@@ -93,4 +93,7 @@
   <select id="selectByName" parameterType="String" resultMap="BaseResultMap">
     select * from hot_search where name = #{name,jdbcType=VARCHAR}
   </select>
+  <select id="getHotSearchList" resultMap="BaseResultMap">
+    select * from hot_search order by count desc
+  </select>
 </mapper>
