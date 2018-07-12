@@ -31,8 +31,6 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Autowired
     private UserVipMapper userVipMapper;
     @Autowired
-    private UserExamineMapper userExamineMapper;
-    @Autowired
     protected RedisTemplate redisTemplate;
 
     @Override
@@ -57,11 +55,8 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 userAddressInfo.setType(type);
             }
             userAddressInfoMapper.insert(userAddressInfo);
-            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-            List<UserAddressDto> userAddressDtos = new ArrayList<>();
-            for(UserAddressInfo userAddress:userAddressInfos){
-                userAddressDtos.add(new UserAddressDto(userAddressInfo));
-            }
+            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId,null);
+            List<UserAddressDto> userAddressDtos = UserAddressDto.toDtoList(userAddressInfos);
             return userAddressDtos;
         }
     }
@@ -106,11 +101,8 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
                 throw new ServiceException("收货地址有误！");
             }else{
                 userAddressInfoMapper.deleteByPrimaryKey(addressId);
-                List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId);
-                List<UserAddressDto> userAddressDtos = new ArrayList<>();
-                for(UserAddressInfo userAddress:userAddressInfos){
-                    userAddressDtos.add(new UserAddressDto(userAddressInfo));
-                }
+                List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId,null);
+                List<UserAddressDto> userAddressDtos = UserAddressDto.toDtoList(userAddressInfos);
                 return userAddressDtos;
             }
         }
@@ -126,9 +118,11 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
         }else{
             //TODO 取消旧默认地址
             UserAddressInfo defaultAddress = userAddressInfoMapper.selectDefaultAddressByUserId(userId);
-            defaultAddress.setType(Integer.valueOf(Status.OTHER.getValue()));
-            defaultAddress.setUpdateTime(DateStampUtils.getTimesteamp());
-            userAddressInfoMapper.updateByPrimaryKey(defaultAddress);
+            if(defaultAddress != null){
+                defaultAddress.setType(Integer.valueOf(Status.OTHER.getValue()));
+                defaultAddress.setUpdateTime(DateStampUtils.getTimesteamp());
+                userAddressInfoMapper.updateByPrimaryKey(defaultAddress);
+            }
             //TODO 设置新默认地址
             UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
             if(userAddressInfo == null){
@@ -140,4 +134,19 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
         }
     }
 
+    @Override
+    public List<UserAddressDto> getAddressList(String token,Integer addressId) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(userId,addressId);
+            if(addressId != null && userAddressInfos.size() == 0){
+                throw new ServiceException("收货地址有误！");
+            }
+            return UserAddressDto.toDtoList(userAddressInfos);
+        }
+    }
 }
