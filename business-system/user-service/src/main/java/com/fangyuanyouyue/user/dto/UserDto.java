@@ -33,49 +33,9 @@ public class UserDto {
 
     private String levelDesc;//等级描述
 
-
-    //UserExamine
-//    private String oldNickname;//申请前昵称
-//
-//    private String newNickname;//待审核昵称
-//
-//    private Integer examineStatus;//审核状态 0申请中 1申请通过 2已拒绝
-
-    //UserInfoExt 用户扩展表
-    private String identity;//身份证号码
-
-    private String name;//真实姓名
-
     private Integer extStatus;//实名登记状态 1已实名 2未实名
 
-    /* ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ */
-    //IdentityAuthApply
-    private String identityImgCover;//身份证封面图
-
-    private String identityImgBack;//身份证背面
-
-    private String identityRejectDesc;//拒绝原因
-
     private Integer identityStatus;//实名认证状态 1申请 2通过 3拒绝
-
-
-
-    //UserThirdParty
-    private Integer thirdType;//类型 1微信 2QQ 3微博
-
-    private String unionId;//第三方唯一ID
-
-    private String appOpenId;//微信app openid
-
-    private String mpOpenId;//公众号openid
-
-    private String miniOpenId;//小程序openid
-
-    private String thirdNickName;//第三方账号昵称
-
-    private String thirdHeadImgUrl;//第三方账号头像地址
-
-
 
     //UserVip
     private Integer vipLevel;//会员等级
@@ -86,13 +46,46 @@ public class UserDto {
 
     private Integer vipStatus;//会员状态1已开通 2未开通
 
+    /**
+     * ↓↓↓↓↓↓↓注释掉不需要返回的属性↓↓↓↓↓↓↓
+     */
+
+    //IdentityAuthApply
+//    private String identityImgCover;//身份证封面图
+
+//    private String identityImgBack;//身份证背面
+
+//    private String identityRejectDesc;//拒绝原因
+
+
+
+    //UserThirdParty
+//    private Integer thirdType;//类型 1微信 2QQ 3微博
+
+//    private String unionId;//第三方唯一ID
+
+//    private String appOpenId;//微信app openid
+
+//    private String mpOpenId;//公众号openid
+
+//    private String miniOpenId;//小程序openid
+
+    //UserInfoExt 用户扩展表
+//    private String identity;//身份证号码
+
+//    private String name;//真实姓名
+
     //UserAddressDto
 //    private List<UserAddressDto> userAddressDtos;//用户收货地址
+
+    /**
+     * ↑↑↑↑↑↑注释掉不需要返回的属性↑↑↑↑↑↑
+     */
 
     public UserDto() {
     }
 
-    public UserDto(String token,UserInfo userInfo, UserVip userVip, IdentityAuthApply identityAuthApply, UserInfoExt userInfoExt, UserExamine userExamine,UserThirdParty userThirdParty) {
+    public UserDto(String token,UserInfo userInfo, UserVip userVip, UserInfoExt userInfoExt,IdentityAuthApply identityAuthApply) {
         if(token != null && !token.equals("")){
             this.token = token;
         }
@@ -116,23 +109,21 @@ public class UserDto {
         }
         //IdentityAuthApply
         if(identityAuthApply != null){
-            this.identity = identityAuthApply.getIdentity();
-            this.name = identityAuthApply.getName();
-            this.identityImgCover = identityAuthApply.getIdentityImgCover();
-            this.identityImgBack = identityAuthApply.getIdentityImgBack();
-            this.identityRejectDesc = identityAuthApply.getRejectDesc();
+//            this.identity = identityAuthApply.getIdentity();
+//            this.name = identityAuthApply.getName();
+//            this.identityImgCover = identityAuthApply.getIdentityImgCover();
+//            this.identityImgBack = identityAuthApply.getIdentityImgBack();
+//            this.identityRejectDesc = identityAuthApply.getRejectDesc();
             this.identityStatus = identityAuthApply.getStatus();
         }
         //UserThirdParty
-        if(userThirdParty != null){
-            this.thirdType = userThirdParty.getType();
-            this.unionId = userThirdParty.getUnionId();
-            this.appOpenId = userThirdParty.getAppOpenId();
-            this.mpOpenId = userThirdParty.getMpOpenId();
-            this.miniOpenId = userThirdParty.getMiniOpenId();
-            this.thirdNickName = userThirdParty.getNickName();
-            this.thirdHeadImgUrl = userThirdParty.getHeadImgUrl();
-        }
+//        if(userThirdParty != null){
+//            this.thirdType = userThirdParty.getType();
+//            this.unionId = userThirdParty.getUnionId();
+//            this.appOpenId = userThirdParty.getAppOpenId();
+//            this.mpOpenId = userThirdParty.getMpOpenId();
+//            this.miniOpenId = userThirdParty.getMiniOpenId();
+//        }
         //UserVip
         if(userVip != null){
             this.vipLevel = userVip.getVipLevel();
@@ -140,12 +131,6 @@ public class UserDto {
             this.vipType = userVip.getVipType();
             this.vipStatus = userVip.getStatus();
         }
-        //UserExamine
-//        if(userExamine != null ){
-//            this.oldNickname = userExamine.getOldNickname();
-//            this.newNickname = userExamine.getNewNickname();
-//            this.examineStatus = userExamine.getStatus();
-//        }
         //UserAddressInfo
 //        if(userAddressInfos != null && userAddressInfos.size()>0){
 //            this.userAddressDtos = UserAddressDto.toDtoList(userAddressInfos);
@@ -248,84 +233,12 @@ public class UserDto {
         this.levelDesc = levelDesc;
     }
 
-    public String getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(String identity) {
-        this.identity = identity;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getExtStatus() {
         return extStatus;
     }
 
     public void setExtStatus(Integer extStatus) {
         this.extStatus = extStatus;
-    }
-
-    public Integer getThirdType() {
-        return thirdType;
-    }
-
-    public void setThirdType(Integer thirdType) {
-        this.thirdType = thirdType;
-    }
-
-    public String getUnionId() {
-        return unionId;
-    }
-
-    public void setUnionId(String unionId) {
-        this.unionId = unionId;
-    }
-
-    public String getAppOpenId() {
-        return appOpenId;
-    }
-
-    public void setAppOpenId(String appOpenId) {
-        this.appOpenId = appOpenId;
-    }
-
-    public String getMpOpenId() {
-        return mpOpenId;
-    }
-
-    public void setMpOpenId(String mpOpenId) {
-        this.mpOpenId = mpOpenId;
-    }
-
-    public String getMiniOpenId() {
-        return miniOpenId;
-    }
-
-    public void setMiniOpenId(String miniOpenId) {
-        this.miniOpenId = miniOpenId;
-    }
-
-    public String getThirdNickName() {
-        return thirdNickName;
-    }
-
-    public void setThirdNickName(String thirdNickName) {
-        this.thirdNickName = thirdNickName;
-    }
-
-    public String getThirdHeadImgUrl() {
-        return thirdHeadImgUrl;
-    }
-
-    public void setThirdHeadImgUrl(String thirdHeadImgUrl) {
-        this.thirdHeadImgUrl = thirdHeadImgUrl;
     }
 
     public Integer getVipLevel() {
@@ -360,30 +273,6 @@ public class UserDto {
         this.vipStatus = vipStatus;
     }
 
-    public String getIdentityImgCover() {
-        return identityImgCover;
-    }
-
-    public void setIdentityImgCover(String identityImgCover) {
-        this.identityImgCover = identityImgCover;
-    }
-
-    public String getIdentityImgBack() {
-        return identityImgBack;
-    }
-
-    public void setIdentityImgBack(String identityImgBack) {
-        this.identityImgBack = identityImgBack;
-    }
-
-    public String getIdentityRejectDesc() {
-        return identityRejectDesc;
-    }
-
-    public void setIdentityRejectDesc(String identityRejectDesc) {
-        this.identityRejectDesc = identityRejectDesc;
-    }
-
     public Integer getIdentityStatus() {
         return identityStatus;
     }
@@ -391,5 +280,4 @@ public class UserDto {
     public void setIdentityStatus(Integer identityStatus) {
         this.identityStatus = identityStatus;
     }
-
 }
