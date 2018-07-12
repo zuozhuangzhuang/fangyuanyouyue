@@ -187,7 +187,7 @@ public class UserControllerTest {
 //                .file(new MockMultipartFile("bgImg", "E:\\pic\\2.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
                 .file(new MockMultipartFile("headImg",headImg))
                 .file(new MockMultipartFile("bgImg",bgImg))
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("phone","18103966057")
                 .param("email","zuozhuang_zzz@163.com")
                 .param("nickName","偷看看哟")
@@ -225,7 +225,7 @@ public class UserControllerTest {
     @Transactional
     public void updatePwd() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updatePwd")
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("loginPwd","123456")
                 .param("newPwd","654321")
                 .accept(MediaType.APPLICATION_JSON))
@@ -241,7 +241,7 @@ public class UserControllerTest {
     @Transactional
     public void addAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/addAddress")
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("receiverName","左壮壮")
                 .param("receiverPhone","18103966057")
                 .param("province","广东省")
@@ -263,7 +263,7 @@ public class UserControllerTest {
     @Transactional
     public void updateAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updateAddress")
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("addressId","1")
                 .param("receiverName","左壮壮")
                 .param("receiverPhone","18103966057")
@@ -285,13 +285,27 @@ public class UserControllerTest {
     @Transactional
     public void deleteAddress() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/deleteAddress")
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("addressId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
+    /**
+     * 获取收货地址列表
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void getAddressList() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/getAddressList")
+                .param("token","10014FY1531254449019")
+                .param("addressId","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
 
     /**
      * 设置默认收货地址
@@ -324,6 +338,21 @@ public class UserControllerTest {
                 .andReturn();
     }
 
+    /**
+     * 获取个人店铺列表
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void shopList() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/user/shopList")
+//                .param("nickName","佛")
+                .param("start","0")
+                .param("limit","10")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
 
 //
 //    /**
