@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.client.BaseController;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
+import com.fangyuanyouyue.goods.dto.SearchDto;
+import com.fangyuanyouyue.goods.model.BannerIndex;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
@@ -60,10 +62,10 @@ public class GoodsController extends BaseController{
             log.info("----》获取商品列表《----");
             log.info("参数：" + param.toString());
             if(param.getStart() == null){
-                return toError("起始页不能为空！");
+                return toError(ReCode.FAILD.getValue(),"起始页数不能为空！");
             }
             if(param.getLimit() == null){
-                return toError("限制页不能为空！");
+                return toError(ReCode.FAILD.getValue(),"每页个数不能为空！");
             }
             if(StringUtils.isNotEmpty(param.getToken())){//如果token不为空，则是我的商品
                 //根据用户token获取userId
@@ -83,7 +85,7 @@ public class GoodsController extends BaseController{
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -95,7 +97,7 @@ public class GoodsController extends BaseController{
             @ApiImplicitParam(name = "description", value = "商品描述(详情)", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "price", value = "商品价格", required = true, dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "postage", value = "运费", required = true, dataType = "BigDecimal", paramType = "query"),
-            @ApiImplicitParam(name = "sort", value = "排序", required = true, dataType = "int", paramType = "query"),
+//            @ApiImplicitParam(name = "sort", value = "排序", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "label", value = "标签", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1普通商品 2秒杀商品", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "status", value = "状态 普通商品 1出售中 2 已售出 5删除", required = true, dataType = "int", paramType = "query"),
@@ -114,7 +116,7 @@ public class GoodsController extends BaseController{
             log.info("参数："+param.toString());
             //验证用户
             if(StringUtils.isEmpty(param.getToken())){
-                return toError("用户token不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
             Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
             String verifyUser = schedualUserService.verifyUserById(userId);
@@ -124,16 +126,16 @@ public class GoodsController extends BaseController{
             }
             JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(StringUtils.isEmpty(param.getGoodsInfoName())){
-                return toError("商品名称不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品名称不能为空！");
             }
             if(param.getGoodsCategoryIds().length<1){
-                return toError("商品分类不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品分类不能为空！");
             }
             if(StringUtils.isEmpty(param.getDescription())){
-                return toError("商品详情不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品详情不能为空！");
             }
             if(param.getPrice()==null){
-                return toError("商品价格不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品价格不能为空！");
             }
             if(param.getPostage() == null){
                 return  toError("商品运费不能为空！");
@@ -151,7 +153,7 @@ public class GoodsController extends BaseController{
             return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -169,34 +171,37 @@ public class GoodsController extends BaseController{
             log.info("参数："+param.toString());
             //验证用户
             if(param.getUserId() == null){
-                return toError("用户id不能为空！");
+                return toError(ReCode.FAILD.getValue(),"用户id不能为空！");
             }
             String verifyUser = schedualUserService.verifyUserById(param.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(user==null){
-                return toError("登录超时，请重新登录！");
+                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
             }
             if((int)user.get("status") == 2){
-                return toError("您的账号已被冻结，请联系管理员！");
+                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
             if(param.getGoodsInfoIds().length<1){
-                return toError("商品ID不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品ID不能为空！");
             }
             for(Integer goodsId:param.getGoodsInfoIds()){
                 //TODO 依次查询商品是否有未完成订单，有订单则不能删
                 GoodsInfo goodsInfo = goodsInfoService.selectByPrimaryKey(goodsId);
                 if(false){
 
-                    return toError("商品"+goodsInfo.getName()+"存在未完成订单，请勿删除！");
+                    return toError(ReCode.FAILD.getValue(),"商品"+goodsInfo.getName()+"存在未完成订单，请勿删除！");
                 }
             }
             //TODO 批量删除商品
             goodsInfoService.deleteGoods(param.getGoodsInfoIds());
             return toSuccess("批量删除商品成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -212,7 +217,7 @@ public class GoodsController extends BaseController{
             return toSuccess(categoryDtos,"获取分类列表成功！");
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -230,21 +235,24 @@ public class GoodsController extends BaseController{
             log.info("----》同类推荐《----");
             log.info("参数："+param.toString());
             if(param.getGoodsId() == null){
-                return toError(1,"商品id不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
             }
             if(param.getStart() == null){
-                return toError(1,"start不能为空！");
+                return toError(ReCode.FAILD.getValue(),"start不能为空！");
             }
             if(param.getLimit() == null){
-                return toError(1,"limit不能为空！");
+                return toError(ReCode.FAILD.getValue(),"limit不能为空！");
             }
             //TODO 同类推荐
             List<GoodsDto> goodsDtos = goodsInfoService.similarGoods(param.getGoodsId(),param.getStart(),param.getLimit());
 
             return toSuccess(goodsDtos,"同类推荐成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
@@ -261,17 +269,167 @@ public class GoodsController extends BaseController{
             log.info("参数："+param.toString());
 
             if(param.getGoodsId() == null){
-                return toError(1,"商品id不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
             }
             //TODO 商品详情
             GoodsDto goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
 
             return toSuccess(goodsDto,"商品详情成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            return toError("系统繁忙，请稍后再试！");
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
+
+    //获取首页轮播图
+    @ApiOperation(value = "获取首页轮播图", notes = "获取首页轮播图",response = ResultUtil.class)
+    @GetMapping(value = "/getBanner")
+    @ResponseBody
+    public String getBanner() throws IOException{
+        try {
+            log.info("----》获取首页轮播图《----");
+            //TODO 获取首页轮播图
+            List<BannerIndex> banner = goodsInfoService.getBanner();
+
+            return toSuccess(banner,"获取首页轮播图成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+    //新增首页轮播图
+    @ApiOperation(value = "新增首页轮播图", notes = "新增首页轮播图",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "businessId", value = "业务ID:商品ID/用户ID", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "jumpType", value = "跳转类型,0:商品 1：个人", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "业务类型,0:商品 1：个人", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "title", value = "描述标题", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "imgUrl", value = "图片地址", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sort", value = "排序", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "是否下架，0未下架 1下架", required = true, dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/addBanner")
+    @ResponseBody
+    public String addBanner(GoodsParam param) throws IOException{
+        try {
+            log.info("----》新增首页轮播图《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getImgUrl())){
+                return toError(ReCode.FAILD.getValue(),"图片地址不能为空！");
+            }
+            if(param.getBusinessId() == null){
+                return toError(ReCode.FAILD.getValue(),"业务ID不能为空！");
+            }
+            if(param.getType() == null){
+                return toError(ReCode.FAILD.getValue(),"业务类型不能为空！");
+            }
+            if(param.getJumpType() == null){
+                return toError(ReCode.FAILD.getValue(),"跳转类型不能为空！");
+
+            }
+            //TODO 新增首页轮播图
+            BannerIndex banner = goodsInfoService.addBanner(param);
+
+            return toSuccess(banner,"新增首页轮播图成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+    //修改首页轮播图
+    @ApiOperation(value = "修改首页轮播图", notes = "修改首页轮播图",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bannerIndexId", value = "轮播图ID", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "businessId", value = "业务ID:商品ID/用户ID", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "jumpType", value = "跳转类型,0:商品 1：个人", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "业务类型,0:商品 1：个人", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "title", value = "描述标题", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "imgUrl", value = "图片地址", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "sort", value = "排序", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "是否下架，0未下架 1下架", dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/updateBanner")
+    @ResponseBody
+    public String updateBanner(GoodsParam param) throws IOException{
+        try {
+            log.info("----》修改首页轮播图《----");
+            log.info("参数：" + param.toString());
+            if (param.getBannerIndexId() == null) {
+                return toError(ReCode.FAILD.getValue(), "轮播图ID不能为空！");
+            }
+            if (StringUtils.isEmpty(param.getImgUrl())) {
+                return toError(ReCode.FAILD.getValue(), "图片地址不能为空！");
+            }
+            if (param.getBusinessId() == null) {
+                return toError(ReCode.FAILD.getValue(), "业务ID不能为空！");
+            }
+            if (param.getType() == null) {
+                return toError(ReCode.FAILD.getValue(), "业务类型不能为空！");
+            }
+            if (param.getJumpType() == null) {
+                return toError(ReCode.FAILD.getValue(), "跳转类型不能为空！");
+
+            }
+            //TODO 修改首页轮播图
+            BannerIndex banner = goodsInfoService.updateBanner(param);
+
+            return toSuccess(banner, "修改首页轮播图成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+
+    //热门搜索
+    @ApiOperation(value = "热门搜索", notes = "热门搜索",response = ResultUtil.class)
+    @GetMapping(value = "/hotSearch")
+    @ResponseBody
+    public String hotSearch() throws IOException{
+        try {
+            log.info("----》热门搜索《----");
+            //TODO 热门搜索
+            List<SearchDto> searchDtos = goodsInfoService.hotSearch();
+            return toSuccess(searchDtos, "获取热门搜索成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+    //TODO 购物车：1.添加商品到购物车 2.查看购物车内商品列表 3.根据店铺区分购物车内商品 4.删除购物车里的商品
+    //添加商品到购物车
+    @ApiOperation(value = "添加商品到购物车", notes = "添加商品到购物车",response = ResultUtil.class)
+    @GetMapping(value = "/hotSearch")
+    @ResponseBody
+    public String addGoodsToCart() throws IOException{
+        try {
+            log.info("----》添加商品到购物车《----");
+            //TODO 添加商品到购物车 返回购物车列表
+            return toSuccess( "添加商品到购物车成功！");
+//        } catch (ServiceException e) {
+//            e.printStackTrace();
+//            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
 
 //
 //    //我的商品
@@ -307,7 +465,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 
@@ -346,7 +504,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //    //我的收藏
@@ -382,7 +540,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //    //他的商品
@@ -418,7 +576,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //    //商品鉴定申请
@@ -457,7 +615,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //    //我的鉴定列表
@@ -492,7 +650,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 //
@@ -538,7 +696,7 @@ public class GoodsController extends BaseController{
 //            return toResult(result);
 //        } catch (Exception e) {
 //            e.printStackTrace();
-//            return toError("系统繁忙，请稍后再试！");
+//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
 //        }
 //    }
 
