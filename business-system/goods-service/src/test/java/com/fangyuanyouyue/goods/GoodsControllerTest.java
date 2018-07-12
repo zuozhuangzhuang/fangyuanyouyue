@@ -49,10 +49,10 @@ public class GoodsControllerTest {
 //                .param("status","1")
                 .param("start","0")
                 .param("limit","10")
-                .param("search","小宝")
+//                .param("search","")
                 .param("synthesize","3")
-                .param("priceMin","10")
-                .param("priceMax","1000")
+//                .param("priceMin","10")
+//                .param("priceMax","1000")
 //                .param("quality","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -159,6 +159,19 @@ public class GoodsControllerTest {
                 .param("goodsId","6")
                 .param("start","0")
                 .param("limit","10")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 热门搜索
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void hotSearch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/hotSearch")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
