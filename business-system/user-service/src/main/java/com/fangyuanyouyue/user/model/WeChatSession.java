@@ -1,5 +1,8 @@
 package com.fangyuanyouyue.user.model;
 
+/**
+ * 微信小程序相关信息
+ */
 public class WeChatSession {
     public static final long serialVersionUID = 1L;
     public static final String APPID = "wx69860c142cdc5391";
