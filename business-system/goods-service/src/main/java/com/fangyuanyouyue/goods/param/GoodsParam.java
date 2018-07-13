@@ -2,7 +2,6 @@ package com.fangyuanyouyue.goods.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -17,13 +16,16 @@ public class GoodsParam{
     private Integer limit; // 限制页
 
     @ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
-    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsCategory：1主图 2次图 goodsCategory：1普通 2热门 bannerIndex：业务类型,0:商品 1：个人
+    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsImg：1主图 2次图 goodsCategory：1普通 2热门 bannerIndex：业务类型,0:商品 1：个人
 
     @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "int",hidden = true)
     private Integer goodsId;//商品id
 
     @ApiModelProperty(name = "imgUrl", value = "图片地址", dataType = "String",hidden = true)
     private String imgUrl;//图片地址
+
+    @ApiModelProperty(name = "imgUrls", value = "图片地址数组", dataType = "String",hidden = true)
+    private String[] imgUrls;//图片地址数组
 
     @ApiModelProperty(name = "price", value = "价格", dataType = "BigDecimal",hidden = true)
     private BigDecimal price;//价格
@@ -63,23 +65,23 @@ public class GoodsParam{
     @ApiModelProperty(name = "goodsImgId", value = "商品图片表ID", dataType = "int",hidden = true)
     private Integer goodsImgId;//商品图片表ID
 
-    @ApiModelProperty(name = "file1", value = "图片文件1", dataType = "file",hidden = true)
-    private MultipartFile file1;//图片文件1
-
-    @ApiModelProperty(name = "file2", value = "图片文件2", dataType = "file",hidden = true)
-    private MultipartFile file2;
-
-    @ApiModelProperty(name = "file3", value = "图片文件3", dataType = "file",hidden = true)
-    private MultipartFile file3;
-
-    @ApiModelProperty(name = "file4", value = "图片文件4", dataType = "file",hidden = true)
-    private MultipartFile file4;
-
-    @ApiModelProperty(name = "file5", value = "图片文件5", dataType = "file",hidden = true)
-    private MultipartFile file5;
-
-    @ApiModelProperty(name = "file6", value = "图片文件6", dataType = "file",hidden = true)
-    private MultipartFile file6;
+//    @ApiModelProperty(name = "file1", value = "图片文件1路径", dataType = "file",hidden = true)
+//    private String file1;//图片文件1路径
+//
+//    @ApiModelProperty(name = "file2", value = "图片文件2路径", dataType = "file",hidden = true)
+//    private String file2;
+//
+//    @ApiModelProperty(name = "file3", value = "图片文件3路径", dataType = "file",hidden = true)
+//    private String file3;
+//
+//    @ApiModelProperty(name = "file4", value = "图片文件4路径", dataType = "file",hidden = true)
+//    private String file4;
+//
+//    @ApiModelProperty(name = "file5", value = "图片文件5路径", dataType = "file",hidden = true)
+//    private String file5;
+//
+//    @ApiModelProperty(name = "file6", value = "图片文件6路径", dataType = "file",hidden = true)
+//    private String file6;
 
 
 
@@ -132,6 +134,9 @@ public class GoodsParam{
     @ApiModelProperty(name = "cartDetailId", value = "购物车明细表ID", dataType = "int",hidden = true)
     private Integer cartDetailId;//购物车明细表ID
 
+    @ApiModelProperty(name = "cartDetailIds", value = "购物车明细表ID数组", dataType = "int",hidden = true)
+    private Integer[] cartDetailIds;//购物车明细表ID数组
+
     @ApiModelProperty(name = "cartId", value = "购物车id", dataType = "int",hidden = true)
     private Integer cartId;//购物车id
 
@@ -168,6 +173,8 @@ public class GoodsParam{
     @ApiModelProperty(name = "title", value = "描述标题", dataType = "String",hidden = true)
     private String title;//描述标题
 
+
+
     public Integer getStart() {
         return start;
     }
@@ -200,13 +207,6 @@ public class GoodsParam{
         this.goodsId = goodsId;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
 
     public BigDecimal getPrice() {
         return price;
@@ -281,53 +281,6 @@ public class GoodsParam{
         this.goodsImgId = goodsImgId;
     }
 
-    public MultipartFile getFile1() {
-        return file1;
-    }
-
-    public void setFile1(MultipartFile file1) {
-        this.file1 = file1;
-    }
-
-    public MultipartFile getFile2() {
-        return file2;
-    }
-
-    public void setFile2(MultipartFile file2) {
-        this.file2 = file2;
-    }
-
-    public MultipartFile getFile3() {
-        return file3;
-    }
-
-    public void setFile3(MultipartFile file3) {
-        this.file3 = file3;
-    }
-
-    public MultipartFile getFile4() {
-        return file4;
-    }
-
-    public void setFile4(MultipartFile file4) {
-        this.file4 = file4;
-    }
-
-    public MultipartFile getFile5() {
-        return file5;
-    }
-
-    public void setFile5(MultipartFile file5) {
-        this.file5 = file5;
-    }
-
-    public MultipartFile getFile6() {
-        return file6;
-    }
-
-    public void setFile6(MultipartFile file6) {
-        this.file6 = file6;
-    }
 
     public Integer getGoodsCommentId() {
         return goodsCommentId;
@@ -537,6 +490,30 @@ public class GoodsParam{
         this.bannerIndexId = bannerIndexId;
     }
 
+    public Integer[] getCartDetailIds() {
+        return cartDetailIds;
+    }
+
+    public String[] getImgUrls() {
+        return imgUrls;
+    }
+
+    public void setImgUrls(String[] imgUrls) {
+        this.imgUrls = imgUrls;
+    }
+
+    public void setCartDetailIds(Integer[] cartDetailIds) {
+        this.cartDetailIds = cartDetailIds;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     @Override
     public String toString() {
         return "GoodsParam{" +
@@ -545,6 +522,7 @@ public class GoodsParam{
                 ", type=" + type +
                 ", goodsId=" + goodsId +
                 ", imgUrl='" + imgUrl + '\'' +
+                ", imgUrls=" + Arrays.toString(imgUrls) +
                 ", price=" + price +
                 ", status=" + status +
                 ", userId=" + userId +
@@ -556,12 +534,6 @@ public class GoodsParam{
                 ", label='" + label + '\'' +
                 ", sort=" + sort +
                 ", goodsImgId=" + goodsImgId +
-                ", file1=" + file1 +
-                ", file2=" + file2 +
-                ", file3=" + file3 +
-                ", file4=" + file4 +
-                ", file5=" + file5 +
-                ", file6=" + file6 +
                 ", goodsCommentId=" + goodsCommentId +
                 ", commentId=" + commentId +
                 ", content='" + content + '\'' +
@@ -575,6 +547,7 @@ public class GoodsParam{
                 ", goodsCategoryName='" + goodsCategoryName + '\'' +
                 ", cartInfoId=" + cartInfoId +
                 ", cartDetailId=" + cartDetailId +
+                ", cartDetailIds=" + Arrays.toString(cartDetailIds) +
                 ", cartId=" + cartId +
                 ", count=" + count +
                 ", search='" + search + '\'' +
