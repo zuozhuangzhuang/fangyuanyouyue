@@ -9,15 +9,14 @@ import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
-import com.fangyuanyouyue.goods.utils.*;
+import com.fangyuanyouyue.goods.utils.DateStampUtils;
+import com.fangyuanyouyue.goods.utils.ServiceException;
 import com.github.pagehelper.PageHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,16 +70,11 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
                 hotSearch.setUpdateTime(DateStampUtils.getTimesteamp());
                 hotSearchMapper.updateByPrimaryKey(hotSearch);
             }
-            //根据search搜索商品（名字或详情）
-
         }
-        if(param.getPriceMin() != null || param.getPriceMax() != null){
-            //价格区间
-        }
-        //将参数传给这个方法就可以实现物理分页了，非常简单。
-        PageHelper.startPage(param.getStart(), param.getLimit());
+        //分页
+//        PageHelper.startPage(param.getStart(), param.getLimit());
         List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(param.getUserId(),param.getStatus(),param.getSearch(),
-                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit());
+                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit(),param.getType());
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
             goodsDtos.add(setDtoByGoodsInfo(goodsInfo));
@@ -119,26 +113,12 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         }
         //商品图片表 goods_img
         //TODO 每个图片储存一条商品图片表信息
-        if(param.getFile1() != null){
-            //存储一张图片
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile1(),param.getType(),1);
-        }else{
-            throw new ServiceException("请至少添加一张图片！");
-        }
-        if(param.getFile2() != null){
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile2(),param.getType(),2);
-        }
-        if(param.getFile3() != null){
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile3(),param.getType(),3);
-        }
-        if(param.getFile4() != null){
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile4(),param.getType(),4);
-        }
-        if(param.getFile5() != null){
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile5(),param.getType(),5);
-        }
-        if(param.getFile6() != null){
-            saveGoodsPicOne(userId,nickName,goodsInfo.getId(),param.getFile6(),param.getType(),6);
+        for(int i=0;i<param.getImgUrls().length;i++){
+            if(i == 0){
+                saveGoodsPicOne(goodsInfo.getId(),param.getImgUrls()[i],param.getType(),1);
+            }else{
+                saveGoodsPicOne(goodsInfo.getId(),param.getImgUrls()[i],param.getType(),2);
+            }
         }
         return setDtoByGoodsInfo(goodsInfo);
     }
@@ -166,43 +146,18 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
     /**
      * 添加商品图片
-     * @param userId
-     * @param nickName
      * @param goodsId
-     * @param picFile
      * @param type
      * @param sort
      * @throws ServiceException
      */
-    public void saveGoodsPicOne(Integer userId,String nickName,Integer goodsId, MultipartFile picFile, Integer type,Integer sort) throws ServiceException{
+    public void saveGoodsPicOne(Integer goodsId, String imgUrl, Integer type,Integer sort) throws ServiceException{
         GoodsImg goodsImg = new GoodsImg();
         goodsImg.setAddTime(DateStampUtils.getTimesteamp());
         goodsImg.setGoodsId(goodsId);
         goodsImg.setType(type);//类型 1主图 2次图
         goodsImg.setSort(sort);
-//        goodsImg.setImgUrl(param.getImgUrl());
-        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-        String fileName = "";
-        FileUtil util = new FileUtil();
-        ImageWritten imgW = new ImageWritten();
-        // 保存图片
-        try {
-            fileName = util.getFileName(picFile, "GoodsImg"+userId);
-            String name = fileName.toLowerCase();
-            if (name.endsWith("jpeg") || name.endsWith("png")|| name.endsWith("jpg")) {
-                util.saveFile(picFile, PIC_PATH + date, fileName);
-                //图片实际地址
-                String filePath = (PIC_PATH + date).replaceAll("\\\\", "/")+fileName;
-                //打印水印方法
-                imgW.createStringMark(filePath,"小方圆@"+nickName, Color.white,3,filePath);
-                goodsImg.setImgUrl(PIC_SERVER + date+fileName);
-            } else {
-                throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceException("保存图片出错！");
-        }
+        goodsImg.setImgUrl(imgUrl);
         goodsImgMapper.insert(goodsImg);
     }
 
@@ -211,8 +166,12 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         //批量修改商品状态为删除
         for(Integer goodsId:goodsIds){
             GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
-            goodsInfo.setStatus(5);//状态 普通商品 1出售中 2已售出 5删除
-            goodsInfoMapper.updateByPrimaryKey(goodsInfo);
+            if(goodsInfo == null){
+                throw new ServiceException("商品状态错误！");
+            }else{
+                goodsInfo.setStatus(5);//状态 普通商品 1出售中 2已售出 5删除
+                goodsInfoMapper.updateByPrimaryKey(goodsInfo);
+            }
         }
     }
 
@@ -256,8 +215,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
 
     @Override
-    public List<BannerIndex> getBanner() throws ServiceException {
-        List<BannerIndex> banner = bannerIndexMapper.getBanner();
+    public List<BannerIndex> getBanner(Integer type) throws ServiceException {
+        List<BannerIndex> banner = bannerIndexMapper.getBanner(type);
         return banner;
     }
 

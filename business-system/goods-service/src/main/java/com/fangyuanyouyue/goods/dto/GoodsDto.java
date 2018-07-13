@@ -8,6 +8,7 @@ import com.fangyuanyouyue.goods.model.GoodsInfo;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,8 +38,15 @@ public class GoodsDto {
 
     private Integer status;//状态 普通商品 1出售中 2已售出 5删除
 
+    private BigDecimal floorPrice;//最低价
+
+    private Date intervalTime;//降价时间间隔
+
+    private BigDecimal markdown;//降价幅度
+
     //GoodsImg
     private List<GoodsImgDto> goodsImgDtos;//商品图片
+
     private String mainUrl;//商品主图
 
     //GoodsCorrelation
@@ -50,6 +58,8 @@ public class GoodsDto {
     //公用
     private Integer type;//类型 1普通商品 2秒杀商品 /1主图（展示在第一张的图片） 2次图
 
+    private String userAddress;//店家地址
+
     public GoodsDto() {
 
     }
@@ -58,6 +68,7 @@ public class GoodsDto {
         if(user != null){
             this.nickName = user.getString("nickName");
             this.headImgUrl = user.getString("headImgUrl");
+            this.userAddress = user.getString("address");
         }
         if(goodsInfo != null){
             //GoodsInfo
@@ -71,6 +82,9 @@ public class GoodsDto {
             this.label = goodsInfo.getLabel();
             this.type = goodsInfo.getType();
             this.status = goodsInfo.getStatus();
+            this.floorPrice = goodsInfo.getFloorPrice();
+            this.intervalTime = goodsInfo.getIntervalTime();
+            this.markdown = goodsInfo.getMarkdown();
         }
         //GoodsImg
         if(goodsImgs != null && goodsImgs.size()>0){
@@ -219,5 +233,37 @@ public class GoodsDto {
 
     public void setHeadImgUrl(String headImgUrl) {
         this.headImgUrl = headImgUrl;
+    }
+
+    public String getUserAddress() {
+        return userAddress;
+    }
+
+    public void setUserAddress(String userAddress) {
+        this.userAddress = userAddress;
+    }
+
+    public BigDecimal getFloorPrice() {
+        return floorPrice;
+    }
+
+    public void setFloorPrice(BigDecimal floorPrice) {
+        this.floorPrice = floorPrice;
+    }
+
+    public Date getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(Date intervalTime) {
+        this.intervalTime = intervalTime;
+    }
+
+    public BigDecimal getMarkdown() {
+        return markdown;
+    }
+
+    public void setMarkdown(BigDecimal markdown) {
+        this.markdown = markdown;
     }
 }

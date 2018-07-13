@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.goods.service;
 
+import com.fangyuanyouyue.goods.dto.CartShopDto;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.dto.SearchDto;
@@ -69,7 +70,7 @@ public interface GoodsInfoService {
      * @return
      * @throws ServiceException
      */
-    List<BannerIndex> getBanner() throws ServiceException;
+    List<BannerIndex> getBanner(Integer type) throws ServiceException;
 
     /**
      * 新增首页轮播图
@@ -93,4 +94,6 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     List<SearchDto> hotSearch() throws ServiceException;
+
+
 }

@@ -25,8 +25,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/goods")
@@ -41,7 +41,8 @@ public class GoodsController extends BaseController{
     @Autowired
     protected RedisTemplate redisTemplate;
 
-    @ApiOperation(value = "获取商品列表", notes = "获取商品列表",response = ResultUtil.class)
+    @ApiOperation(value = "获取商品/抢购列表", notes = "根据start和limit获取分页后的商品/抢购，根据用户token获取买家相关商品/抢购列表，" +
+            "根据userId获取卖家相关商品/抢购列表，根据search、synthesizer、priceMin、priceMax、quality对列表进行筛选，根据type进行区分商品和抢购",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token，不为空则为：我的商品", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "userId", value = "卖家id，不为空则为：他的商品", dataType = "int", paramType = "query"),
@@ -52,8 +53,8 @@ public class GoodsController extends BaseController{
             @ApiImplicitParam(name = "synthesize", value = "综合 1：综合排序 2：信用排序 3：价格升序 4：价格降序", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "priceMin", value = "最小价格", dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "priceMax", value = "最大价格", dataType = "BigDecimal", paramType = "query"),
-            @ApiImplicitParam(name = "quality", value = "品质 1：认证店铺 2：官方保真 3：高信誉度", dataType = "int", paramType = "query")
-
+            @ApiImplicitParam(name = "quality", value = "品质 1：认证店铺 2：官方保真 3：高信誉度", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1普通商品 2抢购商品",required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/goodsList")
     @ResponseBody
@@ -67,6 +68,9 @@ public class GoodsController extends BaseController{
             if(param.getLimit() == null){
                 return toError(ReCode.FAILD.getValue(),"每页个数不能为空！");
             }
+//            if(param.getType() == null){
+//                return toError(ReCode.FAILD.getValue(),"商品类型不能为空！");
+//            }
             if(StringUtils.isNotEmpty(param.getToken())){//如果token不为空，则是我的商品
                 //根据用户token获取userId
                 Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
@@ -75,6 +79,7 @@ public class GoodsController extends BaseController{
                 if((Integer)jsonObject.get("code") != 0){
                     return toError(jsonObject.getString("report"));
                 }
+                redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
                 param.setUserId(userId);
             }
             //TODO 获取商品列表
@@ -97,16 +102,13 @@ public class GoodsController extends BaseController{
             @ApiImplicitParam(name = "description", value = "商品描述(详情)", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "price", value = "商品价格", required = true, dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "postage", value = "运费", required = true, dataType = "BigDecimal", paramType = "query"),
-//            @ApiImplicitParam(name = "sort", value = "排序", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "label", value = "标签", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1普通商品 2秒杀商品", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "floorPrice", value = "最低价", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "intervalTime", value = "降价时间间隔", dataType = "date", paramType = "query"),
+            @ApiImplicitParam(name = "markdown", value = "降价幅度", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1普通商品 2抢购商品", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "status", value = "状态 普通商品 1出售中 2 已售出 5删除", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "file1", value = "file1", required = true, dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "file2", value = "file2", dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "file3", value = "file3", dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "file4", value = "file4", dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "file5", value = "file5", dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "file6", value = "file6", dataType = "file", paramType = "form")
+            @ApiImplicitParam(name = "imgUrls", value = "商品图片路径数组", required = true,allowMultiple = true,dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/addGoods")
     @ResponseBody
@@ -124,6 +126,7 @@ public class GoodsController extends BaseController{
             if((Integer)jsonObject.get("code") != 0){
                 return toError(jsonObject.getString("report"));
             }
+            redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(StringUtils.isEmpty(param.getGoodsInfoName())){
                 return toError(ReCode.FAILD.getValue(),"商品名称不能为空！");
@@ -143,7 +146,7 @@ public class GoodsController extends BaseController{
             if(param.getType() == null){
                 return  toError("商品类型不能为空！");
             }
-            if(param.getFile1() == null){
+            if(param.getImgUrls() == null || param.getImgUrls().length == 0){
                 return toError("请至少上传一张图片！");
             }
             GoodsDto goodsDto = goodsInfoService.addGoods(userId,user.getString("nickName"),param);
@@ -170,18 +173,16 @@ public class GoodsController extends BaseController{
             log.info("----》批量删除商品《----");
             log.info("参数："+param.toString());
             //验证用户
-            if(param.getUserId() == null){
-                return toError(ReCode.FAILD.getValue(),"用户id不能为空！");
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
             }
-            String verifyUser = schedualUserService.verifyUserById(param.getUserId());
+            Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+            String verifyUser = schedualUserService.verifyUserById(userId);
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
-            if(user==null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
+            if((Integer)jsonObject.get("code") != 0){
+                return toError(jsonObject.getString("report"));
             }
-            if((int)user.get("status") == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
+            redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
             if(param.getGoodsInfoIds().length<1){
                 return toError(ReCode.FAILD.getValue(),"商品ID不能为空！");
             }
@@ -286,13 +287,19 @@ public class GoodsController extends BaseController{
 
     //获取首页轮播图
     @ApiOperation(value = "获取首页轮播图", notes = "获取首页轮播图",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "轮播图类型", required = true, dataType = "int", paramType = "query")
+    })
     @GetMapping(value = "/getBanner")
     @ResponseBody
-    public String getBanner() throws IOException{
+    public String getBanner(GoodsParam param) throws IOException{
         try {
             log.info("----》获取首页轮播图《----");
             //TODO 获取首页轮播图
-            List<BannerIndex> banner = goodsInfoService.getBanner();
+            if(param.getType() == null){
+                return toError(ReCode.FAILD.getValue(),"轮播图类型不能为空！");
+            }
+            List<BannerIndex> banner = goodsInfoService.getBanner(param.getType());
 
             return toSuccess(banner,"获取首页轮播图成功！");
         } catch (Exception e) {
@@ -411,24 +418,8 @@ public class GoodsController extends BaseController{
         }
     }
 
-    //TODO 购物车：1.添加商品到购物车 2.查看购物车内商品列表 3.根据店铺区分购物车内商品 4.删除购物车里的商品
-    //添加商品到购物车
-    @ApiOperation(value = "添加商品到购物车", notes = "添加商品到购物车",response = ResultUtil.class)
-    @GetMapping(value = "/hotSearch")
-    @ResponseBody
-    public String addGoodsToCart() throws IOException{
-        try {
-            log.info("----》添加商品到购物车《----");
-            //TODO 添加商品到购物车 返回购物车列表
-            return toSuccess( "添加商品到购物车成功！");
-//        } catch (ServiceException e) {
-//            e.printStackTrace();
-//            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
+
+
 
 
 //

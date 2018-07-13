@@ -11,6 +11,9 @@
     <result column="label" jdbcType="VARCHAR" property="label" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="floor_price" jdbcType="DECIMAL" property="floorPrice" />
+    <result column="interval_time" jdbcType="TIMESTAMP" property="intervalTime" />
+    <result column="markdown" jdbcType="DECIMAL" property="markdown" />
     <result column="add_time" jdbcType="TIMESTAMP" property="addTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
@@ -18,13 +21,14 @@
     <result column="description" jdbcType="LONGVARCHAR" property="description" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user_id, name, price, postage, sort, label, type, status, add_time, update_time
+    id, user_id, name, price, postage, sort, label, type, status, floor_price, interval_time, 
+    markdown, add_time, update_time
   </sql>
   <sql id="Blob_Column_List">
     description
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select
+    select 
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
@@ -39,11 +43,13 @@
     insert into goods_info (id, user_id, name, 
       price, postage, sort, 
       label, type, status, 
+      floor_price, interval_time, markdown, 
       add_time, update_time, description
       )
     values (#{id,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, 
       #{price,jdbcType=DECIMAL}, #{postage,jdbcType=DECIMAL}, #{sort,jdbcType=INTEGER}, 
       #{label,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{floorPrice,jdbcType=DECIMAL}, #{intervalTime,jdbcType=TIMESTAMP}, #{markdown,jdbcType=DECIMAL}, 
       #{addTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{description,jdbcType=LONGVARCHAR}
       )
   </insert>
@@ -76,6 +82,15 @@
       </if>
       <if test="status != null">
         status,
+      </if>
+      <if test="floorPrice != null">
+        floor_price,
+      </if>
+      <if test="intervalTime != null">
+        interval_time,
+      </if>
+      <if test="markdown != null">
+        markdown,
       </if>
       <if test="addTime != null">
         add_time,
@@ -115,6 +130,15 @@
       <if test="status != null">
         #{status,jdbcType=INTEGER},
       </if>
+      <if test="floorPrice != null">
+        #{floorPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="intervalTime != null">
+        #{intervalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="markdown != null">
+        #{markdown,jdbcType=DECIMAL},
+      </if>
       <if test="addTime != null">
         #{addTime,jdbcType=TIMESTAMP},
       </if>
@@ -153,6 +177,15 @@
       <if test="status != null">
         status = #{status,jdbcType=INTEGER},
       </if>
+      <if test="floorPrice != null">
+        floor_price = #{floorPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="intervalTime != null">
+        interval_time = #{intervalTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="markdown != null">
+        markdown = #{markdown,jdbcType=DECIMAL},
+      </if>
       <if test="addTime != null">
         add_time = #{addTime,jdbcType=TIMESTAMP},
       </if>
@@ -175,6 +208,9 @@
       label = #{label,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
+      floor_price = #{floorPrice,jdbcType=DECIMAL},
+      interval_time = #{intervalTime,jdbcType=TIMESTAMP},
+      markdown = #{markdown,jdbcType=DECIMAL},
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
       description = #{description,jdbcType=LONGVARCHAR}
@@ -190,62 +226,69 @@
       label = #{label,jdbcType=VARCHAR},
       type = #{type,jdbcType=INTEGER},
       status = #{status,jdbcType=INTEGER},
+      floor_price = #{floorPrice,jdbcType=DECIMAL},
+      interval_time = #{intervalTime,jdbcType=TIMESTAMP},
+      markdown = #{markdown,jdbcType=DECIMAL},
       add_time = #{addTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
   <select id="getGoodsList" parameterType="Integer" resultMap="BaseResultMap">
-    select * from goods_info
+    select * from goods_info a left join user_info_ext b on a.user_id = b.user_id
     <where>
       1=1
       <if test="status != null">
-        and status = #{status,jdbcType=INTEGER}
+        and a.status = #{status,jdbcType=INTEGER}
       </if>
       <if test="userId != null">
-        and user_id = #{userId,jdbcType=INTEGER}
+        and a.user_id = #{userId,jdbcType=INTEGER}
       </if>
       <if test="priceMin != null">
-        and price <![CDATA[ >= ]]> #{priceMin,jdbcType=DECIMAL}
+        and a.price <![CDATA[ >= ]]> #{priceMin,jdbcType=DECIMAL}
       </if>
       <if test="priceMax != null">
-        and price <![CDATA[ <= ]]> #{priceMax,jdbcType=DECIMAL}
+        and a.price <![CDATA[ <= ]]> #{priceMax,jdbcType=DECIMAL}
       </if>
       <if test="search != null and search != ''">
-        and name like "%"#{search}"%" or description like "%"#{search}"%" or user_id in (select id from user_info where nick_name like "%"#{search}"%")
+        and (a.name like "%"#{search}"%" or a.description like "%"#{search}"%" or a.user_id in (select id from user_info where nick_name like "%"#{search}"%"))
       </if>
-    </where>
-    order by update_time
-    <if test="synthesize != null">
-      <if test="synthesize == 1">
-
-      </if>
-      <if test="synthesize == 2">
-
-      </if>
-      <if test="synthesize == 3">
-        ,price
-      </if>
-      <if test="synthesize == 4">
-        ,price desc
+      <if test="type != null">
+        and a.type = #{type,jdbcType=INTEGER}
       </if>
       <if test="quality != null">
         <if test="quality == 1">
-
+          and b.auth_type = 1
         </if>
         <if test="quality == 2">
 
         </if>
         <if test="quality == 3">
-
+          and b.credit &gt; 150
         </if>
       </if>
+    </where>
+    order by
+    <if test="synthesize != null">
+      <if test="synthesize == 1">
+
+      </if>
+      <if test="synthesize == 2">
+        b.credit desc,
+      </if>
+      <if test="synthesize == 3">
+        a.price,
+      </if>
+      <if test="synthesize == 4">
+        a.price desc,
+      </if>
     </if>
+    a.update_time desc limit #{start},#{limit}
   </select>
   <select id="getGoodsByGoodsIds" parameterType="Integer" resultMap="BaseResultMap">
     select * from goods_info
     <where>
-      <foreach collection="goodsIds" open=" and id in(" close=")" item="id" separator=",">
+      <foreach close=")" collection="goodsIds" item="id" open=" and id in(" separator=",">
         #{id,jdbcType=INTEGER}
       </foreach>
     </where>

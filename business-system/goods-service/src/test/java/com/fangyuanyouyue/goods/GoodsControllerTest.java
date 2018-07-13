@@ -50,10 +50,11 @@ public class GoodsControllerTest {
                 .param("start","0")
                 .param("limit","10")
 //                .param("search","")
-                .param("synthesize","3")
+                .param("synthesize","2")
 //                .param("priceMin","10")
 //                .param("priceMax","1000")
 //                .param("quality","1")
+                .param("type","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -172,6 +173,20 @@ public class GoodsControllerTest {
     @Transactional
     public void hotSearch() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/hotSearch")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 我的购物车
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void getCart() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/goods/getCart")
+                .param("token","10022FY1531365304072")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

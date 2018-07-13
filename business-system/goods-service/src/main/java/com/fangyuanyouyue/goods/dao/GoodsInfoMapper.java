@@ -2,7 +2,6 @@ package com.fangyuanyouyue.goods.dao;
 
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,15 +22,23 @@ public interface GoodsInfoMapper {
     int updateByPrimaryKey(GoodsInfo record);
 
     /**
-     * 分页获取商品列表
-     * @param pageNum
-     * @param pageSize
+     *分页获取商品/抢购列表
+     * @param userId
+     * @param status
+     * @param search
+     * @param priceMin
+     * @param priceMax
+     * @param synthesize
+     * @param quality
+     * @param start
+     * @param limit
+     * @param type
      * @return
      */
-    List<GoodsInfo> getGoodsList(@Param("userId") Integer userId, @Param("status") Integer status,@Param("search") String search,
-                                 @Param("priceMin") BigDecimal priceMin,@Param("priceMax") BigDecimal priceMax,
-                                 @Param("synthesize")Integer synthesize,@Param("quality")Integer quality,
-                                 Integer pageNum, Integer pageSize);
+    List<GoodsInfo> getGoodsList(@Param("userId") Integer userId, @Param("status") Integer status, @Param("search") String search,
+                                 @Param("priceMin") BigDecimal priceMin, @Param("priceMax") BigDecimal priceMax,
+                                 @Param("synthesize")Integer synthesize, @Param("quality")Integer quality,
+                                 @Param("start") Integer start, @Param("limit") Integer limit, @Param("type")Integer type);
 
     /**
      * 根据商品ID集合获取商品
