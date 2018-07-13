@@ -58,8 +58,8 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "phone", value = "手机号",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "loginPwd", value = "登录密码,MD5小写",required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "nickName", value = "昵称",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headImg", value = "头像图片，格式为：jpeg，png，jpg", dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "bgImg", value = "背景图片", dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "headImgUrl", value = "头像图片路径", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "bgImgUrl", value = "背景图片路径", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "regPlatform", value = "注册平台 1安卓 2iOS 3小程序", required = true, dataType = "int", paramType = "query")
     })
@@ -217,8 +217,8 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "name", value = "真实姓名", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "identity", value = "身份证号", required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "identity_img_cover", value = "身份证封面图",dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "identity_img_back", value = "身份证背面",dataType = "file", paramType = "form")
+            @ApiImplicitParam(name = "identityImgCoverUrl", value = "身份证封面图路径",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "identityImgBackUrl", value = "身份证背面路径",dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/certification")
     @ResponseBody
@@ -243,7 +243,7 @@ public class UserController extends BaseController {
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
             //实名认证
-            userInfoExtService.certification(param.getToken(),param.getName(),param.getIdentity(),param.getIdentityImgCover(),param.getIdentityImgBack());
+            userInfoExtService.certification(param.getToken(),param.getName(),param.getIdentity(),param.getIdentityImgCoverUrl(),param.getIdentityImgBackUrl());
             return toSuccess("实名认证成功");
         } catch (ServiceException e) {
             e.printStackTrace();
@@ -287,8 +287,8 @@ public class UserController extends BaseController {
             @ApiImplicitParam(name = "email", value = "电子邮件",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "userAddress", value = "用户所在地",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "nickName", value = "昵称", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "headImg", value = "头像图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form"),
-            @ApiImplicitParam(name = "bgImg", value = "背景图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form"),
+            @ApiImplicitParam(name = "headImgUrl", value = "头像图片路径",dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "bgImgUrl", value = "背景图片路径",dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "signature", value = "个性签名", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "contact", value = "联系电话", dataType = "String", paramType = "query"),
@@ -410,217 +410,6 @@ public class UserController extends BaseController {
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "添加收货地址", notes = "添加收货地址",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "receiverName", value = "收货人姓名",  required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "province", value = "省",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "city", value = "市",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "area", value = "区",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "address", value = "详细收货地址",  required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "postCode", value = "邮编",dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1默认地址 2其他",dataType = "String", paramType = "query")
-    })
-    @PostMapping(value = "/addAddress")
-    @ResponseBody
-    public String addAddress(UserParam param) throws IOException {
-        try {
-            log.info("----》添加收货地址《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getReceiverName())){
-                return toError(ReCode.FAILD.getValue(),"收货人不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getReceiverPhone())){
-                return toError(ReCode.FAILD.getValue(),"联系电话不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
-                return toError(ReCode.FAILD.getValue(),"省市区不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getAddress())){
-                return toError(ReCode.FAILD.getValue(),"详细收货地址不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
-            }
-            UserInfo user=userInfoService.getUserByToken(param.getToken());
-            if(user==null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 添加收货地址
-            List<UserAddressDto> userAddressDtos = userAddressInfoService.addAddress(param.getToken(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
-            return toSuccess(userAddressDtos,"添加收货地址成功");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
-
-
-    @ApiOperation(value = "修改收货地址", notes = "修改收货地址",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "收货地址ID", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "receiverName", value = "收货人姓名", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "receiverPhone", value = "联系电话",required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "province", value = "省", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "city", value = "市", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "area", value = "区", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "address", value = "详细收货地址", dataType = "String", paramType = "query")
-    })
-    @PostMapping(value = "/updateAddress")
-    @ResponseBody
-    public String updateAddress(UserParam param) throws IOException {
-        try {
-            log.info("----》修改收货地址《----");
-            log.info("参数："+param.toString());
-            if(param.getAddressId()==null || param.getAddressId().intValue()==0){
-                return toError(ReCode.FAILD.getValue(),"收货地址ID不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getReceiverName())){
-                return toError(ReCode.FAILD.getValue(),"收货人不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getReceiverPhone())){
-                return toError(ReCode.FAILD.getValue(),"联系电话不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getProvince()) || StringUtils.isEmpty(param.getCity()) || StringUtils.isEmpty(param.getArea())){
-                return toError(ReCode.FAILD.getValue(),"省市区不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getAddress())){
-                return toError(ReCode.FAILD.getValue(),"详细收货地址不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
-            }
-            UserInfo user=userInfoService.getUserByToken(param.getToken());
-            if(user==null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 修改收货地址
-            userAddressInfoService.updateAddress(param.getToken(),param.getAddressId(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
-            return toSuccess("修改收货地址成功");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "删除收货地址", notes = "删除收货地址",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
-    })
-    @PostMapping(value = "/deleteAddress")
-    @ResponseBody
-    public String deleteAddress(UserParam param) throws IOException {
-        try {
-            log.info("----》删除收货地址《----");
-            log.info("参数："+param.toString());
-            if(param.getAddressId()==null){
-                return toError(ReCode.FAILD.getValue(),"收货地址ID不能为空！");
-            }
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
-            }
-            UserInfo user=userInfoService.getUserByToken(param.getToken());
-            if(user==null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 删除收货地址
-            List<UserAddressDto> userAddressDtos = userAddressInfoService.deleteAddress(param.getToken(),param.getAddressId());
-            return toSuccess(userAddressDtos,"删除收货地址成功");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
-
-    @ApiOperation(value = "获取收货地址列表", notes = "获取收货地址列表",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id",dataType = "int", paramType = "query")
-    })
-    @PostMapping(value = "/getAddressList")
-    @ResponseBody
-    public String getAddressList(UserParam param) throws IOException {
-        try {
-            log.info("----》获取收货地址列表《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
-            }
-            UserInfo user=userInfoService.getUserByToken(param.getToken());
-            if(user == null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 获取收货地址列表
-            List<UserAddressDto> userAddressDtos = userAddressInfoService.getAddressList(param.getToken(),param.getAddressId());
-            return toSuccess(userAddressDtos,"获取收货地址列表成功");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
-
-
-
-    @ApiOperation(value = "设置默认收货地址", notes = "设置默认收货地址",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "addressId", value = "地址id", required = true, dataType = "int", paramType = "query")
-    })
-    @PostMapping(value = "/defaultAddress")
-    @ResponseBody
-    public String defaultAddress(UserParam param) throws IOException {
-        try {
-            log.info("----》设置默认收货地址《----");
-            log.info("参数："+param.toString());
-            if(StringUtils.isEmpty(param.getToken())){
-                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
-            }
-            UserInfo user = userInfoService.getUserByToken(param.getToken());
-            if(user == null){
-                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-            }
-            if(user.getStatus() == 2){
-                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-            }
-            //TODO 设置默认收货地址
-            userAddressInfoService.defaultAddress(param.getToken(),param.getAddressId());
-            return toSuccess("设置默认收货地址成功！");
-//        } catch (ServiceException e) {
-//            e.printStackTrace();
-//            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
@@ -795,7 +584,7 @@ public class UserController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "phone", value = "用户手机号", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "验证码类型 0表示注册 1表示密码找回 2 表示支付密码相关 3验证旧手机，4绑定新手机", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "验证码类型 0表示注册 1表示密码找回 2 表示支付密码相关 3验证旧手机，4绑定新手机 5店铺认证", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "unionId", value = "三方唯一识别号", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "thirdType", value = "类型 1微信 2QQ 3微博", dataType = "int", paramType = "query")
     })
@@ -829,10 +618,12 @@ public class UserController extends BaseController {
 
                     }
                 }
-            }else{
+            }else if(PhoneCode.TYPE_AUTH.getCode() == param.getType()){//为5认证店铺
 				/*if(count == 0){
 					return toError(ReCode.FAILD.getValue(),"此手机号尚未注册！");
 				}*/
+            }else{
+
             }
             //调用短信系统发送短信
             JSONObject jsonObject = JSONObject.parseObject(schedualMessageService.sendCode(param.getPhone(),param.getType()));
@@ -882,7 +673,7 @@ public class UserController extends BaseController {
 
     @ApiOperation(value = "获取个人店铺列表", notes = "获取个人店铺列表",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "nickName", value = "用户昵称", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "nickName", value = "用户昵称", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "start", value = "起始页数", required = true, dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "limit", value = "每页个数", required = true, dataType = "int", paramType = "query")
     })
