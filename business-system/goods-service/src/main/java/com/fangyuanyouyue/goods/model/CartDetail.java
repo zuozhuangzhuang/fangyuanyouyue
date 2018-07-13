@@ -7,19 +7,31 @@ import java.util.Date;
  * 购物车明细表
  */
 public class CartDetail {
-    private Integer id;
+    private Integer id;//唯一自增ID
 
     private Integer cartId;//购物车id
 
-    private Integer goodsId;//商品id
+    private Integer goodsId;//商品ID
 
-    private BigDecimal price;//价格
+    private String name;//商品名称
 
-    private Integer count;//数量
+    private String description;//商品详情
+
+    private BigDecimal price;//商品价格
+
+    private String mainUrl;//商品主图
 
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
+    private Integer userId;//店铺ID
+
+    private String nickName;//店铺名字
+
+    private String headImgUrl;//店铺头像图片地址
+
+    private Integer status;//商品是否显示 1显示2不显示
 
     public Integer getId() {
         return id;
@@ -45,6 +57,22 @@ public class CartDetail {
         this.goodsId = goodsId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -53,12 +81,12 @@ public class CartDetail {
         this.price = price;
     }
 
-    public Integer getCount() {
-        return count;
+    public String getMainUrl() {
+        return mainUrl;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setMainUrl(String mainUrl) {
+        this.mainUrl = mainUrl;
     }
 
     public Date getAddTime() {
@@ -75,5 +103,37 @@ public class CartDetail {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getHeadImgUrl() {
+        return headImgUrl;
+    }
+
+    public void setHeadImgUrl(String headImgUrl) {
+        this.headImgUrl = headImgUrl;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }
