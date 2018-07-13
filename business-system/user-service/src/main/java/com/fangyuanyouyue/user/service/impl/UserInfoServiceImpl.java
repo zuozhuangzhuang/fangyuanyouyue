@@ -40,15 +40,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserVipMapper userVipMapper;
     @Autowired
     protected RedisTemplate redisTemplate;
-
     @Autowired
     private SchedualGoodsService schedualGoodsService;
-
-    @Value("${pic_server:errorPicServer}")
-    private String PIC_SERVER;// 图片服务器
-
-    @Value("${pic_path:errorPicPath}")
-    private String PIC_PATH;// 图片存放路径
 
     @Override
     public UserInfo getUserByToken(String token) throws ServiceException {
@@ -78,9 +71,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo user = new UserInfo();
         //手机号注册必定是APP端
         // 保存头像
-        saveHeadImg(param.getHeadImg(),user);
+//        saveHeadImg(param.getHeadImg(),user);
+        user.setHeadImgUrl(param.getHeadImgUrl());
         //保存背景图片
-        saveBgImg(param.getBgImg(),user);
+//        saveBgImg(param.getBgImg(),user);
+        user.setBgImgUrl(param.getBgImgUrl());
 
         user.setRegType(1);//注册来源 1APP 2微信小程序
         user.setRegPlatform(param.getRegPlatform());
@@ -293,9 +288,9 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userInfo.setNickName(param.getNickName());
             }
             // 保存头像
-            saveHeadImg(param.getHeadImg(),userInfo);
+            userInfo.setHeadImgUrl(param.getHeadImgUrl());
             //保存背景图片
-            saveBgImg(param.getBgImg(),userInfo);
+            userInfo.setBgImgUrl(param.getBgImgUrl());
             if(param.getGender() != null){
                 userInfo.setGender(param.getGender());
             }
@@ -389,59 +384,59 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
-    /**
-     * 保存头像图片
-     * @param headImg
-     * @param userInfo
-     * @throws ServiceException
-     */
-    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
-        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-        FileUtil util = new FileUtil();
-        String fileName;
-        if(headImg != null){
-            try {
-                fileName = util.getFileName(headImg, "HEADIMG");
-                String name = fileName.toLowerCase();
-                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
-                    util.saveFile(headImg, PIC_PATH + date, fileName);
-                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
-                } else {
-                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ServiceException("保存头像图片出错！");
-            }
-        }
-    }
-
-    /**
-     * 保存背景图片
-     * @param bgImg
-     * @param userInfo
-     * @throws ServiceException
-     */
-    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
-        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-        FileUtil util = new FileUtil();
-        String fileName;
-        if(bgImg != null){
-            try {
-                fileName = util.getFileName(bgImg, "BGIMG");
-                String name = fileName.toLowerCase();
-                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
-                    util.saveFile(bgImg, PIC_PATH + date, fileName);
-                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
-                } else {
-                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new ServiceException("保存背景图片出错！");
-            }
-        }
-    }
+//    /**
+//     * 保存头像图片
+//     * @param headImg
+//     * @param userInfo
+//     * @throws ServiceException
+//     */
+//    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
+//        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+//        FileUtil util = new FileUtil();
+//        String fileName;
+//        if(headImg != null){
+//            try {
+//                fileName = util.getFileName(headImg, "HEADIMG");
+//                String name = fileName.toLowerCase();
+//                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
+//                    util.saveFile(headImg, PIC_PATH + date, fileName);
+//                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
+//                } else {
+//                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                throw new ServiceException("保存头像图片出错！");
+//            }
+//        }
+//    }
+//
+//    /**
+//     * 保存背景图片
+//     * @param bgImg
+//     * @param userInfo
+//     * @throws ServiceException
+//     */
+//    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
+//        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
+//        FileUtil util = new FileUtil();
+//        String fileName;
+//        if(bgImg != null){
+//            try {
+//                fileName = util.getFileName(bgImg, "BGIMG");
+//                String name = fileName.toLowerCase();
+//                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
+//                    util.saveFile(bgImg, PIC_PATH + date, fileName);
+//                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
+//                } else {
+//                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                throw new ServiceException("保存背景图片出错！");
+//            }
+//        }
+//    }
 
     /**
      * 修改密码
@@ -566,7 +561,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public List<ShopDto> shopList(String nickName,Integer type, Integer start, Integer limit) throws ServiceException {
         //分页
-//        PageHelper.startPage(start,limit);
         //TODO 个人店铺排序：1.会员等级 2.认证店铺 3.信誉度 4.发布商品时间
         List<Map<String, Object>> maps = userInfoMapper.shopList(nickName,start,limit);
         List<ShopDto> shopDtos = ShopDto.toDtoList(maps);

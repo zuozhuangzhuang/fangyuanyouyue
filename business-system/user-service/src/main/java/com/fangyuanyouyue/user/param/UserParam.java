@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.Date;
 
 @ApiModel(value = "用户相关参数")
@@ -18,7 +19,11 @@ public class UserParam{
 	@ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
 	private Integer type;//类型
 
+	@ApiModelProperty(name = "imgFile", value = "图片文件", dataType = "file",hidden = true)
+	private MultipartFile imgFile;//图片文件
 
+	@ApiModelProperty(name = "imgFiles", value = "图片文件数组", dataType = "file",hidden = true)
+	private MultipartFile[] imgFiles;//图片文件数组
 
 	//UserInfo
 	@ApiModelProperty(name = "phone", value = "手机号码", dataType = "String",hidden = true)
@@ -39,14 +44,14 @@ public class UserParam{
 	@ApiModelProperty(name = "headImgUrl", value = "头像图片地址", dataType = "String",hidden = true)
 	private String headImgUrl;//头像图片地址
 
-	@ApiModelProperty(name = "headImg", value = "头像图片", dataType = "file",hidden = true)
-	private MultipartFile headImg;//头像图片
+//	@ApiModelProperty(name = "headImg", value = "头像图片", dataType = "file",hidden = true)
+//	private MultipartFile headImg;//头像图片
 
 	@ApiModelProperty(name = "bgImgUrl", value = "背景图片地址", dataType = "String",hidden = true)
 	private String bgImgUrl;//背景图片地址
 
-	@ApiModelProperty(name = "bgImg", value = "背景图片", dataType = "file",hidden = true)
-	private MultipartFile bgImg;//背景图片
+//	@ApiModelProperty(name = "bgImg", value = "背景图片", dataType = "file",hidden = true)
+//	private MultipartFile bgImg;//背景图片
 
 	@ApiModelProperty(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int",hidden = true)
 	private Integer gender;//性别，1男 2女 0不确定
@@ -90,11 +95,11 @@ public class UserParam{
 	@ApiModelProperty(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String",hidden = true)
 	private String payPwd;//支付密码，明文6位，MD5小写
 
-	@ApiModelProperty(name = "identityImgCover", value = "身份证封面图", dataType = "file",hidden = true)
-	private MultipartFile identityImgCover;//身份证封面图
+	@ApiModelProperty(name = "identityImgCoverUrl", value = "身份证封面图路径", dataType = "file",hidden = true)
+	private String identityImgCoverUrl;//身份证封面图
 
-	@ApiModelProperty(name = "identityImgBack", value = "身份证背面", dataType = "file",hidden = true)
-	private MultipartFile identityImgBack;//身份证背面
+	@ApiModelProperty(name = "identityImgBackUrl", value = "身份证背面路径", dataType = "file",hidden = true)
+	private String identityImgBackUrl;//身份证背面
 
 	@ApiModelProperty(name = "receiverName", value = "收货人", dataType = "String",hidden = true)
 	private String receiverName;//收货人
@@ -216,30 +221,6 @@ public class UserParam{
 		this.headImgUrl = headImgUrl;
 	}
 
-	public MultipartFile getHeadImg() {
-		return headImg;
-	}
-
-	public void setHeadImg(MultipartFile headImg) {
-		this.headImg = headImg;
-	}
-
-	public String getBgImgUrl() {
-		return bgImgUrl;
-	}
-
-	public void setBgImgUrl(String bgImgUrl) {
-		this.bgImgUrl = bgImgUrl;
-	}
-
-	public MultipartFile getBgImg() {
-		return bgImg;
-	}
-
-	public void setBgImg(MultipartFile bgImg) {
-		this.bgImg = bgImg;
-	}
-
 	public Integer getGender() {
 		return gender;
 	}
@@ -343,22 +324,6 @@ public class UserParam{
 
 	public void setPayPwd(String payPwd) {
 		this.payPwd = payPwd;
-	}
-
-	public MultipartFile getIdentityImgCover() {
-		return identityImgCover;
-	}
-
-	public void setIdentityImgCover(MultipartFile identityImgCover) {
-		this.identityImgCover = identityImgCover;
-	}
-
-	public MultipartFile getIdentityImgBack() {
-		return identityImgBack;
-	}
-
-	public void setIdentityImgBack(MultipartFile identityImgBack) {
-		this.identityImgBack = identityImgBack;
 	}
 
 	public String getReceiverName() {
@@ -489,21 +454,61 @@ public class UserParam{
 		this.token = token;
 	}
 
+	public MultipartFile getImgFile() {
+		return imgFile;
+	}
+
+	public void setImgFile(MultipartFile imgFile) {
+		this.imgFile = imgFile;
+	}
+
+	public String getBgImgUrl() {
+		return bgImgUrl;
+	}
+
+	public void setBgImgUrl(String bgImgUrl) {
+		this.bgImgUrl = bgImgUrl;
+	}
+
+	public String getIdentityImgCoverUrl() {
+		return identityImgCoverUrl;
+	}
+
+	public void setIdentityImgCoverUrl(String identityImgCoverUrl) {
+		this.identityImgCoverUrl = identityImgCoverUrl;
+	}
+
+	public String getIdentityImgBackUrl() {
+		return identityImgBackUrl;
+	}
+
+	public void setIdentityImgBackUrl(String identityImgBackUrl) {
+		this.identityImgBackUrl = identityImgBackUrl;
+	}
+
+	public MultipartFile[] getImgFiles() {
+		return imgFiles;
+	}
+
+	public void setImgFiles(MultipartFile[] imgFiles) {
+		this.imgFiles = imgFiles;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
 				"start=" + start +
 				", limit=" + limit +
 				", type=" + type +
+				", imgFile=" + imgFile +
+				", imgFiles=" + Arrays.toString(imgFiles) +
 				", phone='" + phone + '\'' +
 				", email='" + email + '\'' +
 				", userAddress='" + userAddress + '\'' +
 				", loginPwd='" + loginPwd + '\'' +
 				", nickName='" + nickName + '\'' +
 				", headImgUrl='" + headImgUrl + '\'' +
-				", headImg=" + headImg +
 				", bgImgUrl='" + bgImgUrl + '\'' +
-				", bgImg=" + bgImg +
 				", gender=" + gender +
 				", signature='" + signature + '\'' +
 				", contact='" + contact + '\'' +
@@ -518,8 +523,8 @@ public class UserParam{
 				", name='" + name + '\'' +
 				", identity='" + identity + '\'' +
 				", payPwd='" + payPwd + '\'' +
-				", identityImgCover=" + identityImgCover +
-				", identityImgBack=" + identityImgBack +
+				", identityImgCoverUrl='" + identityImgCoverUrl + '\'' +
+				", identityImgBackUrl='" + identityImgBackUrl + '\'' +
 				", receiverName='" + receiverName + '\'' +
 				", receiverPhone='" + receiverPhone + '\'' +
 				", province='" + province + '\'' +

@@ -12,9 +12,9 @@ public interface UserInfoExtService {
      * @param token
      * @param name
      * @param identity
-     * @param identityImgCover
-     * @param identityImgBack
+     * @param identityImgCoverUrl
+     * @param identityImgBackUrl
      * @throws ServiceException
      */
-    void certification(String token, String name, String identity, MultipartFile identityImgCover, MultipartFile identityImgBack) throws ServiceException;
+    void certification(String token, String name, String identity, String identityImgCoverUrl, String identityImgBackUrl) throws ServiceException;
 }
