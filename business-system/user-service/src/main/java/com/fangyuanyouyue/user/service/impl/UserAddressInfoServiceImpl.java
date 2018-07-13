@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.service.impl;
 
-import com.fangyuanyouyue.user.dao.*;
+import com.fangyuanyouyue.user.dao.UserAddressInfoMapper;
+import com.fangyuanyouyue.user.dao.UserInfoMapper;
 import com.fangyuanyouyue.user.dto.UserAddressDto;
 import com.fangyuanyouyue.user.model.UserAddressInfo;
 import com.fangyuanyouyue.user.model.UserInfo;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,15 +21,7 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
     @Autowired
     private UserInfoMapper userInfoMapper;
     @Autowired
-    private UserThirdPartyMapper userThirdPartyMapper;
-    @Autowired
-    private IdentityAuthApplyMapper identityAuthApplyMapper;
-    @Autowired
-    private UserInfoExtMapper userInfoExtMapper;
-    @Autowired
     private UserAddressInfoMapper userAddressInfoMapper;
-    @Autowired
-    private UserVipMapper userVipMapper;
     @Autowired
     protected RedisTemplate redisTemplate;
 
