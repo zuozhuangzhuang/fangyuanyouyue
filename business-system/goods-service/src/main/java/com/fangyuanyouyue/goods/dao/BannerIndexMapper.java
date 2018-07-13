@@ -23,5 +23,5 @@ public interface BannerIndexMapper {
      * 获取首页轮播图列表
      * @return
      */
-    List<BannerIndex> getBanner();
+    List<BannerIndex> getBanner(Integer type);
 }
