@@ -218,6 +218,34 @@ public class GoodsController extends BaseController{
         }
     }
 
+    //商品详情
+    @ApiOperation(value = "商品详情", notes = "商品详情",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "goodsId", value = "商品id", required = true, dataType = "int", paramType = "query")
+    })
+    @GetMapping(value = "/goodsInfo")
+    @ResponseBody
+    public String goodsInfo(GoodsParam param) throws IOException{
+        try {
+            log.info("----》商品详情《----");
+            log.info("参数："+param.toString());
+
+            if(param.getGoodsId() == null){
+                return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
+            }
+            //TODO 商品详情
+            GoodsDto goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
+
+            return toSuccess(goodsDto,"商品详情成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
     //分类列表
     @ApiOperation(value = "获取分类列表", notes = "获取分类列表",response = ResultUtil.class)
     @GetMapping(value = "/categoryList")
@@ -269,33 +297,7 @@ public class GoodsController extends BaseController{
         }
     }
 
-    //商品详情
-    @ApiOperation(value = "商品详情", notes = "商品详情",response = ResultUtil.class)
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodsId", value = "商品id", required = true, dataType = "int", paramType = "query")
-    })
-    @GetMapping(value = "/goodsInfo")
-    @ResponseBody
-    public String goodsInfo(GoodsParam param) throws IOException{
-        try {
-            log.info("----》商品详情《----");
-            log.info("参数："+param.toString());
 
-            if(param.getGoodsId() == null){
-                return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
-            }
-            //TODO 商品详情
-            GoodsDto goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
-
-            return toSuccess(goodsDto,"商品详情成功！");
-        } catch (ServiceException e) {
-            e.printStackTrace();
-            return toError(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-        }
-    }
 
     //获取首页轮播图
     @ApiOperation(value = "获取首页轮播图", notes = "获取首页轮播图",response = ResultUtil.class)
@@ -431,46 +433,27 @@ public class GoodsController extends BaseController{
     }
 
 
+    //热门分类
+    @ApiOperation(value = "热门分类", notes = "热门分类",response = ResultUtil.class)
+    @GetMapping(value = "/hotCategary")
+    @ResponseBody
+    public String hotCategary() throws IOException{
+        try {
+            log.info("----》热门分类《----");
+            //TODO 热门分类
+            List<GoodsCategoryDto> goodsCategoryDtos = goodsInfoService.hotCategary();
+            return toSuccess(goodsCategoryDtos, "获取热门分类成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
 
 
-//
-//    //我的商品
-//    @ApiOperation(value = "我的商品", notes = "我的商品")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "token  ", value = "用户token", required = true, dataType = "string", paramType = "query"),
-//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "int", paramType = "query"),
-//            @ApiImplicitParam(name = "search", value = "搜索内容（标题和内容）", dataType = "string", paramType = "query")
-//    })
-//    @PostMapping(value = "/userGoods")
-//    @ResponseBody
-//    public String userGoods(GoodsParam param) throws IOException {
-//        try {
-//            log.info("----》我的商品《----");
-//            log.info("参数："+param.toString());
-//
-//            if(param.getGoodsId()==null || param.getGoodsId().intValue()==0){
-//                return toError("商品id不能为空！");
-//            }
-//            if(param.getCatalogId()==null || param.getCatalogId().intValue()==0){
-//                return toError("推荐类型不能为空！");
-//            }
-//            if(param.getStart()==null){
-//                return toError("start不能为空！");
-//            }
-//            if(param.getLimit()==null){
-//                return toError("limit不能为空！");
-//            }
-//            //TODO 我的商品
-//
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的商品成功！");
-//            return toResult(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-//        }
-//    }
 
     //我拍下的商品
 //

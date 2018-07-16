@@ -1,11 +1,10 @@
 package com.fangyuanyouyue.goods.dao;
 
 import com.fangyuanyouyue.goods.model.GoodsCategory;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-@Mapper
 public interface GoodsCategoryMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -32,4 +31,16 @@ public interface GoodsCategoryMapper {
      * @return
      */
     List<GoodsCategory> getChildCategoryList(Integer parentId);
+
+    /**
+     * 根据ID修改热度
+     * @param goodsCategoryIds
+     */
+    void addSearchCountByCategoryIds(@Param("goodsCategoryIds") Integer[] goodsCategoryIds);
+
+    /**
+     * 热门分类列表
+     * @return
+     */
+    List<GoodsCategory> getHotCategaryList();
 }

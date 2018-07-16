@@ -72,6 +72,10 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
 //        PageHelper.startPage(param.getStart(), param.getLimit());
         List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(param.getUserId(),param.getStatus(),param.getSearch(),
                 param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit(),param.getType(),param.getGoodsCategoryIds());
+        //分类热度加一
+        if(param.getGoodsCategoryIds() != null && param.getGoodsCategoryIds().length>0){
+            goodsCategoryMapper.addSearchCountByCategoryIds(param.getGoodsCategoryIds());
+        }
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
             goodsDtos.add(setDtoByGoodsInfo(goodsInfo));
@@ -334,5 +338,13 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         List<HotSearch> hotSearchList = hotSearchMapper.getHotSearchList();
         List<SearchDto> searchDtos = SearchDto.toDtoList(hotSearchList);
         return searchDtos;
+    }
+
+    @Override
+    public List<GoodsCategoryDto> hotCategary() throws ServiceException {
+        PageHelper.startPage(0,10);
+        List<GoodsCategory> hotCategaryList = goodsCategoryMapper.getHotCategaryList();
+        List<GoodsCategoryDto> goodsCategoryDtos = GoodsCategoryDto.toDtoList(hotCategaryList);
+        return goodsCategoryDtos;
     }
 }

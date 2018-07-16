@@ -93,7 +93,7 @@ public class CommentController extends BaseController{
     @ApiOperation(value = "评论点赞", notes = "评论点赞",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "commentId", value = "回复评论id", dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "commentId", value = "回复评论id",required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/commentLikes")
     @ResponseBody

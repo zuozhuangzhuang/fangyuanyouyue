@@ -94,5 +94,10 @@ public interface GoodsInfoService {
      */
     List<SearchDto> hotSearch() throws ServiceException;
 
-
+    /**
+     * 热门分类
+     * @return
+     * @throws ServiceException
+     */
+    List<GoodsCategoryDto> hotCategary() throws ServiceException;
 }

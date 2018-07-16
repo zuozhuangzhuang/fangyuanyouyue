@@ -47,6 +47,7 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsList() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/goodsList")
+//                .param("token","10025FY1531699708772")
 //                .param("userId","1")
                 //商品状态 普通商品 1出售中 2已售出 5删除
 //                .param("status","1")
@@ -54,7 +55,7 @@ public class GoodsControllerTest {
                 .param("limit","10")
 //                .param("search","")
                 //综合 1：综合排序 2：信用排序 3：价格升序 4：价格降序
-                .param("synthesize","2")
+//                .param("synthesize","2")
 //                .param("priceMin","10")
 //                .param("priceMax","1000")
                 //品质 1：认证店铺 2：官方保真 3：高信誉度 4.我的关注
@@ -69,24 +70,26 @@ public class GoodsControllerTest {
     }
 
     /**
-     * 添加商品
+     * 发布商品/抢购
      * @throws Exception
      */
     @Test
     @Transactional
     public void addGoods() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.multipart("/goods/addGoods")
-                .file(new MockMultipartFile("file1", "1.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
-                .param("userId","1")
-                .param("goodsInfoName","123")
-                .param("goodsCategoryIds","10")
-                .param("description","10")
-                .param("price","10")
+        mvc.perform(MockMvcRequestBuilders.post("/goods/addGoods")
+                .param("token","10025FY1531699708772")
+                .param("goodsInfoName","我是商品")
+                .param("goodsCategoryIds","10,21")
+                .param("description","这是个商品，你爱信不信")
+                .param("price","1000")
                 .param("postage","10")
-                .param("sort","1")
                 .param("label","1")
-                .param("type","10")
-                .param("status","10")
+//                .param("floorPrice","")
+//                .param("intervalTime","")
+//                .param("markdown","")
+                .param("type","1")
+                .param("status","1")
+                .param("imgUrls","http://app.fangyuanyouyue.com/static/pic/default/001.jpg,http://app.fangyuanyouyue.com/static/pic/default/002.jpg")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -100,8 +103,8 @@ public class GoodsControllerTest {
     @Transactional
     public void deleteGoods() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/deleteGoods")
-                .param("userId","0")
-                .param("goodsInfoIds","0")
+                .param("token","10025FY1531699708772")
+                .param("goodsInfoIds","1,2,3")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -120,29 +123,6 @@ public class GoodsControllerTest {
                 .andReturn();
     }
 
-//    /**
-//     *
-//     * @throws Exception
-//     */
-//    @Test
-//    @Transactional
-//    public void similarGoods() throws Exception {
-//        mvc.perform(MockMvcRequestBuilders.post("/goods/similarGoods")
-//                .param("token","0")
-//                .param("catalogId","0")
-//                .param("title","10")
-//                .param("price","10")
-//                .param("file","10")
-//                .param("imgWidth","10")
-//                .param("imgHeight","10")
-//                .param("description","10")
-//                .param("isSpecial","10")
-//                .param("postage","10")
-//                .param("type","10")
-//                .accept(MediaType.APPLICATION_JSON))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andReturn();
-//    }
 
     /**
      * 获取分类列表
@@ -174,6 +154,20 @@ public class GoodsControllerTest {
     }
 
     /**
+     * 获取首页轮播图
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void getBanner() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/getBanner")
+                .param("type","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
      * 热门搜索
      * @throws Exception
      */
@@ -187,16 +181,16 @@ public class GoodsControllerTest {
     }
 
     /**
-     * 我的购物车
+     * 热门分类
      * @throws Exception
      */
     @Test
     @Transactional
-    public void getCart() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/goods/getCart")
-                .param("token","10022FY1531365304072")
+    public void hotCategary() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/hotCategary")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
+
 }

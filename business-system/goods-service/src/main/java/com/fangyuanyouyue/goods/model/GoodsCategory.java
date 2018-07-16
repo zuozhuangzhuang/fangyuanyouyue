@@ -20,6 +20,8 @@ public class GoodsCategory {
 
     private Integer status;//状态
 
+    private Integer searchCount;//搜索次数
+
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
@@ -78,6 +80,14 @@ public class GoodsCategory {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getSearchCount() {
+        return searchCount;
+    }
+
+    public void setSearchCount(Integer searchCount) {
+        this.searchCount = searchCount;
     }
 
     public Date getAddTime() {

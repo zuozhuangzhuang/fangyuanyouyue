@@ -22,7 +22,8 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 @ContextConfiguration
 @Rollback
-public class CommentControllerTest {
+public class CartControllerTest {
+
     @Autowired
     private WebApplicationContext context;
 
@@ -35,63 +36,50 @@ public class CommentControllerTest {
                 .build();
     }
 
-
     /**
-     * 发布评论/回复
+     * 添加商品到购物车
      * @throws Exception
      */
     @Test
     @Transactional
-    public void addComment() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/addComment")
-                //用户token：notNull
+    public void addGoodsToCart() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/cart/addGoodsToCart")
                 .param("token","10025FY1531699708772")
-                //商品id：notNull
-                .param("goodsId","1")
-                //回复评论id
-                .param("commentId","")
-                //评论内容：notNull
-                .param("content","这是啥！")
-                //图片地址1
-                .param("img1Url","")
-                //图片地址2
-                .param("img2Url","")
-                //图片地址3
-                .param("img3Url","")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 评论点赞
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void commentLikes() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/commentLikes")
-                //用户token：notNull
-                .param("token","10025FY1531699708772")
-                //评论id
-                .param("commentId","8")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 查看全部评论
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void getComments() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/getComments")
-                //商品ID
                 .param("goodsId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
+
+
+    /**
+     * 我的购物车
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void getCart() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/cart/getCart")
+                .param("token","10025FY1531699708772")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+
+    /**
+     * 移出购物车
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void cartRemove() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/cart/cartRemove")
+                .param("token","10025FY1531699708772")
+                .param("cartDetailIds","1,2,3")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
 }
