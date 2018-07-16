@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.dto;
 
 import com.fangyuanyouyue.user.model.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class UserDto {
     }
 
     public UserDto(String token,UserInfo userInfo, UserVip userVip, UserInfoExt userInfoExt,IdentityAuthApply identityAuthApply) {
-        if(token != null && !token.equals("")){
+        if(StringUtils.isNotEmpty(token)){
             this.token = token;
         }
         //UserInfo
