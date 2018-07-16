@@ -697,7 +697,26 @@ public class UserController extends BaseController {
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
-
+    @ApiOperation(value = "获取用户信息", notes = "获取用户信息",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "卖家ID", dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/userInfo")
+    @ResponseBody
+    public String userInfo(UserParam param) throws IOException {
+        try {
+            log.info("----》获取用户信息《----");
+            log.info("参数："+param.toString());
+            if(param.getUserId() == null){
+                return toError(ReCode.FAILD.getValue(),"用户ID不能为空！");
+            }
+            UserDto userDto = userInfoService.userInfo(param.getUserId());
+            return toSuccess(userDto,"获取用户信息成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
 //    @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
 //    @ApiImplicitParams({

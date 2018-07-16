@@ -370,7 +370,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @return
      * @throws ServiceException
      */
-    public UserDto setUserDtoByInfo(String token,UserInfo user) throws ServiceException{
+    private UserDto setUserDtoByInfo(String token,UserInfo user) throws ServiceException{
         if(user == null){
             throw new ServiceException("用户错误！");
         }else{
@@ -543,7 +543,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      * @param token
      * @param userId
      */
-    public String setToken(String token,Integer userId){
+    private String setToken(String token,Integer userId){
         //生成用户token，存到Redis
         token = 10000+userId+"FY"+DateStampUtils.getGMTUnixTimeByCalendar()+"";
         redisTemplate.opsForValue().set(token,userId);
@@ -573,7 +573,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             JSONArray goodsList = JSONArray.parseArray(jsonObject.getString("data"));
             for(int i=0;i<goodsList.size();i++){
                 System.out.println("goods:"+goodsList.get(i));
-//            for(JSONArray goods:goodsList.toArray()){
                 JSONObject goods = JSONObject.parseObject(goodsList.get(i).toString());
                 if(i == 0){
                     shopDto.setImgUrl1(goods.getString("mainUrl"));
@@ -581,7 +580,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                     shopDto.setImgUrl2(goods.getString("mainUrl"));
                 }else if(i == 2){
                     shopDto.setImgUrl3(goods.getString("mainUrl"));
-
+                }else{
+                    throw new ServiceException("");
                 }
             }
         }
@@ -596,5 +596,16 @@ public class UserInfoServiceImpl implements UserInfoService {
         System.out.println("jsonObject:"+jsonObject);
         JSONObject goodsList = JSONArray.parseObject(jsonObject.getString("data"));
         System.out.println("goodsList:"+goodsList);
+    }
+
+    @Override
+    public UserDto userInfo(Integer userId) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("获取用户失败！");
+        }else{
+            UserDto userDto = setUserDtoByInfo("",userInfo);
+            return userDto;
+        }
     }
 }

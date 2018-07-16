@@ -10,20 +10,22 @@ import java.util.Date;
 @ApiModel(value = "用户相关参数")
 public class UserParam{
 	//公用
-	@ApiModelProperty(name = "start", value = "起始页", dataType = "Integer",hidden = true)
+
+	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "int",hidden = true)
+	private Integer userId; //用户ID
+
+	@ApiModelProperty(name = "start", value = "起始页", dataType = "int",hidden = true)
 	private Integer start; // 起始页
 
-	@ApiModelProperty(name = "limit", value = "限制页", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "limit", value = "限制页", dataType = "int",hidden = true)
 	private Integer limit; // 限制页
 
-	@ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
+	@ApiModelProperty(name = "type", value = "类型", dataType = "int",hidden = true)
 	private Integer type;//类型
 
 	@ApiModelProperty(name = "imgFile", value = "图片文件", dataType = "file",hidden = true)
 	private MultipartFile imgFile;//图片文件
 
-	@ApiModelProperty(name = "imgFiles", value = "图片文件数组", dataType = "file",hidden = true)
-	private MultipartFile[] imgFiles;//图片文件数组
 
 	//UserInfo
 	@ApiModelProperty(name = "phone", value = "手机号码", dataType = "String",hidden = true)
@@ -486,22 +488,22 @@ public class UserParam{
 		this.identityImgBackUrl = identityImgBackUrl;
 	}
 
-	public MultipartFile[] getImgFiles() {
-		return imgFiles;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setImgFiles(MultipartFile[] imgFiles) {
-		this.imgFiles = imgFiles;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	@Override
 	public String toString() {
 		return "UserParam{" +
-				"start=" + start +
+				"userId=" + userId +
+				", start=" + start +
 				", limit=" + limit +
 				", type=" + type +
 				", imgFile=" + imgFile +
-				", imgFiles=" + Arrays.toString(imgFiles) +
 				", phone='" + phone + '\'' +
 				", email='" + email + '\'' +
 				", userAddress='" + userAddress + '\'' +

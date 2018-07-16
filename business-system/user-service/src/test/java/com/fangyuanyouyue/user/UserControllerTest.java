@@ -354,6 +354,20 @@ public class UserControllerTest {
                 .andReturn();
     }
 
+    /**
+     * 获取个人店铺列表
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void userInfo() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/userInfo")
+                .param("userId","16")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
 //
 //    /**
 //     * 我的粉丝
