@@ -20,7 +20,7 @@
     status, add_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from goods_comment
     where id = #{id,jdbcType=INTEGER}
@@ -174,7 +174,30 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <select id="getCommentsByGoodsId" parameterType="Integer" resultMap="BaseResultMap">
-    select * from goods_comment where goods_id = #{goodsId,jdbcType=INTEGER} and status = 1
+
+  <select id="selectMapByGoodsIdCommentId" parameterType="Integer" resultType="Map">
+    select * from goods_comment a left join user_info b on a.user_id = b.id
+    <where>
+      a.status = 1
+      <if test="commentId != null">
+        and a.comment_id = #{commentId,jdbcType=INTEGER}
+      </if>
+      <if test="goodsId != null">
+        and a.goods_id = #{goodsId,jdbcType=INTEGER}
+      </if>
+    </where>
+    order by a.add_time
+    <if test="start != null and limit != null">
+      limit #{start},#{limit}
+    </if>
+  </select>
+  <select id="selectByCommentId" parameterType="Integer" resultType="Map">
+    select * from goods_comment a left join user_info b on a.user_id = b.id where a.id = #{commentId,jdbcType=INTEGER}
+  </select>
+  <select id="selectCount" parameterType="Integer" resultType="Integer">
+    select count(id) from goods_comment where goods_id = #{goodsId,jdbcType=INTEGER}
+  </select>
+  <select id="selectByGoodsId" parameterType="Integer" resultType="Map">
+    select * from goods_comment a left join user_info b on a.user_id = b.id where a.goods_id = #{goodsId,jdbcType=INTEGER} and ISNULL(a.comment_id)
   </select>
 </mapper>
