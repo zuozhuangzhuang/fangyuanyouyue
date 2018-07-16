@@ -20,21 +20,21 @@ public class GoodsInfo {
 
     private String label;//标签
 
-    private Integer type;//类型 1普通商品 2秒杀商品
+    private Integer type;//类型 1普通商品 2抢购商品
 
-    private Integer status;//状态 普通商品 1出售中 2已售出 5删除
+    private Integer status;//状态 1出售中 2已售出 5删除
 
     private BigDecimal floorPrice;//最低价
 
-    private Date intervalTime;//降价时间间隔
+    private Long intervalTime;//降价时间间隔
 
     private BigDecimal markdown;//降价幅度
+
+    private Date lastIntervalTime;//最后一次降价时间
 
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
-
-
 
     public Integer getId() {
         return id;
@@ -116,11 +116,11 @@ public class GoodsInfo {
         this.floorPrice = floorPrice;
     }
 
-    public Date getIntervalTime() {
+    public Long getIntervalTime() {
         return intervalTime;
     }
 
-    public void setIntervalTime(Date intervalTime) {
+    public void setIntervalTime(Long intervalTime) {
         this.intervalTime = intervalTime;
     }
 
@@ -130,6 +130,14 @@ public class GoodsInfo {
 
     public void setMarkdown(BigDecimal markdown) {
         this.markdown = markdown;
+    }
+
+    public Date getLastIntervalTime() {
+        return lastIntervalTime;
+    }
+
+    public void setLastIntervalTime(Date lastIntervalTime) {
+        this.lastIntervalTime = lastIntervalTime;
     }
 
     public Date getAddTime() {

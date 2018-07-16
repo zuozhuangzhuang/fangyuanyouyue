@@ -1,13 +1,11 @@
 package com.fangyuanyouyue.goods.dto;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fangyuanyouyue.goods.model.GoodsComment;
 import com.fangyuanyouyue.goods.model.GoodsCorrelation;
 import com.fangyuanyouyue.goods.model.GoodsImg;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,9 +38,11 @@ public class GoodsDto {
 
     private BigDecimal floorPrice;//最低价
 
-    private Date intervalTime;//降价时间间隔
+    private Long intervalTime;//降价时间间隔
 
     private BigDecimal markdown;//降价幅度
+
+    private Date lastIntervalTime;//最后一次降价时间
 
     //GoodsImg
     private List<GoodsImgDto> goodsImgDtos;//商品图片
@@ -55,16 +55,17 @@ public class GoodsDto {
     //GoodsComment
     private List<GoodsCommentDto> goodsCommentDtos;//商品评论列表
 
+    private Integer commentCount;//商品评论总数
+
     //公用
-    private Integer type;//类型 1普通商品 2秒杀商品 /1主图（展示在第一张的图片） 2次图
+    private Integer type;//类型 1普通商品 2抢购商品 /1主图（展示在第一张的图片） 2次图
 
     private String userAddress;//店家地址
 
     public GoodsDto() {
-
     }
 
-    public GoodsDto(JSONObject user,GoodsInfo goodsInfo, List<GoodsImg> goodsImgs, List<GoodsCorrelation> goodsCorrelations, List<GoodsComment> goodsComments) {
+    public GoodsDto(JSONObject user,GoodsInfo goodsInfo, List<GoodsImg> goodsImgs, List<GoodsCorrelation> goodsCorrelations, List<GoodsCommentDto> goodsCommentDtos) {
         if(user != null){
             this.nickName = user.getString("nickName");
             this.headImgUrl = user.getString("headImgUrl");
@@ -85,6 +86,7 @@ public class GoodsDto {
             this.floorPrice = goodsInfo.getFloorPrice();
             this.intervalTime = goodsInfo.getIntervalTime();
             this.markdown = goodsInfo.getMarkdown();
+            this.lastIntervalTime = goodsInfo.getLastIntervalTime();
         }
         //GoodsImg
         if(goodsImgs != null && goodsImgs.size()>0){
@@ -100,10 +102,9 @@ public class GoodsDto {
             //GoodsCorrelation
             this.goodsCorrelations = GoodsCorrelationDto.toDtoList(goodsCorrelations);
         }
-
         //GoodsComment
-        if(goodsComments != null && goodsComments.size()>0){
-            this.goodsCommentDtos = GoodsCommentDto.toDtoList(goodsComments);
+        if(goodsCommentDtos != null && goodsCommentDtos.size()>0){
+            this.goodsCommentDtos = goodsCommentDtos;
         }
     }
 
@@ -251,11 +252,11 @@ public class GoodsDto {
         this.floorPrice = floorPrice;
     }
 
-    public Date getIntervalTime() {
+    public Long getIntervalTime() {
         return intervalTime;
     }
 
-    public void setIntervalTime(Date intervalTime) {
+    public void setIntervalTime(Long intervalTime) {
         this.intervalTime = intervalTime;
     }
 
@@ -265,5 +266,21 @@ public class GoodsDto {
 
     public void setMarkdown(BigDecimal markdown) {
         this.markdown = markdown;
+    }
+
+    public Date getLastIntervalTime() {
+        return lastIntervalTime;
+    }
+
+    public void setLastIntervalTime(Date lastIntervalTime) {
+        this.lastIntervalTime = lastIntervalTime;
+    }
+
+    public Integer getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(Integer commentCount) {
+        this.commentCount = commentCount;
     }
 }

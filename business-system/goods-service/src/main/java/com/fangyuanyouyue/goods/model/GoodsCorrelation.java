@@ -2,9 +2,6 @@ package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
 
-/**
- * 商品分类关联表
- */
 public class GoodsCorrelation {
     private Integer id;//唯一自增ID
 
@@ -12,9 +9,12 @@ public class GoodsCorrelation {
 
     private Integer goodsId;//商品ID
 
+    private Integer categoryParentId;//商品分类父ID
+
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
 
     public Integer getId() {
         return id;
@@ -38,6 +38,14 @@ public class GoodsCorrelation {
 
     public void setGoodsId(Integer goodsId) {
         this.goodsId = goodsId;
+    }
+
+    public Integer getCategoryParentId() {
+        return categoryParentId;
+    }
+
+    public void setCategoryParentId(Integer categoryParentId) {
+        this.categoryParentId = categoryParentId;
     }
 
     public Date getAddTime() {

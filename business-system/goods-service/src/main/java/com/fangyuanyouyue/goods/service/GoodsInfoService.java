@@ -1,6 +1,5 @@
 package com.fangyuanyouyue.goods.service;
 
-import com.fangyuanyouyue.goods.dto.CartShopDto;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.dto.SearchDto;

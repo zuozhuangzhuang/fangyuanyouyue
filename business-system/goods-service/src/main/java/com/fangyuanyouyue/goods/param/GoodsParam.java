@@ -5,8 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 
-@ApiModel(value = "参数类")
+@ApiModel(value = "商品参数类")
 public class GoodsParam{
     //公用
     @ApiModelProperty(name = "start", value = "起始页", dataType = "Integer",hidden = true)
@@ -59,6 +60,14 @@ public class GoodsParam{
     @ApiModelProperty(name = "sort", value = "排序", dataType = "int",hidden = true)
     private Integer sort;//排序
 
+    @ApiModelProperty(name = "floorPrice", value = "最低价", dataType = "BigDecimal",hidden = true)
+    private BigDecimal floorPrice;//最低价
+
+    @ApiModelProperty(name = "intervalTime", value = "降价时间间隔", dataType = "Long",hidden = true)
+    private Long intervalTime;//降价时间间隔
+
+    @ApiModelProperty(name = "markdown", value = "降价幅度", dataType = "BigDecimal",hidden = true)
+    private BigDecimal markdown;//降价幅度
 
 
     //GoodsImg
@@ -94,9 +103,6 @@ public class GoodsParam{
 
     @ApiModelProperty(name = "content", value = "评论内容", dataType = "String",hidden = true)
     private String content;//评论内容
-
-    @ApiModelProperty(name = "likesCount", value = "点赞次数", dataType = "int",hidden = true)
-    private Integer likesCount;//点赞次数
 
     @ApiModelProperty(name = "img1Url", value = "图片地址1", dataType = "String",hidden = true)
     private String img1Url;//图片地址1
@@ -158,7 +164,7 @@ public class GoodsParam{
     private BigDecimal priceMax;//最大价格
 
     @ApiModelProperty(name = "quality", value = "品质", dataType = "int",hidden = true)
-    private Integer quality;//品质 1：认证店铺 2：官方保真 3：高信誉度
+    private Integer quality;//品质 1：认证店铺 2：官方保真 3：高信誉度 4：我的关注
 
     //轮播图 BannerIndex
     @ApiModelProperty(name = "bannerIndexId", value = "轮播图ID", dataType = "int",hidden = true)
@@ -304,14 +310,6 @@ public class GoodsParam{
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Integer getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(Integer likesCount) {
-        this.likesCount = likesCount;
     }
 
     public String getImg1Url() {
@@ -514,6 +512,30 @@ public class GoodsParam{
         this.imgUrl = imgUrl;
     }
 
+    public BigDecimal getFloorPrice() {
+        return floorPrice;
+    }
+
+    public void setFloorPrice(BigDecimal floorPrice) {
+        this.floorPrice = floorPrice;
+    }
+
+    public Long getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(Long intervalTime) {
+        this.intervalTime = intervalTime;
+    }
+
+    public BigDecimal getMarkdown() {
+        return markdown;
+    }
+
+    public void setMarkdown(BigDecimal markdown) {
+        this.markdown = markdown;
+    }
+
     @Override
     public String toString() {
         return "GoodsParam{" +
@@ -533,11 +555,13 @@ public class GoodsParam{
                 ", postage=" + postage +
                 ", label='" + label + '\'' +
                 ", sort=" + sort +
+                ", floorPrice=" + floorPrice +
+                ", intervalTime=" + intervalTime +
+                ", markdown=" + markdown +
                 ", goodsImgId=" + goodsImgId +
                 ", goodsCommentId=" + goodsCommentId +
                 ", commentId=" + commentId +
                 ", content='" + content + '\'' +
-                ", likesCount=" + likesCount +
                 ", img1Url='" + img1Url + '\'' +
                 ", img2Url='" + img2Url + '\'' +
                 ", img3Url='" + img3Url + '\'' +

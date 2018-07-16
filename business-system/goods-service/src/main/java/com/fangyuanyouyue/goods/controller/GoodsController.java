@@ -42,7 +42,7 @@ public class GoodsController extends BaseController{
     protected RedisTemplate redisTemplate;
 
     @ApiOperation(value = "获取商品/抢购列表", notes = "根据start和limit获取分页后的商品/抢购，根据用户token获取买家相关商品/抢购列表，" +
-            "根据userId获取卖家相关商品/抢购列表，根据search、synthesizer、priceMin、priceMax、quality对列表进行筛选，根据type进行区分商品和抢购",response = ResultUtil.class)
+            "根据userId获取卖家相关商品/抢购列表，根据search、synthesizer、priceMin、priceMax、quality、goodsCategoryIds对列表进行筛选，根据type进行区分商品和抢购",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token，不为空则为：我的商品", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "userId", value = "卖家id，不为空则为：他的商品", dataType = "int", paramType = "query"),
@@ -53,8 +53,9 @@ public class GoodsController extends BaseController{
             @ApiImplicitParam(name = "synthesize", value = "综合 1：综合排序 2：信用排序 3：价格升序 4：价格降序", dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "priceMin", value = "最小价格", dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "priceMax", value = "最大价格", dataType = "BigDecimal", paramType = "query"),
-            @ApiImplicitParam(name = "quality", value = "品质 1：认证店铺 2：官方保真 3：高信誉度", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1普通商品 2抢购商品",required = true, dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "quality", value = "品质 1：认证店铺 2：官方保真 3：高信誉度 4：我的关注", dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1普通商品 2抢购商品",required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）",allowMultiple = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/goodsList")
     @ResponseBody
@@ -94,7 +95,7 @@ public class GoodsController extends BaseController{
         }
     }
 
-    @ApiOperation(value = "添加商品", notes = "添加商品",response = ResultUtil.class)
+    @ApiOperation(value = "发布商品/抢购", notes = "发布商品/抢购",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsInfoName", value = "商品名称", required = true, dataType = "String", paramType = "query"),
@@ -114,7 +115,7 @@ public class GoodsController extends BaseController{
     @ResponseBody
     public String addGoods(GoodsParam param) throws IOException {
         try {
-            log.info("----》发布商品《----");
+            log.info("----》发布商品/抢购《----");
             log.info("参数："+param.toString());
             //验证用户
             if(StringUtils.isEmpty(param.getToken())){
@@ -129,28 +130,39 @@ public class GoodsController extends BaseController{
             redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
             if(StringUtils.isEmpty(param.getGoodsInfoName())){
-                return toError(ReCode.FAILD.getValue(),"商品名称不能为空！");
+                return toError(ReCode.FAILD.getValue(),"标题不能为空！");
             }
             if(param.getGoodsCategoryIds().length<1){
-                return toError(ReCode.FAILD.getValue(),"商品分类不能为空！");
+                return toError(ReCode.FAILD.getValue(),"所属分类不能为空！");
             }
             if(StringUtils.isEmpty(param.getDescription())){
-                return toError(ReCode.FAILD.getValue(),"商品详情不能为空！");
+                return toError(ReCode.FAILD.getValue(),"商品描述不能为空！");
             }
             if(param.getPrice()==null){
-                return toError(ReCode.FAILD.getValue(),"商品价格不能为空！");
+                return toError(ReCode.FAILD.getValue(),"价格不能为空！");
             }
             if(param.getPostage() == null){
-                return  toError("商品运费不能为空！");
+                return  toError(ReCode.FAILD.getValue(),"商品运费不能为空！");
             }
             if(param.getType() == null){
-                return  toError("商品类型不能为空！");
+                return  toError(ReCode.FAILD.getValue(),"商品类型不能为空！");
             }
             if(param.getImgUrls() == null || param.getImgUrls().length == 0){
-                return toError("请至少上传一张图片！");
+                return toError(ReCode.FAILD.getValue(),"请至少上传一张图片！");
+            }
+            if(param.getType() == 2){//抢购
+                if(param.getFloorPrice() == null){
+                    return toError(ReCode.FAILD.getValue(),"最低价不能为空！");
+                }
+                if(param.getIntervalTime() == null){
+                    return toError(ReCode.FAILD.getValue(),"降价时间间隔不能为空！");
+                }
+                if(param.getMarkdown() == null){
+                    return toError(ReCode.FAILD.getValue(),"降价幅度不能为空！");
+                }
             }
             GoodsDto goodsDto = goodsInfoService.addGoods(userId,user.getString("nickName"),param);
-            return toSuccess(goodsDto,"添加商品成功！");
+            return toSuccess(goodsDto,"发布商品成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());

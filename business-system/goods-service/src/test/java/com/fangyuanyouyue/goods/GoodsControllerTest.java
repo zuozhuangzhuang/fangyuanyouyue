@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GoodsServiceApplication.class)
 @WebAppConfiguration
@@ -46,15 +48,21 @@ public class GoodsControllerTest {
     public void goodsList() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/goodsList")
 //                .param("userId","1")
+                //商品状态 普通商品 1出售中 2已售出 5删除
 //                .param("status","1")
                 .param("start","0")
                 .param("limit","10")
 //                .param("search","")
+                //综合 1：综合排序 2：信用排序 3：价格升序 4：价格降序
                 .param("synthesize","2")
 //                .param("priceMin","10")
 //                .param("priceMax","1000")
+                //品质 1：认证店铺 2：官方保真 3：高信誉度 4.我的关注
 //                .param("quality","1")
-                .param("type","2")
+                //类型 1普通商品 2抢购商品
+                .param("type","1")
+                .param("goodsCategoryIds", "23,121,5")
+
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -106,7 +114,7 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsInfo() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/goodsInfo")
-                .param("goodsId","6")
+                .param("goodsId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

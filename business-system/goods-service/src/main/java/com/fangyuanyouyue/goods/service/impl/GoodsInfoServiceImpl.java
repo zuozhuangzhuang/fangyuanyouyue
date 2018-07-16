@@ -3,6 +3,7 @@ package com.fangyuanyouyue.goods.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
+import com.fangyuanyouyue.goods.dto.GoodsCommentDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.dto.SearchDto;
 import com.fangyuanyouyue.goods.model.*;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service(value = "goodsInfoService")
 public class GoodsInfoServiceImpl implements GoodsInfoService{
@@ -38,11 +40,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     private BannerIndexMapper bannerIndexMapper;
     @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
-    @Value("${pic_server:errorPicServer}")
-    private String PIC_SERVER;// 图片服务器
-
-    @Value("${pic_path:errorPicPath}")
-    private String PIC_PATH;// 图片存放路径
 
     @Override
     public GoodsInfo selectByPrimaryKey(Integer id) {
@@ -74,7 +71,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         //分页
 //        PageHelper.startPage(param.getStart(), param.getLimit());
         List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(param.getUserId(),param.getStatus(),param.getSearch(),
-                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit(),param.getType());
+                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart(),param.getLimit(),param.getType(),param.getGoodsCategoryIds());
         List<GoodsDto> goodsDtos = new ArrayList<>();
         for (GoodsInfo goodsInfo:goodsInfos) {
             goodsDtos.add(setDtoByGoodsInfo(goodsInfo));
@@ -100,6 +97,11 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         goodsInfo.setStatus(param.getStatus());
         goodsInfo.setAddTime(DateStampUtils.getTimesteamp());
         goodsInfo.setUpdateTime(DateStampUtils.getTimesteamp());
+        if(param.getType() == 2){
+            goodsInfo.setFloorPrice(param.getFloorPrice());
+            goodsInfo.setIntervalTime(param.getIntervalTime());
+            goodsInfo.setMarkdown(param.getMarkdown());
+        }
         goodsInfoMapper.insert(goodsInfo);
 
         //初始化商品分类关联表
@@ -129,29 +131,90 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
      * @return
      * @throws ServiceException
      */
-    public GoodsDto setDtoByGoodsInfo(GoodsInfo goodsInfo) throws ServiceException{
+    private GoodsDto setDtoByGoodsInfo(GoodsInfo goodsInfo) throws ServiceException{
         if(goodsInfo == null){
             throw new ServiceException("获取商品失败！");
         }else{
             List<GoodsImg> goodsImgs = goodsImgMapper.getImgsByGoodsId(goodsInfo.getId());
             List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsInfo.getId());
-            List<GoodsComment> goodsComments = goodsCommentMapperl.getCommentsByGoodsId(goodsInfo.getId());
+            //按照先后顺序获取评论
+            List<Map<String, Object>> maps = goodsCommentMapperl.selectMapByGoodsIdCommentId(null,goodsInfo.getId(), 0, 3);
+            List<GoodsCommentDto> goodsCommentDtos = GoodsCommentDto.mapToDtoList(maps);
+            for(GoodsCommentDto goodsCommentDto:goodsCommentDtos){
+                Map<String, Object> map = goodsCommentMapperl.selectByCommentId(goodsCommentDto.getCommentId());
+                if(map != null){
+                    goodsCommentDto.setToUserId((Integer)map.get("user_id"));
+                    goodsCommentDto.setToUserHeadImgUrl((String)map.get("head_img_url"));
+                    goodsCommentDto.setToUserName((String)map.get("nick_name"));
+                }
+            }
+//            if(goodsCommentDtos != null){
+//                circulation:for(GoodsComment goodsComment:goodsComments){
+//                    goodsCommentDtos.add(new GoodsCommentDto(goodsComment));
+//                    if(goodsCommentDtos.size() == 3){
+//                        break;
+//                    }
+//                    //获取评论的回复
+//                    List<GoodsComment> replys = goodsCommentMapperl.selectByGoodsIdCommentId(goodsComment.getCommentId(),goodsInfo.getId());
+//                    if(replys == null){
+//                        //评论没有回复，就获取下一条商品的评论
+//                        continue;
+//                    }else{
+//                        //评论有回复，将回复放到评论的replys中
+//                        List<GoodsCommentDto> replyDtos = new ArrayList<>();
+//                        for(int i=0;i<replys.size();i++){
+//                            GoodsCommentDto replyDto = new GoodsCommentDto(replys.get(i));
+//                            replyDtos.add(new GoodsCommentDto());
+//                            goodsCommentDtos.add(new GoodsCommentDto(replys.get(i)));
+//                            if(goodsCommentDtos.size() == 3){
+//                                break circulation;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
             //获取卖家信息
             String verifyUser = schedualUserService.verifyUserById(goodsInfo.getUserId());
             JSONObject jsonObject = JSONObject.parseObject(verifyUser);
             JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
-            GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsComments);
+            GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsCommentDtos);
+            goodsDto.setCommentCount(goodsCommentMapperl.selectCount(goodsInfo.getId()));
             return goodsDto;
         }
     }
+
     /**
-     * 添加商品图片
+     * 根据商品ID和评论ID获取评论列表
+     * @param commentId
+     * @param goodsId
+     * @return
+     */
+//    public List<GoodsComment> getCommentsByGoodsId(Integer commentId,Integer goodsId) throws ServiceException{
+//        List<GoodsComment> goodsComments;
+//        if(commentId == null){
+//            //商品的最新评论
+//            goodsComments = goodsCommentMapperl.selectByGoodsId(goodsId);
+//            return goodsComments;
+//        }else{
+//            //评论的最新回复
+//            goodsComments = goodsCommentMapperl.selectByGoodsIdCommentId(commentId,goodsId);
+//            if(goodsComments == null){
+//                //没有回复
+//                return null;
+//            }else{
+//                goodsCommentMapperl.selectByGoodsIdCommentId(commentId,goodsId);
+//                return goodsComments;
+//            }
+//        }
+//    }
+    /**
+     * 添加商品图片路径
      * @param goodsId
      * @param type
      * @param sort
      * @throws ServiceException
      */
-    public void saveGoodsPicOne(Integer goodsId, String imgUrl, Integer type,Integer sort) throws ServiceException{
+    private void saveGoodsPicOne(Integer goodsId, String imgUrl, Integer type,Integer sort) throws ServiceException{
         GoodsImg goodsImg = new GoodsImg();
         goodsImg.setAddTime(DateStampUtils.getTimesteamp());
         goodsImg.setGoodsId(goodsId);

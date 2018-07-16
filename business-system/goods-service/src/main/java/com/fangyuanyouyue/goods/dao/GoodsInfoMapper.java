@@ -1,11 +1,13 @@
 package com.fangyuanyouyue.goods.dao;
 
 import com.fangyuanyouyue.goods.model.GoodsInfo;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Mapper
 public interface GoodsInfoMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -35,10 +37,12 @@ public interface GoodsInfoMapper {
      * @param type
      * @return
      */
+
     List<GoodsInfo> getGoodsList(@Param("userId") Integer userId, @Param("status") Integer status, @Param("search") String search,
                                  @Param("priceMin") BigDecimal priceMin, @Param("priceMax") BigDecimal priceMax,
                                  @Param("synthesize")Integer synthesize, @Param("quality")Integer quality,
-                                 @Param("start") Integer start, @Param("limit") Integer limit, @Param("type")Integer type);
+                                 @Param("start") Integer start, @Param("limit") Integer limit, @Param("type")Integer type,
+                                 @Param("goodsCategoryIds")Integer[] goodsCategoryIds);
 
     /**
      * 根据商品ID集合获取商品
@@ -46,4 +50,6 @@ public interface GoodsInfoMapper {
      * @return
      */
     List<GoodsInfo> getGoodsByGoodsIds(@Param("goodsIds") List<Integer> goodsIds,int pageNum, int pageSize);
+
+    List<GoodsInfo> selectGoodsByIntervalTime(@Param("nowTime") Long nowTime);
 }
