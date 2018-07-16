@@ -17,7 +17,7 @@ public class ShopDto {
 
     private Integer userId;//卖家ID
 
-    private Integer gender = 0;//性别，1男 2女 0不确定
+    private Integer gender;//性别，1男 2女 0不确定
 
     private Integer level;//用户等级
 
