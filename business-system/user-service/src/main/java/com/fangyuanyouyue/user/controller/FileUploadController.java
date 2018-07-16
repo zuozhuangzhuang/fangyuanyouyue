@@ -32,7 +32,7 @@ public class FileUploadController extends BaseController {
 
     @ApiOperation(value = "图片上传", notes = "图片上传",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "imgFiles", value = "头像图片数组，格式为：jpeg，png，jpg", allowMultiple = true,dataType = "file", paramType = "form")
+            @ApiImplicitParam(name = "imgFile", value = "头像图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form")
     })
     @PostMapping(value = "/uploadPic")
     @ResponseBody
@@ -40,7 +40,7 @@ public class FileUploadController extends BaseController {
         try {
             log.info("----》图片上传《----");
             log.info("参数：" + param.toString());
-            if(param.getImgFile() == null || param.getImgFile().getSize() == 0){
+            if(param.getImgFile() == null){
                 return toError(ReCode.FAILD.getValue(),"图片为空");
             }
             String name = param.getImgFile().getOriginalFilename().toLowerCase();
@@ -49,8 +49,8 @@ public class FileUploadController extends BaseController {
                 return toError("请上传JPEG/PNG/JPG格式化图片！");
             }
             //图片上传
-            List<String> urls= fileUploadService.uploadFile(param.getImgFiles());
-            return toSuccess(urls,"图片上传成功");
+            String url= fileUploadService.uploadFile(param.getImgFile());
+            return toSuccess(url,"图片上传成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());

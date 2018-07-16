@@ -8,9 +8,9 @@ import java.util.List;
 public interface FileUploadService {
     /**
      * 上传文件，获取下载url
-     * @param files
+     * @param file
      * @return
      * @throws ServiceException
      */
-    List<String> uploadFile(MultipartFile[] files) throws ServiceException;
+    String uploadFile(MultipartFile file) throws ServiceException;
 }

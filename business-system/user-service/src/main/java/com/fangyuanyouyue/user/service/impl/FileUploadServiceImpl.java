@@ -29,26 +29,22 @@ public class FileUploadServiceImpl implements FileUploadService{
     private String bucket;
 
     @Override
-    public List<String> uploadFile(MultipartFile[] files){
-        List<String> firleUrls = new ArrayList<>();
-        for(MultipartFile file:files){
-            String fileUrl = null;
-            String fileName = getFileName(file.getOriginalFilename());
-            fileName = "pic" + fileName;
-            try{
-                OSSClient ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
-                // 上传文件流file
-                ossClient.putObject(bucket, fileName, file.getInputStream());
-                // 关闭client
-                ossClient.shutdown();
+    public String uploadFile(MultipartFile file){
+        String fileUrl = null;
+        String fileName = getFileName(file.getOriginalFilename());
+        fileName = "pic" + fileName;
+        try{
+            OSSClient ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
+            // 上传文件流file
+            ossClient.putObject(bucket, fileName, file.getInputStream());
+            // 关闭client
+            ossClient.shutdown();
 
-                fileUrl = ossPath+fileName;
-                firleUrls.add(fileUrl);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+            fileUrl = ossPath+fileName;
+        }catch(Exception e){
+            e.printStackTrace();
         }
-        return firleUrls;
+        return fileUrl;
     }
 
     /**
