@@ -2,6 +2,7 @@ package com.fangyuanyouyue.goods.dao;
 
 import com.fangyuanyouyue.goods.model.GoodsAppraisalDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface GoodsAppraisalDetailMapper {
@@ -15,5 +16,9 @@ public interface GoodsAppraisalDetailMapper {
 
     int updateByPrimaryKeySelective(GoodsAppraisalDetail record);
 
+    int updateByPrimaryKeyWithBLOBs(GoodsAppraisalDetail record);
+
     int updateByPrimaryKey(GoodsAppraisalDetail record);
+
+    GoodsAppraisalDetail selectByUserIdGoodsId(@Param("userId") Integer userId, @Param("goodsId") Integer goodsId);
 }

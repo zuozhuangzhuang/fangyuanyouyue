@@ -42,7 +42,6 @@ public class CartController extends BaseController{
     private CartService cartService;
 
 
-    //TODO 购物车：1.添加商品到购物车 2.查看购物车内商品列表 3.根据店铺区分购物车内商品 4.删除购物车里的商品
     //添加商品到购物车
     @ApiOperation(value = "添加商品到购物车", notes = "添加商品到购物车",response = ResultUtil.class)
     @ApiImplicitParams({
@@ -54,6 +53,7 @@ public class CartController extends BaseController{
     public String addGoodsToCart(GoodsParam param) throws IOException {
         try {
             log.info("----》添加商品到购物车《----");
+            log.info("参数：" + param.toString());
             //验证用户
             if(StringUtils.isEmpty(param.getToken())){
                 return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
@@ -65,7 +65,7 @@ public class CartController extends BaseController{
                 return toError(jsonObject.getString("report"));
             }
 
-            //TODO 添加商品到购物车 返回购物车内商品列表
+            //添加商品到购物车 返回购物车内商品列表
             cartService.addGoodsToCart(userId, param.getGoodsId());
             return toSuccess( "添加商品到购物车成功！");
         } catch (ServiceException e) {
@@ -87,6 +87,7 @@ public class CartController extends BaseController{
     public String getCart(GoodsParam param) throws IOException{
         try {
             log.info("----》我的购物车《----");
+            log.info("参数：" + param.toString());
             //验证用户
             if(StringUtils.isEmpty(param.getToken())){
                 return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
@@ -98,7 +99,7 @@ public class CartController extends BaseController{
                 return toError(jsonObject.getString("report"));
             }
             redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
-            //TODO 我的购物车
+            //我的购物车
             List<CartShopDto> cart = cartService.getCart(userId);
             return toSuccess( cart,"获取我的购物车成功！");
         } catch (ServiceException e) {
@@ -122,6 +123,7 @@ public class CartController extends BaseController{
     public String cartRemove(GoodsParam param) throws IOException{
         try {
             log.info("----》移出购物车《----");
+            log.info("参数：" + param.toString());
             //验证用户
             if(StringUtils.isEmpty(param.getToken())){
                 return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
@@ -136,7 +138,7 @@ public class CartController extends BaseController{
             if(param.getCartDetailIds() == null || param.getCartDetailIds().length == 0){
                 return toError(ReCode.FAILD.getValue(),"购物车详情id不能为空！");
             }
-            //TODO 移出购物车
+            //移出购物车
             cartService.cartRemove(param.getCartDetailIds());
             return toSuccess( "移出购物车成功！");
         } catch (ServiceException e) {

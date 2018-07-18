@@ -51,5 +51,19 @@ public interface GoodsInfoMapper {
      */
     List<GoodsInfo> getGoodsByGoodsIds(@Param("goodsIds") List<Integer> goodsIds,int pageNum, int pageSize);
 
+    /**
+     * 根据当前时间获取需要降价的抢购列表
+     * @param nowTime
+     * @return
+     */
     List<GoodsInfo> selectGoodsByIntervalTime(@Param("nowTime") Long nowTime);
+
+    /**
+     * 获取我收藏/关注的商品、抢购列表
+     * @param userId
+     * @param collectType
+     * @param type
+     * @return
+     */
+    List<GoodsInfo> selectMyCollectGoods(@Param("userId")Integer userId,@Param("collectType")Integer collectType,@Param("type")Integer type);
 }

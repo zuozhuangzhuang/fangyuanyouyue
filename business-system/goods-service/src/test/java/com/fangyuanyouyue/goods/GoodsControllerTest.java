@@ -47,7 +47,7 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsList() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/goodsList")
-//                .param("token","10025FY1531699708772")
+                .param("token","10025FY1531853150345")
 //                .param("userId","1")
                 //商品状态 普通商品 1出售中 2已售出 5删除
 //                .param("status","1")
@@ -58,11 +58,11 @@ public class GoodsControllerTest {
 //                .param("synthesize","2")
 //                .param("priceMin","10")
 //                .param("priceMax","1000")
-                //品质 1：认证店铺 2：官方保真 3：高信誉度 4.我的关注
-//                .param("quality","1")
+                //品质 1：认证店铺 2：官方保真 3：高信誉度 4.我的关注 5：(已完成)已完成
+                .param("quality","5")
                 //类型 1普通商品 2抢购商品
-                .param("type","1")
-                .param("goodsCategoryIds", "23,121,5")
+                .param("type","2")
+//                .param("goodsCategoryIds", "23,121,5")
 
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -77,7 +77,7 @@ public class GoodsControllerTest {
     @Transactional
     public void addGoods() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/addGoods")
-                .param("token","10025FY1531699708772")
+                .param("token","10025FY1531851479276")
                 .param("goodsInfoName","我是商品")
                 .param("goodsCategoryIds","10,21")
                 .param("description","这是个商品，你爱信不信")
@@ -103,7 +103,7 @@ public class GoodsControllerTest {
     @Transactional
     public void deleteGoods() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/goods/deleteGoods")
-                .param("token","10025FY1531699708772")
+                .param("token","10025FY1531851479276")
                 .param("goodsInfoIds","1,2,3")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -188,6 +188,19 @@ public class GoodsControllerTest {
     @Transactional
     public void hotCategary() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/hotCategary")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 获取快速查询条件
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void quickSearch() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/goods/quickSearch")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

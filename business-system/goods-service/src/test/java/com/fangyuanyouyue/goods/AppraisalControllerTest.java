@@ -22,8 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 @ContextConfiguration
 @Rollback
-public class CartControllerTest {
-
+public class AppraisalControllerTest {
     @Autowired
     private WebApplicationContext context;
 
@@ -37,46 +36,23 @@ public class CartControllerTest {
     }
 
     /**
-     * 添加商品到购物车
+     * 申请鉴定
      * @throws Exception
      */
     @Test
     @Transactional
-    public void addGoodsToCart() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/cart/addGoodsToCart")
+    public void addAppraisal() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/appraisal/addAppraisal")
                 .param("token","10025FY1531851479276")
-                .param("goodsId","1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-
-    /**
-     * 我的购物车
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void getCart() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/cart/getCart")
-                .param("token","10025FY1531851479276")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-
-    /**
-     * 移出购物车
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void cartRemove() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/cart/cartRemove")
-                .param("token","10025FY1531851479276")
-                .param("cartDetailIds","1,2,3")
+                .param("goodsIds","12")
+                //鉴定类型 1商家鉴定 2买家
+                .param("type","2")
+                //鉴定标题
+                .param("title","鉴定一下")
+                //鉴定赏金
+                .param("price","10.5")
+                //描述
+                .param("description","我想鉴定一下，这是我家传的宝贝")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

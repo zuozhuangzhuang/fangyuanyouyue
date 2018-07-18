@@ -3,6 +3,9 @@ package com.fangyuanyouyue.goods.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * 商品表
+ */
 public class GoodsInfo {
     private Integer id;
 
@@ -31,6 +34,8 @@ public class GoodsInfo {
     private BigDecimal markdown;//降价幅度
 
     private Date lastIntervalTime;//最后一次降价时间
+
+    private Integer isAppraisal;//是否鉴定 1未鉴定 2已鉴定
 
     private Date addTime;//添加时间
 
@@ -138,6 +143,14 @@ public class GoodsInfo {
 
     public void setLastIntervalTime(Date lastIntervalTime) {
         this.lastIntervalTime = lastIntervalTime;
+    }
+
+    public Integer getIsAppraisal() {
+        return isAppraisal;
+    }
+
+    public void setIsAppraisal(Integer isAppraisal) {
+        this.isAppraisal = isAppraisal;
     }
 
     public Date getAddTime() {

@@ -22,7 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 @WebAppConfiguration
 @ContextConfiguration
 @Rollback
-public class CommentControllerTest {
+public class CollectControllerTest {
     @Autowired
     private WebApplicationContext context;
 
@@ -37,61 +37,44 @@ public class CommentControllerTest {
 
 
     /**
-     * 发布评论/回复
+     * 收藏/关注
      * @throws Exception
      */
     @Test
     @Transactional
-    public void addComment() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/addComment")
-                //用户token：notNull
+    public void collectGoods() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/collect/collectGoods")
                 .param("token","10025FY1531851479276")
-                //商品id：notNull
-                .param("goodsId","1")
-                //回复评论id
-                .param("commentId","")
-                //评论内容：notNull
-                .param("content","这是啥！")
-                //图片地址1
-                .param("img1Url","")
-                //图片地址2
-                .param("img2Url","")
-                //图片地址3
-                .param("img3Url","")
+                //收藏对象ID
+                .param("collectId","1")
+                //类型 1关注 2收藏
+                .param("type","1")
+                //关注/收藏类型 关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
+                .param("collectType","2")
+                //状态 1关注/收藏 2取消关注/收藏
+                .param("status","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
+
     /**
-     * 评论点赞
+     * 收藏/关注
      * @throws Exception
      */
     @Test
     @Transactional
-    public void commentLikes() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/commentLikes")
-                //用户token：notNull
+    public void collectList() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/collect/collectList")
                 .param("token","10025FY1531851479276")
-                //评论id
-                .param("commentId","8")
+                //类型 1关注 2收藏
+                .param("type","1")
+                //关注/收藏类型 关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
+                .param("collectType","2")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
-    /**
-     * 查看全部评论
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void getComments() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/comment/getComments")
-                //商品ID
-                .param("goodsId","1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
 }

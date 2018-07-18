@@ -1,5 +1,6 @@
 package com.fangyuanyouyue.goods.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -12,13 +13,23 @@ public class GoodsAppraisalDetail {
 
     private Integer goodsId;//商品id
 
-    private String option;//鉴定观点
+    private String opinion;//鉴定观点
 
-    private Integer status;//状态 1申请 2真 3假
+    private Integer status;//状态 0申请 1真 2假 3存疑
+
+    private String title;//鉴定标题
+
+    private BigDecimal price;//鉴定赏金
+
+    private String description;//描述
+
+    private Date submitTime;//审核时间
 
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
+    private Integer type;//鉴定类型 1商家鉴定 2买家 3普通用户
 
     public Integer getId() {
         return id;
@@ -44,12 +55,12 @@ public class GoodsAppraisalDetail {
         this.goodsId = goodsId;
     }
 
-    public String getOption() {
-        return option;
+    public String getOpinion() {
+        return opinion;
     }
 
-    public void setOption(String option) {
-        this.option = option == null ? null : option.trim();
+    public void setOpinion(String opinion) {
+        this.opinion = opinion == null ? null : opinion.trim();
     }
 
     public Integer getStatus() {
@@ -58,6 +69,38 @@ public class GoodsAppraisalDetail {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title == null ? null : title.trim();
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Date getSubmitTime() {
+        return submitTime;
+    }
+
+    public void setSubmitTime(Date submitTime) {
+        this.submitTime = submitTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Date getAddTime() {
@@ -74,5 +117,13 @@ public class GoodsAppraisalDetail {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 }

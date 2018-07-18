@@ -44,6 +44,8 @@ public class GoodsDto {
 
     private Date lastIntervalTime;//最后一次降价时间
 
+    private Integer isAppraisal;//是否鉴定 1未鉴定 2已鉴定
+
     //GoodsImg
     private List<GoodsImgDto> goodsImgDtos;//商品图片
 
@@ -87,6 +89,7 @@ public class GoodsDto {
             this.intervalTime = goodsInfo.getIntervalTime();
             this.markdown = goodsInfo.getMarkdown();
             this.lastIntervalTime = goodsInfo.getLastIntervalTime();
+            this.isAppraisal = goodsInfo.getIsAppraisal();
         }
         //GoodsImg
         if(goodsImgs != null && goodsImgs.size()>0){
@@ -282,5 +285,13 @@ public class GoodsDto {
 
     public void setCommentCount(Integer commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public Integer getIsAppraisal() {
+        return isAppraisal;
+    }
+
+    public void setIsAppraisal(Integer isAppraisal) {
+        this.isAppraisal = isAppraisal;
     }
 }

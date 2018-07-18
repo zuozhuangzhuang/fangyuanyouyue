@@ -10,17 +10,20 @@ import java.util.Date;
 @ApiModel(value = "商品参数类")
 public class GoodsParam{
     //公用
-    @ApiModelProperty(name = "start", value = "起始页", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "start", value = "起始页", dataType = "int",hidden = true)
     private Integer start; // 起始页
 
-    @ApiModelProperty(name = "limit", value = "限制页", dataType = "Integer",hidden = true)
+    @ApiModelProperty(name = "limit", value = "限制页", dataType = "int",hidden = true)
     private Integer limit; // 限制页
 
-    @ApiModelProperty(name = "type", value = "类型", dataType = "Integer",hidden = true)
-    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsImg：1主图 2次图 goodsCategory：1普通 2热门 bannerIndex：业务类型,0:商品 1：个人
+    @ApiModelProperty(name = "type", value = "类型", dataType = "int",hidden = true)
+    private Integer type;//类型 goodsInfo：1普通商品 2秒杀商品 goodsImg：1主图 2次图 goodsCategory：1普通 2热门 bannerIndex：业务类型,0:商品 1：个人 collect: 1关注 2收藏
 
     @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "int",hidden = true)
     private Integer goodsId;//商品id
+
+    @ApiModelProperty(name = "goodsId", value = "商品id数组", dataType = "int",hidden = true)
+    private Integer[] goodsIds;//商品id数组
 
     @ApiModelProperty(name = "imgUrl", value = "图片地址", dataType = "String",hidden = true)
     private String imgUrl;//图片地址
@@ -29,11 +32,16 @@ public class GoodsParam{
     private String[] imgUrls;//图片地址数组
 
     @ApiModelProperty(name = "price", value = "价格", dataType = "BigDecimal",hidden = true)
-    private BigDecimal price;//价格
+    private BigDecimal price;//GoodsInfo:价格 Appraisal:鉴定赏金
 
     @ApiModelProperty(name = "status", value = "状态", dataType = "int",hidden = true)
-    private Integer status;//状态 GoodsComment：1正常 2隐藏 GoodsInfo：普通商品 1出售中 2已售出 5删除
+    private Integer status;//状态 GoodsComment：1正常 2隐藏 GoodsInfo：普通商品 1出售中 2已售出 5删除 Appraisal: 0申请 1真 2假 3存疑
 
+    @ApiModelProperty(name = "title", value = "描述标题", dataType = "String",hidden = true)
+    private String title;//BannerIndex描述标题 Appraisal:鉴定标题
+
+    @ApiModelProperty(name = "description", value = "商品详情", dataType = "String",hidden = true)
+    private String description;//GoodsInfo:商品详情  Appraisal:描述
 
     //GoodsInfo
     @ApiModelProperty(name = "userId", value = "卖家id", dataType = "int",hidden = true)
@@ -48,8 +56,6 @@ public class GoodsParam{
     @ApiModelProperty(name = "goodsInfoName", value = "商品名称", dataType = "String",hidden = true)
     private String goodsInfoName;//商品名称
 
-    @ApiModelProperty(name = "description", value = "商品详情", dataType = "String",hidden = true)
-    private String description;//商品详情
 
     @ApiModelProperty(name = "postage", value = "运费", dataType = "BigDecimal",hidden = true)
     private BigDecimal postage;//运费
@@ -166,6 +172,7 @@ public class GoodsParam{
     @ApiModelProperty(name = "quality", value = "品质", dataType = "int",hidden = true)
     private Integer quality;//品质 1：认证店铺 2：官方保真 3：高信誉度 4：我的关注
 
+
     //轮播图 BannerIndex
     @ApiModelProperty(name = "bannerIndexId", value = "轮播图ID", dataType = "int",hidden = true)
     private Integer bannerIndexId;//轮播图ID
@@ -176,9 +183,18 @@ public class GoodsParam{
     @ApiModelProperty(name = "jumpType", value = "跳转类型,0:商品 1：个人", dataType = "int",hidden = true)
     private Integer jumpType;//跳转类型,0:商品 1：个人
 
-    @ApiModelProperty(name = "title", value = "描述标题", dataType = "String",hidden = true)
-    private String title;//描述标题
 
+    //Collect
+    @ApiModelProperty(name = "collectId", value = "收藏对象ID", dataType = "int",hidden = true)
+    private Integer collectId;//收藏对象ID
+
+    @ApiModelProperty(name = "collectType", value = "关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏", dataType = "int",hidden = true)
+    private Integer collectType;//关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
+
+
+    //Appraisal
+    @ApiModelProperty(name = "opinion", value = "鉴定观点", dataType = "String",hidden = true)
+    private String opinion;//鉴定观点
 
 
     public Integer getStart() {
@@ -424,14 +440,6 @@ public class GoodsParam{
         this.search = search;
     }
 
-    public Integer getSynthesize() {
-        return synthesize;
-    }
-
-    public void setSynthesize(Integer synthesize) {
-        this.synthesize = synthesize;
-    }
-
     public BigDecimal getPriceMin() {
         return priceMin;
     }
@@ -446,14 +454,6 @@ public class GoodsParam{
 
     public void setPriceMax(BigDecimal priceMax) {
         this.priceMax = priceMax;
-    }
-
-    public Integer getQuality() {
-        return quality;
-    }
-
-    public void setQuality(Integer quality) {
-        this.quality = quality;
     }
 
     public Integer getBusinessId() {
@@ -536,6 +536,54 @@ public class GoodsParam{
         this.markdown = markdown;
     }
 
+    public Integer getCollectId() {
+        return collectId;
+    }
+
+    public void setCollectId(Integer collectId) {
+        this.collectId = collectId;
+    }
+
+    public Integer getCollectType() {
+        return collectType;
+    }
+
+    public void setCollectType(Integer collectType) {
+        this.collectType = collectType;
+    }
+
+    public String getOpinion() {
+        return opinion;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
+    }
+
+    public Integer[] getGoodsIds() {
+        return goodsIds;
+    }
+
+    public void setGoodsIds(Integer[] goodsIds) {
+        this.goodsIds = goodsIds;
+    }
+
+    public Integer getSynthesize() {
+        return synthesize;
+    }
+
+    public void setSynthesize(Integer synthesize) {
+        this.synthesize = synthesize;
+    }
+
+    public Integer getQuality() {
+        return quality;
+    }
+
+    public void setQuality(Integer quality) {
+        this.quality = quality;
+    }
+
     @Override
     public String toString() {
         return "GoodsParam{" +
@@ -543,15 +591,17 @@ public class GoodsParam{
                 ", limit=" + limit +
                 ", type=" + type +
                 ", goodsId=" + goodsId +
+                ", goodsIds=" + Arrays.toString(goodsIds) +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", imgUrls=" + Arrays.toString(imgUrls) +
                 ", price=" + price +
                 ", status=" + status +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
                 ", userId=" + userId +
                 ", token='" + token + '\'' +
                 ", goodsInfoIds=" + Arrays.toString(goodsInfoIds) +
                 ", goodsInfoName='" + goodsInfoName + '\'' +
-                ", description='" + description + '\'' +
                 ", postage=" + postage +
                 ", label='" + label + '\'' +
                 ", sort=" + sort +
@@ -582,7 +632,9 @@ public class GoodsParam{
                 ", bannerIndexId=" + bannerIndexId +
                 ", businessId=" + businessId +
                 ", jumpType=" + jumpType +
-                ", title='" + title + '\'' +
+                ", collectId=" + collectId +
+                ", collectType=" + collectType +
+                ", opinion='" + opinion + '\'' +
                 '}';
     }
 }

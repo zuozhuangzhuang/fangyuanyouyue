@@ -10,7 +10,7 @@ public class GoodsAppraisal {
 
     private Integer userId;//用户id
 
-    private Integer type;//鉴定类型 1商家鉴定 2买家
+    private String imgurl;//图片地址
 
     private Date addTime;//添加时间
 
@@ -32,12 +32,12 @@ public class GoodsAppraisal {
         this.userId = userId;
     }
 
-    public Integer getType() {
-        return type;
+    public String getImgurl() {
+        return imgurl;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setImgurl(String imgurl) {
+        this.imgurl = imgurl == null ? null : imgurl.trim();
     }
 
     public Date getAddTime() {

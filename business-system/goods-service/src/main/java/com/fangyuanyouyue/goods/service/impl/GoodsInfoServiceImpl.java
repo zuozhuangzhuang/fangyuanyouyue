@@ -2,10 +2,7 @@ package com.fangyuanyouyue.goods.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
-import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
-import com.fangyuanyouyue.goods.dto.GoodsCommentDto;
-import com.fangyuanyouyue.goods.dto.GoodsDto;
-import com.fangyuanyouyue.goods.dto.SearchDto;
+import com.fangyuanyouyue.goods.dto.*;
 import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
@@ -39,6 +36,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     @Autowired
     private BannerIndexMapper bannerIndexMapper;
     @Autowired
+    private GoodsQuickSearchMapper goodsQuickSearchMapper;
+    @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
 
     @Override
@@ -53,7 +52,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     @Override
     public List<GoodsDto> getGoodsInfoList(GoodsParam param) throws ServiceException{
         if(StringUtils.isNotEmpty(param.getSearch())){
-            //TODO 搜索表
             HotSearch hotSearch = hotSearchMapper.selectByName(param.getSearch());
             if(hotSearch == null){
                 hotSearch = new HotSearch();
@@ -118,7 +116,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             goodsCorrelationMapper.insert(goodsCorrelation);
         }
         //商品图片表 goods_img
-        //TODO 每个图片储存一条商品图片表信息
+        //每个图片储存一条商品图片表信息
         for(int i=0;i<param.getImgUrls().length;i++){
             if(i == 0){
                 saveGoodsPicOne(goodsInfo.getId(),param.getImgUrls()[i],param.getType(),1);
@@ -337,7 +335,11 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         PageHelper.startPage(0,10);
         List<HotSearch> hotSearchList = hotSearchMapper.getHotSearchList();
         List<SearchDto> searchDtos = SearchDto.toDtoList(hotSearchList);
-        return searchDtos;
+        if(searchDtos == null || searchDtos.size()==0){
+            throw new ServiceException("获取热门查询失败！");
+        }else{
+            return searchDtos;
+        }
     }
 
     @Override
@@ -345,6 +347,21 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         PageHelper.startPage(0,10);
         List<GoodsCategory> hotCategaryList = goodsCategoryMapper.getHotCategaryList();
         List<GoodsCategoryDto> goodsCategoryDtos = GoodsCategoryDto.toDtoList(hotCategaryList);
-        return goodsCategoryDtos;
+        if(goodsCategoryDtos == null || goodsCategoryDtos.size()==0){
+            throw new ServiceException("获取热门分类失败！");
+        }else{
+            return goodsCategoryDtos;
+        }
+    }
+
+    @Override
+    public List<GoodsQuickSearchDto> quickSearch() throws ServiceException {
+        List<GoodsQuickSearch> quickSearchList = goodsQuickSearchMapper.getQuickSearchList();
+        List<GoodsQuickSearchDto> goodsQuickSearchDtos = GoodsQuickSearchDto.toDtoList(quickSearchList);
+        if(goodsQuickSearchDtos == null || goodsQuickSearchDtos.size()==0){
+            throw new ServiceException("获取快速查询条件列表失败！");
+        }else{
+            return goodsQuickSearchDtos;
+        }
     }
 }

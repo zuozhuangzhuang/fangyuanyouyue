@@ -2,6 +2,7 @@ package com.fangyuanyouyue.goods.service;
 
 import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
+import com.fangyuanyouyue.goods.dto.GoodsQuickSearchDto;
 import com.fangyuanyouyue.goods.dto.SearchDto;
 import com.fangyuanyouyue.goods.model.BannerIndex;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
@@ -100,4 +101,11 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     List<GoodsCategoryDto> hotCategary() throws ServiceException;
+
+    /**
+     * 获取快速查询条件
+     * @return
+     * @throws ServiceException
+     */
+    List<GoodsQuickSearchDto> quickSearch() throws ServiceException;
 }
