@@ -32,4 +32,7 @@ zuul:
     message-service:
       path: /message/**
       serviceId: message-service
+    forum-service:
+      path: /forum/**
+      serviceId: forum-service
   sensitive-headers: "*"
