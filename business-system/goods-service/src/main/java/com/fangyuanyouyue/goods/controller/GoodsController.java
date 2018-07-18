@@ -64,11 +64,11 @@ public class GoodsController extends BaseController{
         try {
             log.info("----》获取商品列表《----");
             log.info("参数：" + param.toString());
-            if(param.getStart() == null){
-                return toError(ReCode.FAILD.getValue(),"起始页数不能为空！");
+            if(param.getStart() == null || param.getStart() < 1){
+                return toError(ReCode.FAILD.getValue(),"起始页数错误！");
             }
-            if(param.getLimit() == null){
-                return toError(ReCode.FAILD.getValue(),"每页个数不能为空！");
+            if(param.getLimit() == null || param.getLimit() < 1){
+                return toError(ReCode.FAILD.getValue(),"每页个数错误！");
             }
             if(StringUtils.isNotEmpty(param.getToken())){//我的商品验证用户
                 //根据用户token获取userId
@@ -285,11 +285,11 @@ public class GoodsController extends BaseController{
             if(param.getGoodsId() == null){
                 return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
             }
-            if(param.getStart() == null){
-                return toError(ReCode.FAILD.getValue(),"start不能为空！");
+            if(param.getStart() == null || param.getLimit() < 0){
+                return toError(ReCode.FAILD.getValue(),"起始页数错误！");
             }
-            if(param.getLimit() == null){
-                return toError(ReCode.FAILD.getValue(),"limit不能为空！");
+            if(param.getLimit() == null || param.getLimit() < 1){
+                return toError(ReCode.FAILD.getValue(),"每页个数错误！");
             }
             //同类推荐
             List<GoodsDto> goodsDtos = goodsInfoService.similarGoods(param.getGoodsId(),param.getStart(),param.getLimit());

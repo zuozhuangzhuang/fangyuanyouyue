@@ -660,11 +660,11 @@ public class UserController extends BaseController {
         try {
             log.info("----》获取个人店铺列表《----");
             log.info("参数："+param.toString());
-            if(param.getStart() == null){
-                return toError(ReCode.FAILD.getValue(),"起始页数不能为空！");
+            if(param.getStart() == null || param.getStart() < 1){
+                return toError(ReCode.FAILD.getValue(),"起始页数错误！");
             }
-            if(param.getLimit() == null){
-                return toError(ReCode.FAILD.getValue(),"每页个数不能为空！");
+            if(param.getLimit() == null || param.getLimit() < 1){
+                return toError(ReCode.FAILD.getValue(),"每页个数错误！");
             }
 
             List<ShopDto> shopDtos = userInfoService.shopList(param.getNickName(),param.getType(), param.getStart(), param.getLimit());
