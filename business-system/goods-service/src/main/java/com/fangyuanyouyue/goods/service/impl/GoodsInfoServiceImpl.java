@@ -70,7 +70,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         //分页
 //        PageHelper.startPage(param.getStart(), param.getLimit());
         List<GoodsInfo> goodsInfos =goodsInfoMapper.getGoodsList(param.getUserId(),param.getStatus(),param.getSearch(),
-                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),(param.getStart()-1)*param.getLimit(),param.getLimit(),param.getType(),param.getGoodsCategoryIds());
+                param.getPriceMin(),param.getPriceMax(),param.getSynthesize(),param.getQuality(),param.getStart()*param.getLimit(),param.getLimit(),param.getType(),param.getGoodsCategoryIds());
 //        PageResults list = new PageResults();
 //        list.setPageSize(param.getStart());
 //        list.setResults(goodsInfos);

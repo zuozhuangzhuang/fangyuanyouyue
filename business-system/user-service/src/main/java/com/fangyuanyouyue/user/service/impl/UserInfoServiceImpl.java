@@ -513,7 +513,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public List<ShopDto> shopList(String nickName,Integer type, Integer start, Integer limit) throws ServiceException {
         //分页
         //个人店铺排序：1.会员等级 2.认证店铺 3.信誉度 4.发布商品时间
-        List<Map<String, Object>> maps = userInfoMapper.shopList(nickName,(start-1)*limit,limit);
+        List<Map<String, Object>> maps = userInfoMapper.shopList(nickName,start*limit,limit);
         List<ShopDto> shopDtos = ShopDto.toDtoList(maps);
         for(ShopDto shopDto:shopDtos){
             //根据用户ID获取前三个商品

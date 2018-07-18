@@ -660,7 +660,7 @@ public class UserController extends BaseController {
         try {
             log.info("----》获取个人店铺列表《----");
             log.info("参数："+param.toString());
-            if(param.getStart() == null || param.getStart() < 1){
+            if(param.getStart() == null || param.getStart() < 0){
                 return toError(ReCode.FAILD.getValue(),"起始页数错误！");
             }
             if(param.getLimit() == null || param.getLimit() < 1){
