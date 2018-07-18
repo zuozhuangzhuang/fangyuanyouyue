@@ -2,30 +2,35 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
+/**
+ *
+ */
 public class ForumInfo {
-    private Integer id;
+    private Integer id;//帖子id
 
-    private Integer userId;
+    private Integer userId; //作者用户id
 
-    private String title;
+    private String title;//标题
 
-    private String videoUrl;
+    private String content;//内容描述，富文本
 
-    private Integer videoLength;
+    private String videoUrl;//视频地址url
 
-    private String label;
+    private Integer videoLength;//视频长度，单位秒
 
-    private Integer sort;
+    private String label;//标签
 
-    private Integer type;
+    private Integer sort;//排列优先级
 
-    private Integer status;
+    private Integer type;//帖子类型 1帖子 2视频
 
-    private Date addTime;
+    private Integer status;//帖子状态 1显示 2隐藏
 
-    private Date updateTime;
+    private Date addTime;//发布时间
 
-    private String content;
+    private Date updateTime;//更新时间
+
+
 
     public Integer getId() {
         return id;

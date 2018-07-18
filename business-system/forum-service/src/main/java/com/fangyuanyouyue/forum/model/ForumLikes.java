@@ -2,14 +2,17 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
+/**
+ *论坛帖子点赞表
+ */
 public class ForumLikes {
-    private Integer id;
+    private Integer id;//唯一自增ID
 
-    private Integer userId;
+    private Integer userId;//发布用户id
 
-    private Integer forumId;
+    private Integer forumId;//帖子id
 
-    private Date addTime;
+    private Date addTime;//添加时间
 
     public Integer getId() {
         return id;

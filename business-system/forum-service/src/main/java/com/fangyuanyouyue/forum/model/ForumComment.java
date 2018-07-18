@@ -2,22 +2,25 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
+/**
+ *论坛帖子评论表
+ */
 public class ForumComment {
-    private Integer id;
+    private Integer id;//唯一自增ID
 
-    private Integer userId;
+    private Integer userId;//发布用户id
 
-    private Integer forumId;
+    private Integer forumId;//帖子id
 
-    private Integer commentId;
+    private Integer commentId;//被回复的帖子评论id
 
-    private String content;
+    private String content;//评论内容
 
-    private Integer status;
+    private Integer status;//评论状态 1显示 2隐藏
 
-    private Date addTime;
+    private Date addTime;//添加时间
 
-    private Date updateTime;
+    private Date updateTime;//更新时间
 
     public Integer getId() {
         return id;

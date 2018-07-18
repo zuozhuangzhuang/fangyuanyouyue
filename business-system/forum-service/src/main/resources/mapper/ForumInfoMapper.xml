@@ -36,7 +36,7 @@
     delete from forum_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.forum.model.ForumInfo" >
+  <insert id="insert" parameterType="com.fangyuanyouyue.forum.model.ForumInfo" useGeneratedKeys="true" keyProperty="id">
     insert into forum_info (id, user_id, title, 
       video_url, video_length, label, 
       sort, type, status, 

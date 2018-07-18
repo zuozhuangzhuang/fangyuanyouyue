@@ -23,7 +23,7 @@
     delete from forum_column
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.forum.model.ForumColumn" >
+  <insert id="insert" parameterType="com.fangyuanyouyue.forum.model.ForumColumn" useGeneratedKeys="true" keyProperty="id">
     insert into forum_column (id, user_id, name, 
       cover_img_url, fans_count, add_time, 
       update_time)

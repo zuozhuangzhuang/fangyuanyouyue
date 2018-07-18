@@ -2,14 +2,17 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
+/**
+ *专栏粉丝表
+ */
 public class ForumColumnFans {
-    private Integer id;
+    private Integer id;//唯一自增ID
 
-    private Integer userId;
+    private Integer userId;//用户id
 
-    private Integer columnId;
+    private Integer columnId;//专栏id
 
-    private Date addTime;
+    private Date addTime;//添加时间
 
     public Integer getId() {
         return id;
