@@ -42,6 +42,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     protected RedisTemplate redisTemplate;
     @Autowired
     private SchedualGoodsService schedualGoodsService;
+    @Autowired
+    private UserFansMapper userFansMapper;
 
     @Override
     public UserInfo getUserByToken(String token) throws ServiceException {
@@ -139,7 +141,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 //设置用户token到Redis
                 String token = setToken("",user.getId());
                 //TODO 注册通讯账户
-                //TODO 获取用户的相关信息：商品列表、钱包系统、好友列表
+                //TODO 获取用户的相关信息：好友列表
                 UserDto userDto = setUserDtoByInfo(token,user);
                 return userDto;
             }
@@ -153,13 +155,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(param.getUnionId(),param.getType());
         if(userThirdParty == null){
             log.info("三方注册");
-            //TODO 注册
+            //注册
             //初始化用户信息
             UserInfo user = new UserInfo();
             if(StringUtils.isEmpty(param.getThirdNickName())){
                 throw new ServiceException("第三方账号昵称不能为空！");
             }else{
-                //TODO 第三方昵称末尾加随机数
+                //第三方昵称末尾加随机数
                 user.setNickName(param.getThirdNickName()+"-"+((int)(Math.random() * 9000) + 1000));
             }
             user.setHeadImgUrl(param.getThirdHeadImgUrl());
@@ -207,7 +209,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserDto userDto = setUserDtoByInfo(token,user);
             return userDto;
         }else{
-            //TODO 记录用户登录时间，登录平台，最后一次登录
+            //记录用户登录时间，登录平台，最后一次登录
             log.info("三方登录");
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
             userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
@@ -288,7 +290,9 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userInfo.setNickName(param.getNickName());
             }
             // 保存头像
-            userInfo.setHeadImgUrl(param.getHeadImgUrl());
+            if(StringUtils.isNotEmpty(param.getHeadImgUrl())){
+                userInfo.setHeadImgUrl(param.getHeadImgUrl());
+            }
             //保存背景图片
             userInfo.setBgImgUrl(param.getBgImgUrl());
             if(param.getGender() != null){
@@ -372,7 +376,7 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     private UserDto setUserDtoByInfo(String token,UserInfo user) throws ServiceException{
         if(user == null){
-            throw new ServiceException("用户错误！");
+            throw new ServiceException("用户不存在！");
         }else{
             UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(user.getId());
 //            List<UserAddressInfo> userAddressInfos = userAddressInfoMapper.selectAddressByUserId(user.getId());
@@ -384,59 +388,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
-//    /**
-//     * 保存头像图片
-//     * @param headImg
-//     * @param userInfo
-//     * @throws ServiceException
-//     */
-//    private void saveHeadImg(MultipartFile headImg,UserInfo userInfo) throws ServiceException {
-//        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-//        FileUtil util = new FileUtil();
-//        String fileName;
-//        if(headImg != null){
-//            try {
-//                fileName = util.getFileName(headImg, "HEADIMG");
-//                String name = fileName.toLowerCase();
-//                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
-//                    util.saveFile(headImg, PIC_PATH + date, fileName);
-//                    userInfo.setHeadImgUrl(PIC_SERVER + date+fileName);
-//                } else {
-//                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new ServiceException("保存头像图片出错！");
-//            }
-//        }
-//    }
-//
-//    /**
-//     * 保存背景图片
-//     * @param bgImg
-//     * @param userInfo
-//     * @throws ServiceException
-//     */
-//    private void saveBgImg(MultipartFile bgImg, UserInfo userInfo) throws ServiceException {
-//        String date = DateUtil.getCurrentDate("/yyyy/MM/dd/");
-//        FileUtil util = new FileUtil();
-//        String fileName;
-//        if(bgImg != null){
-//            try {
-//                fileName = util.getFileName(bgImg, "BGIMG");
-//                String name = fileName.toLowerCase();
-//                if (name.endsWith("jpeg") || name.endsWith("png") || name.endsWith("jpg")) {
-//                    util.saveFile(bgImg, PIC_PATH + date, fileName);
-//                    userInfo.setBgImgUrl(PIC_SERVER + date+fileName);
-//                } else {
-//                    throw new ServiceException("请上传JPEG/PNG/JPG格式化图片！");
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new ServiceException("保存背景图片出错！");
-//            }
-//        }
-//    }
 
     /**
      * 修改密码
@@ -461,11 +412,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public UserDto miniLogin(UserParam param,String openid,String session_key) throws ServiceException {
-        //TODO 用户登录
+        //用户登录
         //根据unionId和type获取用户第三方登录信息
         UserThirdParty userThirdParty = userThirdPartyMapper.getUserByThirdNoType(param.getUnionId(),1);
         if(userThirdParty == null){
-            //TODO 如果用户为空，注册
+            //如果用户为空，注册
             //初始化用户信息
             UserInfo user = new UserInfo();
             user.setNickName(param.getThirdNickName()+"-"+((int)(Math.random() * 9000) + 1000));
@@ -561,7 +512,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public List<ShopDto> shopList(String nickName,Integer type, Integer start, Integer limit) throws ServiceException {
         //分页
-        //TODO 个人店铺排序：1.会员等级 2.认证店铺 3.信誉度 4.发布商品时间
+        //个人店铺排序：1.会员等级 2.认证店铺 3.信誉度 4.发布商品时间
         List<Map<String, Object>> maps = userInfoMapper.shopList(nickName,start,limit);
         List<ShopDto> shopDtos = ShopDto.toDtoList(maps);
         for(ShopDto shopDto:shopDtos){
@@ -602,10 +553,40 @@ public class UserInfoServiceImpl implements UserInfoService {
     public UserDto userInfo(Integer userId) throws ServiceException {
         UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if(userInfo == null){
-            throw new ServiceException("获取用户失败！");
+            throw new ServiceException("用户不存在！");
         }else{
             UserDto userDto = setUserDtoByInfo("",userInfo);
             return userDto;
+        }
+    }
+
+    @Override
+    public void fansFollow(Integer userId, Integer toUserId, Integer type) throws ServiceException {
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            UserInfo toUser = userInfoMapper.selectByPrimaryKey(toUserId);
+            if(toUser == null){
+                throw new ServiceException("被关注用户不存在！");
+            }else{
+                if(type == 0){//关注用户
+                    UserFans userFans = new UserFans();
+                    userFans.setAddTime(DateStampUtils.getTimesteamp());
+                    userFans.setToUserId(toUserId);
+                    userFans.setUserId(userId);
+                    userFansMapper.insert(userFans);
+                }else if(type == 1){//取消关注
+                    UserFans userFans = userFansMapper.selectByUserIdToUserId(userId, toUserId);
+                    if(userFans == null){
+                        throw new ServiceException("双方不是好友，取消关注失败！");
+                    }else{
+                        userFansMapper.deleteByPrimaryKey(userFans.getId());
+                    }
+                }else{
+                    throw new ServiceException("状态值错误！");
+                }
+            }
         }
     }
 }

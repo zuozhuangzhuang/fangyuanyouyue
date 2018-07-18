@@ -59,6 +59,15 @@ spring:
         min-idle: 5 # 连接池中的最小空闲连接
         max-idle: 10 # 连接池中的最大空闲连接
     timeout:  0 # 连接超时时间（毫秒）
+#max-file-size 单个数据大小限制
+#max-request-size 总数据大小限制
+  servlet:
+    multipart:
+      max-file-size: 1024MB
+      max-request-size: 10240MB
+  mvc:
+    async:
+      request-timeout: 30s
 #springcloud-bus
 management:
   endpoints:
@@ -97,4 +106,3 @@ pagehelper:
 #      exposure:
 #        include: "*"
 #base-path: /
-

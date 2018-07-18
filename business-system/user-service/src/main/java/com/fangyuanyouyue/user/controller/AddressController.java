@@ -76,7 +76,7 @@ public class AddressController extends BaseController{
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 添加收货地址
+            //添加收货地址
             List<UserAddressDto> userAddressDtos = userAddressInfoService.addAddress(param.getToken(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
             return toSuccess(userAddressDtos,"添加收货地址成功");
         } catch (ServiceException e) {
@@ -131,7 +131,7 @@ public class AddressController extends BaseController{
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 修改收货地址
+            //修改收货地址
             userAddressInfoService.updateAddress(param.getToken(),param.getAddressId(),param.getReceiverName(),param.getReceiverPhone(),param.getProvince(),param.getCity(),param.getArea(),param.getAddress(),param.getPostCode(),param.getType());
             return toSuccess("修改收货地址成功");
         } catch (ServiceException e) {
@@ -167,7 +167,7 @@ public class AddressController extends BaseController{
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 删除收货地址
+            //删除收货地址
             List<UserAddressDto> userAddressDtos = userAddressInfoService.deleteAddress(param.getToken(),param.getAddressId());
             return toSuccess(userAddressDtos,"删除收货地址成功");
         } catch (ServiceException e) {
@@ -200,7 +200,7 @@ public class AddressController extends BaseController{
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 获取收货地址列表
+            //获取收货地址列表
             List<UserAddressDto> userAddressDtos = userAddressInfoService.getAddressList(param.getToken(),param.getAddressId());
             return toSuccess(userAddressDtos,"获取收货地址列表成功");
         } catch (ServiceException e) {
@@ -235,12 +235,12 @@ public class AddressController extends BaseController{
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 设置默认收货地址
+            //设置默认收货地址
             userAddressInfoService.defaultAddress(param.getToken(),param.getAddressId());
             return toSuccess("设置默认收货地址成功！");
-//        } catch (ServiceException e) {
-//            e.printStackTrace();
-//            return toError(e.getMessage());
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");

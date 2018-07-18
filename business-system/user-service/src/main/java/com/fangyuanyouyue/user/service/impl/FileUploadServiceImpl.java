@@ -3,6 +3,7 @@ package com.fangyuanyouyue.user.service.impl;
 import com.aliyun.oss.OSSClient;
 import com.fangyuanyouyue.user.service.FileUploadService;
 import com.fangyuanyouyue.user.utils.DateUtil;
+import com.fangyuanyouyue.user.utils.ServiceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,17 +30,37 @@ public class FileUploadServiceImpl implements FileUploadService{
     private String bucket;
 
     @Override
-    public String uploadFile(MultipartFile file){
+    public String uploadFile(MultipartFile file) throws ServiceException {
         String fileUrl = null;
         String fileName = getFileName(file.getOriginalFilename());
         fileName = "pic" + fileName;
+        fileUrl = uploadFile(file, fileUrl, fileName);
+        return fileUrl;
+    }
+
+    @Override
+    public String uploadVideo(MultipartFile file) throws ServiceException {
+        String fileUrl = null;
+        String fileName = getFileName(file.getOriginalFilename());
+        fileName = "video" + fileName;
+        fileUrl = uploadFile(file, fileUrl, fileName);
+        return fileUrl;
+    }
+
+    /**
+     * 上传文件，获取地址
+     * @param file
+     * @param fileUrl
+     * @param fileName
+     * @return
+     */
+    private String uploadFile(MultipartFile file, String fileUrl, String fileName) {
         try{
             OSSClient ossClient = new OSSClient(endpoint, accessKeyId, accessKeySecret);
             // 上传文件流file
             ossClient.putObject(bucket, fileName, file.getInputStream());
             // 关闭client
             ossClient.shutdown();
-
             fileUrl = ossPath+fileName;
         }catch(Exception e){
             e.printStackTrace();

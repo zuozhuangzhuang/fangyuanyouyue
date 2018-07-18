@@ -9,4 +9,9 @@ public class SchedualGoodsServiceImpl implements SchedualGoodsService{
     public String goodsList(Integer userId, Integer start, Integer limit) {
         return "系统繁忙，请稍后重试！";
     }
+
+    @Override
+    public String goodsInfo(Integer goodsId) {
+        return "系统繁忙，请稍后重试！";
+    }
 }

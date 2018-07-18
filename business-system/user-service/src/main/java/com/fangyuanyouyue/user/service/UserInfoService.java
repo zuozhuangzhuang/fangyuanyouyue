@@ -153,4 +153,12 @@ public interface UserInfoService {
      * @throws ServiceException
      */
     UserDto userInfo(Integer userId) throws ServiceException;
+
+    /**
+     * 添加关注/取消关注
+     * @param userId
+     * @param toUserId
+     * @throws ServiceException
+     */
+    void fansFollow(Integer userId,Integer toUserId,Integer type) throws ServiceException;
 }

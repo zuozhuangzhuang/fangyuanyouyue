@@ -254,31 +254,6 @@ public class UserController extends BaseController {
         }
     }
 
-//    @ApiOperation(value = "上传头像", notes = "上传头像")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "id", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "headImg", value = "头像文件，格式为：jpeg，png，jpg", required = true, dataType = "file", paramType = "query")
-//    })
-//    @PostMapping(value = "/headImg")
-//    @ResponseBody
-//    public String headImg(UserParam param) throws IOException {
-//        try {
-//            log.info("----》上传头像《----");
-//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-//            if (user == null) {
-//                return toError(ReCode.FAILD.getValue(), "登录超时，请重新登录！");
-//            }
-//            if (user.getStatus() == 2) {
-//                return toError(ReCode.FAILD.getValue(), "您的账号已被冻结，请联系管理员！");
-//            }
-//            //TODO 上传头像
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "上传头像成功！");
-//            return toResult(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-//        }
-//    }
 
     @ApiOperation(value = "完善资料", notes = "完善资料",response = ResultUtil.class)
     @ApiImplicitParams({
@@ -361,8 +336,7 @@ public class UserController extends BaseController {
             if(StringUtils.isEmpty(param.getNewPwd())){
                 return toError(ReCode.FAILD.getValue(),"新密码不能为空！");
             }
-            //TODO 找回密码
-            //修改密码
+            //找回密码
             userInfoService.resetPwd(param.getPhone(),param.getNewPwd());
             return toSuccess("找回密码成功");
         } catch (ServiceException e) {
@@ -404,7 +378,7 @@ public class UserController extends BaseController {
             if(!MD5Util.verify(MD5Util.MD5(param.getLoginPwd()),user.getLoginPwd())){
                 return toError(ReCode.FAILD.getValue(),"旧密码不正确！");
             }
-            //TODO 修改密码
+            //修改密码
             userInfoService.updatePwd(param.getToken(),param.getNewPwd());
             return toSuccess("修改密码成功");
         } catch (ServiceException e) {
@@ -449,7 +423,7 @@ public class UserController extends BaseController {
             if(oldUser != null){
                 return toError(ReCode.FAILD.getValue(),"该手机已被其他帐号绑定，请不要重复绑定！");
             }
-            //TODO 修改绑定手机
+            //修改绑定手机
             UserDto userDto = userInfoService.updatePhone(param.getToken(),param.getPhone());
             return toSuccess(userDto,"修改绑定手机成功！");
         } catch (ServiceException e) {
@@ -485,7 +459,7 @@ public class UserController extends BaseController {
             if(user.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            //TODO 合并账号
+            //TODO 合并账号,一定是从三方账号发起请求
             UserDto userDto = userInfoService.accountMerge(param.getToken(),param.getPhone());
             return toSuccess(userDto,"修改绑定手机成功！");
         } catch (ServiceException e) {
@@ -532,7 +506,7 @@ public class UserController extends BaseController {
                 String openid = weChatSession.getOpenid();
                 //获取会话秘钥
                 String session_key = weChatSession.getSession_key();
-                //TODO 正常情况只返回openID和session_key，注册过的用户会额外返回unionID
+                //正常情况只返回openID和session_key，注册过的用户会额外返回unionID
                 //微信用户的固定唯一识别号
                 String unionid = weChatSession.getUnionid();
                 if(StringUtils.isEmpty(unionid)){
@@ -573,6 +547,9 @@ public class UserController extends BaseController {
             }else{
                 return toError(ReCode.FAILD.getValue(),"页面授权失败！");
             }
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
@@ -692,11 +669,16 @@ public class UserController extends BaseController {
 
             List<ShopDto> shopDtos = userInfoService.shopList(param.getNickName(),param.getType(), param.getStart(), param.getLimit());
             return toSuccess(shopDtos,"获取个人店铺列表成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
+
+
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "userId", value = "卖家ID", dataType = "int", paramType = "query")
@@ -712,16 +694,65 @@ public class UserController extends BaseController {
             }
             UserDto userDto = userInfoService.userInfo(param.getUserId());
             return toSuccess(userDto,"获取用户信息成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
 
+    @ApiOperation(value = "添加/取消关注", notes = "添加/取消关注")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "toUserId", value = "被关注用户id", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "0关注 1取消关注", required = true, dataType = "int", paramType = "query")
+    })
+    @PostMapping(value = "/fansFollow")
+    @ResponseBody
+    public String fansFollow(UserParam param) throws IOException {
+        try {
+            log.info("----》添加关注/取消关注《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            UserInfo user=userInfoService.getUserByToken(param.getToken());
+            if(user==null){
+                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
+            }
+            if(user.getStatus() == 2){
+                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
+            }
+            if(user.getId() == param.getToUserId()){
+                return toError(ReCode.FAILD.getValue(),"不能关注自己");
+            }
+            if(param.getToUserId() == null){
+                return toError(ReCode.FAILD.getValue(),"被关注人不能为空！");
+            }
+            redisTemplate.expire(param.getToken(),7,TimeUnit.DAYS);
+            //添加/取消关注
+            userInfoService.fansFollow(user.getId(), param.getToUserId(),param.getType());
+            if(param.getType() == 0){
+                return toSuccess("添加关注成功！");
+            }else{
+                return toSuccess("取消关注成功！");
+            }
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+
 //    @ApiOperation(value = "我的粉丝", notes = "我的粉丝")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start value = "分页start", required = true, dataType = "Integer", paramType = "query"),
 //            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
 //    })
 //    @PostMapping(value = "/myFans")
@@ -743,7 +774,7 @@ public class UserController extends BaseController {
 //            if(user.getStatus() == 2){
 //                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 //            }
-//            //TODO 我的粉丝
+//            //我的粉丝
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的粉丝成功！");
 //            return toResult(result);
 //        } catch (Exception e) {
@@ -753,44 +784,12 @@ public class UserController extends BaseController {
 //    }
 //
 //
-//    @ApiOperation(value = "添加/取消关注", notes = "添加/取消关注")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "userId ", value = "被关注用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "type", value = "0关注 1取消关注", required = true, dataType = "Integer", paramType = "query")
-//    })
-//    @PostMapping(value = "/fansFollow")
-//    @ResponseBody
-//    public String fansFollow(UserParam param) throws IOException {
-//        try {
-//            log.info("----》添加关注/取消关注《----");
-//            log.info("参数："+param.toString());
-//            if(param.getUserId()==null || param.getUserId().intValue()==0){
-//                return toError(ReCode.FAILD.getValue(),"用户id不能为空！");
-//            }
-//            UserInfo user=userInfoService.selectByPrimaryKey(param.getUserId());
-//            if(user==null){
-//                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
-//            }
-//            if(user.getStatus() == 2){
-//                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
-//            }
-//            if(user.getId().intValue()==param.getUserId().intValue()){
-//                return toError(ReCode.FAILD.getValue(),"不能关注自己");
-//            }
-//            //TODO 添加/取消关注
-//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "添加/取消关注成功！");
-//            return toResult(result);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
-//        }
-//    }
+//
 //
 //    @ApiOperation(value = "我的关注", notes = "我的关注")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
 //            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
 //    })
 //    @PostMapping(value = "/myFollows")
@@ -805,7 +804,7 @@ public class UserController extends BaseController {
 //            if(param.getLimit()==null){
 //                return toError(ReCode.FAILD.getValue(),"分页limit不能为空！");
 //            }
-//            //TODO 我的关注
+//            //我的关注
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取我的关注列表成功！");
 //            return toResult(result);
 //        } catch (Exception e) {
@@ -817,7 +816,7 @@ public class UserController extends BaseController {
 //    @ApiOperation(value = "好友列表", notes = "好友列表")
 //    @ApiImplicitParams({
 //            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataType = "Integer", paramType = "query"),
-//            @ApiImplicitParam(name = "start ", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
+//            @ApiImplicitParam(name = "start", value = "分页start", required = true, dataType = "Integer", paramType = "query"),
 //            @ApiImplicitParam(name = "limit", value = "分页limit", required = true, dataType = "Integer", paramType = "query")
 //    })
 //    @PostMapping(value = "/friendList")
@@ -839,7 +838,7 @@ public class UserController extends BaseController {
 //            if(user.getStatus() == 2){
 //                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 //            }
-//            //TODO 好友列表
+//            //好友列表
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "获取好友列表成功！");
 //            return toResult(result);
 //        } catch (Exception e) {
@@ -865,7 +864,7 @@ public class UserController extends BaseController {
 //            if(user.getStatus() == 2){
 //                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
 //            }
-//            //TODO 签到
+//            //签到
 //            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "签到成功！");
 //            return toResult(result);
 //        } catch (Exception e) {

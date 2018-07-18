@@ -21,10 +21,13 @@ public class UserParam{
 	private Integer limit; // 限制页
 
 	@ApiModelProperty(name = "type", value = "类型", dataType = "int",hidden = true)
-	private Integer type;//类型
+	private Integer type;//类型	UserThirdParty：1微信 2QQ 3微博 UserAddressInfo：1默认地址 2其他 UserCollect：1关注 2收藏
 
 	@ApiModelProperty(name = "imgFile", value = "图片文件", dataType = "file",hidden = true)
 	private MultipartFile imgFile;//图片文件
+
+	@ApiModelProperty(name = "videoFile", value = "视频文件", dataType = "file",hidden = true)
+	private MultipartFile videoFile;//视频文件
 
 
 	//UserInfo
@@ -97,10 +100,10 @@ public class UserParam{
 	@ApiModelProperty(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String",hidden = true)
 	private String payPwd;//支付密码，明文6位，MD5小写
 
-	@ApiModelProperty(name = "identityImgCoverUrl", value = "身份证封面图路径", dataType = "file",hidden = true)
+	@ApiModelProperty(name = "identityImgCoverUrl", value = "身份证封面图路径", dataType = "String",hidden = true)
 	private String identityImgCoverUrl;//身份证封面图
 
-	@ApiModelProperty(name = "identityImgBackUrl", value = "身份证背面路径", dataType = "file",hidden = true)
+	@ApiModelProperty(name = "identityImgBackUrl", value = "身份证背面路径", dataType = "String",hidden = true)
 	private String identityImgBackUrl;//身份证背面
 
 	@ApiModelProperty(name = "receiverName", value = "收货人", dataType = "String",hidden = true)
@@ -150,6 +153,10 @@ public class UserParam{
 
 	@ApiModelProperty(name = "iv", value = "加密算法的初始向量", dataType = "String",hidden = true)
 	private String iv;//加密算法的初始向量
+
+	//UserFans
+	@ApiModelProperty(name = "toUserId", value = "加密算法的初始向量", dataType = "int",hidden = true)
+	private Integer toUserId;//被关注人ID
 
 	public Integer getStart() {
 		return start;
@@ -496,6 +503,22 @@ public class UserParam{
 		this.userId = userId;
 	}
 
+	public Integer getToUserId() {
+		return toUserId;
+	}
+
+	public void setToUserId(Integer toUserId) {
+		this.toUserId = toUserId;
+	}
+
+	public MultipartFile getVideoFile() {
+		return videoFile;
+	}
+
+	public void setVideoFile(MultipartFile videoFile) {
+		this.videoFile = videoFile;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
@@ -504,6 +527,7 @@ public class UserParam{
 				", limit=" + limit +
 				", type=" + type +
 				", imgFile=" + imgFile +
+				", videoFile=" + videoFile +
 				", phone='" + phone + '\'' +
 				", email='" + email + '\'' +
 				", userAddress='" + userAddress + '\'' +
@@ -542,6 +566,7 @@ public class UserParam{
 				", code='" + code + '\'' +
 				", encryptedData='" + encryptedData + '\'' +
 				", iv='" + iv + '\'' +
+				", toUserId=" + toUserId +
 				'}';
 	}
 }

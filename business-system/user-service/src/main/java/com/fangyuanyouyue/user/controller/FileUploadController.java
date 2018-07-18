@@ -32,7 +32,7 @@ public class FileUploadController extends BaseController {
 
     @ApiOperation(value = "图片上传", notes = "图片上传",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "imgFile", value = "头像图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form")
+            @ApiImplicitParam(name = "imgFile", value = "图片，格式为：jpeg，png，jpg",dataType = "file", paramType = "form")
     })
     @PostMapping(value = "/uploadPic")
     @ResponseBody
@@ -51,6 +51,31 @@ public class FileUploadController extends BaseController {
             //图片上传
             String url= fileUploadService.uploadFile(param.getImgFile());
             return toSuccess(url,"图片上传成功");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+    @ApiOperation(value = "视频上传", notes = "视频上传",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "videoFile", value = "视频",dataType = "file", paramType = "form")
+    })
+    @PostMapping(value = "/uploadVideo")
+    @ResponseBody
+    public String uploadVideo(UserParam param) throws IOException {
+        try {
+            log.info("----》视频上传《----");
+            log.info("参数：" + param.toString());
+            if(param.getVideoFile() == null){
+                return toError(ReCode.FAILD.getValue(),"文件为空");
+            }
+            //视频上传
+            String url= fileUploadService.uploadVideo(param.getVideoFile());
+            return toSuccess(url,"视频上传成功");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());

@@ -108,14 +108,14 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
         if(userInfo == null){
             throw new ServiceException("此用户不存在！");
         }else{
-            //TODO 取消旧默认地址
+            //取消旧默认地址
             UserAddressInfo defaultAddress = userAddressInfoMapper.selectDefaultAddressByUserId(userId);
             if(defaultAddress != null){
                 defaultAddress.setType(Integer.valueOf(Status.OTHER.getValue()));
                 defaultAddress.setUpdateTime(DateStampUtils.getTimesteamp());
                 userAddressInfoMapper.updateByPrimaryKey(defaultAddress);
             }
-            //TODO 设置新默认地址
+            //设置新默认地址
             UserAddressInfo userAddressInfo = userAddressInfoMapper.selectByPrimaryKey(addressId);
             if(userAddressInfo == null){
                 throw new ServiceException("参数错误！");

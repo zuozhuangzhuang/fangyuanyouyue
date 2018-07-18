@@ -12,4 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SchedualGoodsService {
     @RequestMapping(value = "/goods/goodsList",method = RequestMethod.POST)
     String goodsList(@RequestParam(value = "userId") Integer userId,@RequestParam(value = "start") Integer start,@RequestParam(value = "limit") Integer limit);
+
+    @RequestMapping(value = "/goods/goodsInfo",method = RequestMethod.POST)
+    String goodsInfo(@RequestParam(value = "goodsId") Integer goodsId);
 }
