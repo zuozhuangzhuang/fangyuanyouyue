@@ -18,6 +18,12 @@ public class ForumParam{
 	@ApiModelProperty(name = "forumId", value = "帖子id", dataType = "Integer",hidden = true)
 	private Integer forumId;//帖子id
 
+	@ApiModelProperty(name = "title", value = "帖子标题", dataType = "String",hidden = true)
+	private String title;//帖子标题
+
+	@ApiModelProperty(name = "content", value = "帖子内容", dataType = "String",hidden = true)
+	private String content;//帖子内容
+	
 	
 	public Integer getStart() {
 		return start;
