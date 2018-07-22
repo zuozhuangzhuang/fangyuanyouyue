@@ -2,7 +2,13 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
+/**
+ * 帖子评论
+ * @author wuzhimin
+ *
+ */
 public class ForumComment {
+	
     private Integer id;
 
     private Integer userId;
@@ -18,6 +24,11 @@ public class ForumComment {
     private Date addTime;
 
     private Date updateTime;
+    
+    private String headImgUrl;
+    
+    private String nickName;
+    
 
     public Integer getId() {
         return id;
@@ -82,4 +93,21 @@ public class ForumComment {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+    
 }

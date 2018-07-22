@@ -7,6 +7,8 @@ public class ForumInfo {
 
     private Integer userId;
 
+    private Integer columnId;
+    
     private String title;
 
     private String videoUrl;
@@ -26,6 +28,10 @@ public class ForumInfo {
     private Date updateTime;
 
     private String content;
+    
+    private String headImgUrl;
+    
+    private String nickName;
 
     public Integer getId() {
         return id;
@@ -122,4 +128,30 @@ public class ForumInfo {
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
     }
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public Integer getColumnId() {
+		return columnId;
+	}
+
+	public void setColumnId(Integer columnId) {
+		this.columnId = columnId;
+	}
+    
+    
 }

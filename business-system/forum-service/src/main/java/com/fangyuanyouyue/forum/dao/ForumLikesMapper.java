@@ -14,4 +14,6 @@ public interface ForumLikesMapper {
     int updateByPrimaryKeySelective(ForumLikes record);
 
     int updateByPrimaryKey(ForumLikes record);
+
+    int countById(Integer forumId);
 }

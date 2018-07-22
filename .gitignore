@@ -21,3 +21,5 @@
 /based-business/sms-service/target/
 /business-system/forum-service/forum-service.iml
 /based-business/message-service/message-service.iml
+/.project
+/.gitignore
