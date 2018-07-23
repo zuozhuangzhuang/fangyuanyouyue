@@ -35,8 +35,8 @@ public class ForumColumnController extends BaseController {
 
 	@ApiOperation(value = "专栏", notes = "获取专栏列表", response = ResultUtil.class)
 	@ApiImplicitParams({
-			@ApiImplicitParam(name = "start", value = "起始条数", required = true, dataType = "Integer", paramType = "query"),
-			@ApiImplicitParam(name = "limit", value = "每页条数", required = true, dataType = "Integer", paramType = "query") })
+			@ApiImplicitParam(name = "start", value = "起始条数", required = true, dataType = "int", paramType = "query"),
+			@ApiImplicitParam(name = "limit", value = "每页条数", required = true, dataType = "int", paramType = "query") })
 	@PostMapping(value = "/list")
 	@ResponseBody
 	public String forumComment(ForumParam param) throws IOException {
