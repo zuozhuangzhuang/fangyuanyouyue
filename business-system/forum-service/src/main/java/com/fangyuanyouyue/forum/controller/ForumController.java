@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping(value = "/forum")
-@Api( tags = {"帖子/视频Controller"})
+@Api( description = "帖子/视频Controller")
 @RefreshScope
 public class ForumController extends BaseController {
     protected Logger log = Logger.getLogger(this.getClass());
