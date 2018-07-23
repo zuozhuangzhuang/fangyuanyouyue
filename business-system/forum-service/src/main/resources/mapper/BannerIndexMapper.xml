@@ -25,7 +25,7 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from banner_index where status=#{"status"}
+    from banner_index where status=#{status}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from banner_index
