@@ -2,18 +2,14 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
-public class ForumLikes {
+public class ForumImg {
     private Integer id;
-
-    private Integer userId;
 
     private Integer forumId;
 
+    private String imgUrl;
+
     private Date addTime;
-    
-    private String headImgUrl;
-    
-    private String nickName;
 
     public Integer getId() {
         return id;
@@ -21,14 +17,6 @@ public class ForumLikes {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public Integer getForumId() {
@@ -39,6 +27,14 @@ public class ForumLikes {
         this.forumId = forumId;
     }
 
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl == null ? null : imgUrl.trim();
+    }
+
     public Date getAddTime() {
         return addTime;
     }
@@ -46,21 +42,4 @@ public class ForumLikes {
     public void setAddTime(Date addTime) {
         this.addTime = addTime;
     }
-
-	public String getHeadImgUrl() {
-		return headImgUrl;
-	}
-
-	public void setHeadImgUrl(String headImgUrl) {
-		this.headImgUrl = headImgUrl;
-	}
-
-	public String getNickName() {
-		return nickName;
-	}
-
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
-    
 }

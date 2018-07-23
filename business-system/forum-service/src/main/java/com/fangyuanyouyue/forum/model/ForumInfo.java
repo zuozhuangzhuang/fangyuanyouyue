@@ -2,35 +2,36 @@ package com.fangyuanyouyue.forum.model;
 
 import java.util.Date;
 
-/**
- *
- */
 public class ForumInfo {
-    private Integer id;//帖子id
+    private Integer id;
 
-    private Integer userId; //作者用户id
+    private Integer userId;
 
-    private String title;//标题
+    private Integer columnId;
+    
+    private String title;
 
-    private String content;//内容描述，富文本
+    private String videoUrl;
 
-    private String videoUrl;//视频地址url
+    private Integer videoLength;
 
-    private Integer videoLength;//视频长度，单位秒
+    private String label;
 
-    private String label;//标签
+    private Integer sort;
 
-    private Integer sort;//排列优先级
+    private Integer type;
 
-    private Integer type;//帖子类型 1帖子 2视频
+    private Integer status;
 
-    private Integer status;//帖子状态 1显示 2隐藏
+    private Date addTime;
 
-    private Date addTime;//发布时间
+    private Date updateTime;
 
-    private Date updateTime;//更新时间
-
-
+    private String content;
+    
+    private String headImgUrl;
+    
+    private String nickName;
 
     public Integer getId() {
         return id;
@@ -127,4 +128,30 @@ public class ForumInfo {
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
     }
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public Integer getColumnId() {
+		return columnId;
+	}
+
+	public void setColumnId(Integer columnId) {
+		this.columnId = columnId;
+	}
+    
+    
 }

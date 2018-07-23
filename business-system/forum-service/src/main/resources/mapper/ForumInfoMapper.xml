@@ -4,6 +4,7 @@
   <resultMap id="BaseResultMap" type="com.fangyuanyouyue.forum.model.ForumInfo" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="column_id" property="columnId" jdbcType="INTEGER" />
     <result column="title" property="title" jdbcType="VARCHAR" />
     <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
     <result column="video_length" property="videoLength" jdbcType="INTEGER" />
@@ -13,24 +14,31 @@
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="add_time" property="addTime" jdbcType="TIMESTAMP" />
     <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="com.fangyuanyouyue.forum.model.ForumInfo" extends="BaseResultMap" >
+    <result column="nick_name" property="nickName" jdbcType="VARCHAR" />
+    <result column="head_img_url" property="headImgUrl" jdbcType="VARCHAR" />
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_id, title, video_url, video_length, label, sort, type, status, add_time, 
-    update_time
+    id, column_id, user_id, title, video_url, video_length, label, sort, type, status, add_time, 
+    update_time,content
   </sql>
-  <sql id="Blob_Column_List" >
-    content
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
     from forum_info
     where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectDetailByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    a.*,b.nick_name,b.head_img_url
+    from forum_info a,user_info b
+    where a.user_id=b.id and a.id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectList" resultMap="BaseResultMap" >
+    select 
+    a.*,b.nick_name,b.head_img_url
+    from forum_info a,user_info b
+    where a.user_id=b.id and a.column_id = #{columnId} limit #{start},#{limit}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from forum_info

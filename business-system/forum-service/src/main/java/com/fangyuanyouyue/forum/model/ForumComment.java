@@ -3,24 +3,32 @@ package com.fangyuanyouyue.forum.model;
 import java.util.Date;
 
 /**
- *论坛帖子评论表
+ * 帖子评论
+ * @author wuzhimin
+ *
  */
 public class ForumComment {
-    private Integer id;//唯一自增ID
+	
+    private Integer id;
 
-    private Integer userId;//发布用户id
+    private Integer userId;
 
-    private Integer forumId;//帖子id
+    private Integer forumId;
 
-    private Integer commentId;//被回复的帖子评论id
+    private Integer commentId;
 
-    private String content;//评论内容
+    private String content;
 
-    private Integer status;//评论状态 1显示 2隐藏
+    private Integer status;
 
-    private Date addTime;//添加时间
+    private Date addTime;
 
-    private Date updateTime;//更新时间
+    private Date updateTime;
+    
+    private String headImgUrl;
+    
+    private String nickName;
+    
 
     public Integer getId() {
         return id;
@@ -85,4 +93,21 @@ public class ForumComment {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+	public String getHeadImgUrl() {
+		return headImgUrl;
+	}
+
+	public void setHeadImgUrl(String headImgUrl) {
+		this.headImgUrl = headImgUrl;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+    
 }

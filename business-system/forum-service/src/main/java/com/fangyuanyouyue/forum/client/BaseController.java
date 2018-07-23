@@ -25,6 +25,18 @@ public class BaseController{
 	 * @return
 	 * @throws IOException
 	 */
+	public String toSuccess(Object object) throws IOException {
+//		BaseClientResult result ;
+//		result = new BaseClientResult(ReCode.SUCCESS.getValue(),reMsg);
+		ResultUtil resultUtil = new ResultUtil(0,"请求成功",new Date(),object,"");
+		return toJson(resultUtil);
+	}
+	
+	/**
+	 * 操作成功
+	 * @return
+	 * @throws IOException
+	 */
 	public String toSuccess(String reMsg) throws IOException {
 //		BaseClientResult result ;
 //		result = new BaseClientResult(ReCode.SUCCESS.getValue(),reMsg);

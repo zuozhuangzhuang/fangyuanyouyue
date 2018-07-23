@@ -1,10 +1,15 @@
 package com.fangyuanyouyue.forum.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.fangyuanyouyue.forum.model.ForumColumn;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface ForumColumnMapper {
+	
     int deleteByPrimaryKey(Integer id);
 
     int insert(ForumColumn record);
@@ -16,4 +21,7 @@ public interface ForumColumnMapper {
     int updateByPrimaryKeySelective(ForumColumn record);
 
     int updateByPrimaryKey(ForumColumn record);
+    
+    List<ForumColumn> selectPage(@Param("start")Integer start,@Param("limit")Integer limit);
+    
 }

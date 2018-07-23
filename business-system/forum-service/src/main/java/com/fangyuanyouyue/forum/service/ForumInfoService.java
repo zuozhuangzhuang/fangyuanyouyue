@@ -17,8 +17,17 @@ public interface ForumInfoService {
 	 * @param id
 	 * @return
 	 */
-	ForumInfoDto getForumInfoById(Integer id);
+	ForumInfoDto getForumInfoById(Integer id) throws ServiceException;
 
-    List<ForumInfoDto> forumList(String nickName,Integer type,Integer start,Integer limit) throws ServiceException;
-
+	/**
+	 * 获取帖子列表
+	 * @param columnId
+	 * @param start
+	 * @param limit
+	 * @return
+	 * @throws ServiceException
+	 */
+    List<ForumInfoDto> getForumList(Integer columnId,Integer start,Integer limit) throws ServiceException;
+    
+    
 }

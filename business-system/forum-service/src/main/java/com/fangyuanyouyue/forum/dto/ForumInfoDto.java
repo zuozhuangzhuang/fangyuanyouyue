@@ -15,7 +15,7 @@ public class ForumInfoDto {
 
     private Integer userId; //作者用户id
     
-    private String userName;//作者昵称
+    private String nickName;//作者昵称
     
     private String headImgUrl;//作者头像
 
@@ -33,12 +33,14 @@ public class ForumInfoDto {
 
     private String addTime;//发布时间
 
-    private String content;
+    private String content;//帖子内容
+    
+    private List<String> imgs;//帖子图片，最多9张
     
     private Long commentCount;//评论数量
     
     private Long likesCount;//点赞数量
-
+    
     public ForumInfoDto() {
     	
     }
@@ -52,6 +54,8 @@ public class ForumInfoDto {
         this.addTime = DateUtil.getFormatDate(forumInfo.getAddTime(), DateUtil.DATE_FORMT);
         this.type = forumInfo.getType();
         this.status = forumInfo.getStatus();
+        this.nickName = forumInfo.getNickName();
+        this.headImgUrl = forumInfo.getHeadImgUrl();
     }
     public static List<ForumInfoDto> toDtoList(List<ForumInfo> list) {
         if (list == null)
@@ -144,12 +148,12 @@ public class ForumInfoDto {
 		this.content = content;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getNickName() {
+		return nickName;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 
 	public String getHeadImgUrl() {
@@ -174,6 +178,14 @@ public class ForumInfoDto {
 
 	public void setLikesCount(Long likesCount) {
 		this.likesCount = likesCount;
+	}
+
+	public List<String> getImgs() {
+		return imgs;
+	}
+
+	public void setImgs(List<String> imgs) {
+		this.imgs = imgs;
 	}
 
 	

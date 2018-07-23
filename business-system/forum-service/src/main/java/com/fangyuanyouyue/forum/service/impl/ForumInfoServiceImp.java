@@ -5,11 +5,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fangyuanyouyue.forum.dao.ForumCommentMapper;
 import com.fangyuanyouyue.forum.dao.ForumInfoMapper;
 import com.fangyuanyouyue.forum.dto.ForumInfoDto;
 import com.fangyuanyouyue.forum.model.ForumInfo;
+import com.fangyuanyouyue.forum.service.ForumCommentService;
 import com.fangyuanyouyue.forum.service.ForumInfoService;
+import com.fangyuanyouyue.forum.service.ForumLikesService;
 import com.fangyuanyouyue.forum.utils.ServiceException;
 
 
@@ -20,20 +21,25 @@ public class ForumInfoServiceImp implements ForumInfoService {
     @Autowired
     private ForumInfoMapper forumInfoMapper;
     @Autowired
-    private ForumCommentMapper forumCommentMapper;
+    private ForumCommentService forumCommentService;
+    @Autowired
+    private ForumLikesService forumLikesService;
     
 	@Override
-	public ForumInfoDto getForumInfoById(Integer id) {
+	public ForumInfoDto getForumInfoById(Integer id) throws ServiceException {
 		
-		ForumInfo forumInfo = forumInfoMapper.selectByPrimaryKey(id);
+		ForumInfo forumInfo = forumInfoMapper.selectDetailByPrimaryKey(id);
 		
 		if(forumInfo!=null) {
 			ForumInfoDto dto = new ForumInfoDto(forumInfo);
 			//计算点赞数
-			
+			long likesCount = forumLikesService.countLikes(id);
+			dto.setLikesCount(likesCount);
 			//计算评论数
-			long commentCount = forumCommentMapper.countAll();
+			long commentCount = forumCommentService.countComment(id);
 			dto.setCommentCount(commentCount);
+			
+			//TODO 如果不是视频，需要找到图片
 			
 			return dto;
 		}
@@ -42,10 +48,12 @@ public class ForumInfoServiceImp implements ForumInfoService {
 	}
 
 	@Override
-	public List<ForumInfoDto> forumList(String nickName, Integer type, Integer start, Integer limit)
+	public List<ForumInfoDto> getForumList(Integer columnId, Integer start, Integer limit)
 			throws ServiceException {
-		// TODO Auto-generated method stub
-		return null;
+		List<ForumInfo> list = forumInfoMapper.selectList(columnId, start, limit);
+
+		return ForumInfoDto.toDtoList(list);
 	}
+
 
 }
