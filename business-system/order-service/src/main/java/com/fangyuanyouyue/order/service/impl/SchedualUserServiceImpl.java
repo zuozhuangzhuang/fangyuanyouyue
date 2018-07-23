@@ -20,4 +20,9 @@ public class SchedualUserServiceImpl implements SchedualUserService{
     public String verifyUserByUnionId(String unionId, Integer type) {
         return "系统繁忙，请稍后重试！";
     }
+
+    @Override
+    public String getAddressList(String token, Integer addressId) {
+        return "系统繁忙，请稍后重试！";
+    }
 }

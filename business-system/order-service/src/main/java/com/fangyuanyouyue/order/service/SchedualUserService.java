@@ -19,4 +19,7 @@ public interface SchedualUserService {
     @RequestMapping(value = "/userFeign/verifyUserByUnionId",method = RequestMethod.POST)
     String verifyUserByUnionId(@RequestParam(value = "unionId") String unionId, @RequestParam(value = "type") Integer type);
 
+    @RequestMapping(value = "/address/getAddressList",method = RequestMethod.POST)
+    String getAddressList(@RequestParam(value = "token") String token, @RequestParam(value = "addressId") Integer addressId);
+
 }
