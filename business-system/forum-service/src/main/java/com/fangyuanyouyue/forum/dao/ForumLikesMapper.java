@@ -1,5 +1,9 @@
 package com.fangyuanyouyue.forum.dao;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.fangyuanyouyue.forum.model.ForumLikes;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -18,4 +22,6 @@ public interface ForumLikesMapper {
     int updateByPrimaryKey(ForumLikes record);
 
     int countById(Integer forumId);
+
+    List<ForumLikes> selectByForumId(@Param("forumId")Integer forumId,@Param("start")Integer start,@Param("limit")Integer limit);
 }
