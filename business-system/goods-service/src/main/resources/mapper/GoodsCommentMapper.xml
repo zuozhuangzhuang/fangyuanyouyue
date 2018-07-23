@@ -198,6 +198,6 @@
     select count(id) from goods_comment where goods_id = #{goodsId,jdbcType=INTEGER}
   </select>
   <select id="selectByGoodsId" parameterType="Integer" resultType="Map">
-    select * from goods_comment a left join user_info b on a.user_id = b.id where a.goods_id = #{goodsId,jdbcType=INTEGER} and ISNULL(a.comment_id)
+    select * from goods_comment a left join user_info b on a.user_id = b.id where a.goods_id = #{goodsId,jdbcType=INTEGER} and ISNULL(a.comment_id) limit #{start,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
   </select>
 </mapper>

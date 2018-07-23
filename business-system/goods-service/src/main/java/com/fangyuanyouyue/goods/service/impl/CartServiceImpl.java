@@ -46,11 +46,9 @@ public class CartServiceImpl implements CartService{
             cartInfo = new CartInfo();
             cartInfo.setUserId(userId);
             cartInfo.setAddTime(DateStampUtils.getTimesteamp());
-            cartInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             cartInfoMapper.insert(cartInfo);
         }else{
             //购物车存在就修改update_time
-            cartInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             cartInfoMapper.updateByPrimaryKey(cartInfo);
 
             GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
@@ -64,7 +62,6 @@ public class CartServiceImpl implements CartService{
                     cartDetail = new CartDetail();
                     JSONObject user = JSONObject.parseObject(JSONObject.parseObject(schedualUserService.verifyUserById(goodsInfo.getUserId())).getString("data"));
                     cartDetail.setAddTime(DateStampUtils.getTimesteamp());
-                    cartDetail.setUpdateTime(DateStampUtils.getTimesteamp());
                     cartDetail.setCartId(cartInfo.getId());
                     cartDetail.setGoodsId(goodsId);
                     cartDetail.setPrice(goodsInfo.getPrice());
@@ -114,7 +111,6 @@ public class CartServiceImpl implements CartService{
                 throw new ServiceException("购物车详情数据异常！");
             }else{
                 cartDetail.setStatus(2);//商品是否显示 1显示2不显示
-                cartDetail.setUpdateTime(DateStampUtils.getTimesteamp());
                 cartDetailMapper.updateByPrimaryKey(cartDetail);
             }
         }

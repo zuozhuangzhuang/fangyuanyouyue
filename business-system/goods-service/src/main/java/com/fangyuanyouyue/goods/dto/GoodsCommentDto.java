@@ -1,7 +1,5 @@
 package com.fangyuanyouyue.goods.dto;
 
-import com.fangyuanyouyue.goods.model.GoodsComment;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

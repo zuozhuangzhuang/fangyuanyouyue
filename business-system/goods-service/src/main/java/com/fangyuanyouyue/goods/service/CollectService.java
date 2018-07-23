@@ -15,7 +15,7 @@ public interface CollectService {
      * @param status
      * @throws ServiceException
      */
-    void collectGoods(Integer userId,Integer collectId,Integer collectType,Integer type,Integer status) throws ServiceException;
+    void collectGoods(Integer userId,Integer[] collectId,Integer collectType,Integer type,Integer status) throws ServiceException;
 
     /**
      * 我的收藏/关注列表 (商品、抢购)

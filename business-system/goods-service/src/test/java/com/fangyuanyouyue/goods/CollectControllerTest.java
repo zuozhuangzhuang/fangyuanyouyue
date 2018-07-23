@@ -44,15 +44,15 @@ public class CollectControllerTest {
     @Transactional
     public void collectGoods() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/collect/collectGoods")
-                .param("token","10025FY1531851479276")
+                .param("token","10025FY1532052608373")
                 //收藏对象ID
-                .param("collectId","1")
+                .param("collectId","1，2，3")
                 //类型 1关注 2收藏
-                .param("type","1")
+                .param("type","2")
                 //关注/收藏类型 关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
-                .param("collectType","2")
+                .param("collectType","1")
                 //状态 1关注/收藏 2取消关注/收藏
-                .param("status","2")
+                .param("status","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

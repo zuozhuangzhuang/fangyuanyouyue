@@ -19,6 +19,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -72,17 +74,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         //初始化用户信息
         UserInfo user = new UserInfo();
         //手机号注册必定是APP端
-        // 保存头像
-//        saveHeadImg(param.getHeadImg(),user);
         user.setHeadImgUrl(param.getHeadImgUrl());
-        //保存背景图片
-//        saveBgImg(param.getBgImg(),user);
         user.setBgImgUrl(param.getBgImgUrl());
-
         user.setRegType(1);//注册来源 1APP 2微信小程序
         user.setRegPlatform(param.getRegPlatform());
         user.setAddTime(DateStampUtils.getTimesteamp());
-        user.setUpdateTime(DateStampUtils.getTimesteamp());
         user.setPhone(param.getPhone());
         user.setLoginPwd(MD5Util.generate(MD5Util.MD5(param.getLoginPwd())));
         //TODO 昵称筛选敏感字
@@ -99,14 +95,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         //TODO 信誉度待定
         userInfoExt.setCredit(100);
         userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
-        userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
         userInfoExtMapper.insert(userInfoExt);
         //用户会员系统
         UserVip userVip = new UserVip();
         userVip.setUserId(user.getId());
         userVip.setStatus(2);//会员状态1已开通 2未开通
         userVip.setAddTime(DateStampUtils.getTimesteamp());
-        userVip.setUpdateTime(DateStampUtils.getTimesteamp());
         userVipMapper.insert(userVip);
         //TODO 注册通讯账户
         //TODO 调用钱包系统初始化接口
@@ -169,7 +163,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             user.setRegPlatform(param.getLoginPlatform());
             user.setLastLoginPlatform(param.getLoginPlatform());
             user.setAddTime(DateStampUtils.getTimesteamp());
-            user.setUpdateTime(DateStampUtils.getTimesteamp());
             user.setStatus(1);//状态 1正常 2冻结
             if(param.getGender() != null){
                 user.setGender(param.getGender());
@@ -185,7 +178,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             userThirdParty.setUnionId(param.getUnionId());
             userThirdParty.setType(param.getType());
             userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
-            userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
             userThirdPartyMapper.insert(userThirdParty);
             //用户扩展信息表
             UserInfoExt userInfoExt = new UserInfoExt();
@@ -194,14 +186,12 @@ public class UserInfoServiceImpl implements UserInfoService {
             //TODO 信誉度待定
             userInfoExt.setCredit(100);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
-            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
             //用户会员系统
             UserVip userVip = new UserVip();
             userVip.setUserId(user.getId());
             userVip.setStatus(2);//会员状态1已开通 2未开通
             userVip.setAddTime(DateStampUtils.getTimesteamp());
-            userVip.setUpdateTime(DateStampUtils.getTimesteamp());
             userVipMapper.insert(userVip);
             //TODO 注册通讯账户
             //TODO 调用钱包系统初始化接口
@@ -249,7 +239,6 @@ public class UserInfoServiceImpl implements UserInfoService {
                 userThirdParty.setType(type);
                 userThirdParty.setUnionId(unionId);
                 userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
-                userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
                 userThirdPartyMapper.insert(userThirdParty);
                 UserDto userDto = setUserDtoByInfo(token,userInfo);
                 return userDto;
@@ -307,7 +296,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(StringUtils.isNotEmpty(param.getUserAddress())){
                 userInfo.setAddress(param.getUserAddress());
             }
-            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             //用户扩展信息表
             UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(userId);
@@ -320,7 +308,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(StringUtils.isNotEmpty(param.getPayPwd())){
                 userInfoExt.setPayPwd(MD5Util.generate(MD5Util.MD5(param.getPayPwd())));
             }
-            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.updateByPrimaryKey(userInfoExt);
             UserDto userDto = setUserDtoByInfo(param.getToken(),userInfo);
             return userDto;
@@ -337,7 +324,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new ServiceException("用户不存在！");
         }else{
             userInfo.setPhone(phone);
-            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             UserDto userDto = setUserDtoByInfo(token,userInfo);
             return userDto;
@@ -360,7 +346,6 @@ public class UserInfoServiceImpl implements UserInfoService {
                 //TODO 清除旧token
                 //第三方登录账号在未绑定手机号时拥有功能：
 
-                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
                 UserDto userDto = setUserDtoByInfo(token,userInfo);
                 return userDto;
@@ -404,7 +389,6 @@ public class UserInfoServiceImpl implements UserInfoService {
                 throw new ServiceException("不能和旧密码相同！");
             }else{
                 userInfo.setLoginPwd(MD5Util.generate(MD5Util.MD5(newPwd)));
-                userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
                 userInfoMapper.updateByPrimaryKey(userInfo);
             }
         }
@@ -424,7 +408,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             user.setRegType(2);//注册来源 1app 2微信小程序
             user.setRegPlatform(3);//注册平台 1安卓 2iOS 3小程序
             user.setAddTime(DateStampUtils.getTimesteamp());
-            user.setUpdateTime(DateStampUtils.getTimesteamp());
             user.setStatus(1);//状态 1正常 2冻结
             if(param.getGender() != null){
                 user.setGender(param.getGender());
@@ -442,7 +425,6 @@ public class UserInfoServiceImpl implements UserInfoService {
              userThirdParty.setSessionKey(session_key);
             userThirdParty.setType(1);//类型 1微信 2QQ 3微博
             userThirdParty.setAddTime(DateStampUtils.getTimesteamp());
-            userThirdParty.setUpdateTime(DateStampUtils.getTimesteamp());
             userThirdPartyMapper.insert(userThirdParty);
             //用户扩展信息表
             UserInfoExt userInfoExt = new UserInfoExt();
@@ -451,14 +433,12 @@ public class UserInfoServiceImpl implements UserInfoService {
             //TODO 信誉度待定
             userInfoExt.setCredit(100);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
-            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
             //用户会员系统
             UserVip userVip = new UserVip();
             userVip.setUserId(user.getId());
             userVip.setStatus(2);//会员状态 1已开通 2未开通
             userVip.setAddTime(DateStampUtils.getTimesteamp());
-            userVip.setUpdateTime(DateStampUtils.getTimesteamp());
             userVipMapper.insert(userVip);
             //TODO 注册通讯账户
             //TODO 调用钱包系统初始化接口
@@ -468,7 +448,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userThirdParty.getUserId());
             userInfo.setLastLoginPlatform(3);//最后登录平台 1安卓 2IOS 3小程序
             userInfo.setLastLoginTime(DateStampUtils.getTimesteamp());
-            userInfo.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoMapper.updateByPrimaryKey(userInfo);
             String token = setToken("",userInfo.getId());
             userThirdParty.setSessionKey(session_key);
@@ -539,15 +518,15 @@ public class UserInfoServiceImpl implements UserInfoService {
         return shopDtos;
     }
 
-    public static void main(String[] args) {
-        SchedualGoodsService schedualGoodsService = new SchedualGoodsServiceImpl();
-        String goodsLists = schedualGoodsService.goodsList(16, 0, 3);
-        System.out.println("goodsLists:"+goodsLists);
-        JSONObject jsonObject = JSONObject.parseObject(goodsLists);
-        System.out.println("jsonObject:"+jsonObject);
-        JSONObject goodsList = JSONArray.parseObject(jsonObject.getString("data"));
-        System.out.println("goodsList:"+goodsList);
-    }
+//    public static void main(String[] args) {
+//        SchedualGoodsService schedualGoodsService = new SchedualGoodsServiceImpl();
+//        String goodsLists = schedualGoodsService.goodsList(16, 0, 3);
+//        System.out.println("goodsLists:"+goodsLists);
+//        JSONObject jsonObject = JSONObject.parseObject(goodsLists);
+//        System.out.println("jsonObject:"+jsonObject);
+//        JSONObject goodsList = JSONArray.parseObject(jsonObject.getString("data"));
+//        System.out.println("goodsList:"+goodsList);
+//    }
 
     @Override
     public UserDto userInfo(Integer userId) throws ServiceException {
@@ -556,6 +535,8 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new ServiceException("用户不存在！");
         }else{
             UserDto userDto = setUserDtoByInfo("",userInfo);
+            userDto.setFansCount(userFansMapper.fansCount(userId));
+            userDto.setCollectCount(userFansMapper.collectCount(userId));
             return userDto;
         }
     }
@@ -576,6 +557,11 @@ public class UserInfoServiceImpl implements UserInfoService {
                     userFans.setToUserId(toUserId);
                     userFans.setUserId(userId);
                     userFansMapper.insert(userFans);
+                    List<UserInfo> list = new ArrayList<>();
+                    Iterator<UserInfo> iterator = list.iterator();
+                    while(iterator.hasNext()){
+                        iterator.remove();
+                    }
                 }else if(type == 1){//取消关注
                     UserFans userFans = userFansMapper.selectByUserIdToUserId(userId, toUserId);
                     if(userFans == null){
@@ -589,4 +575,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             }
         }
     }
+
+
 }

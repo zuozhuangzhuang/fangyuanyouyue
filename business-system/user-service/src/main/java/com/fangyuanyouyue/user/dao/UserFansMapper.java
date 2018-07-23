@@ -19,4 +19,8 @@ public interface UserFansMapper {
     int updateByPrimaryKey(UserFans record);
 
     UserFans selectByUserIdToUserId(@Param("userId")Integer userId,@Param("toUserId")Integer toUserId);
+
+    Integer fansCount(Integer userId);
+
+    Integer collectCount(Integer userId);
 }

@@ -40,7 +40,6 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
         }else{
             //用户扩展信息表
             UserInfoExt userInfoExt = userInfoExtMapper.selectByUserId(userId);
-            userInfoExt.setUpdateTime(DateStampUtils.getTimesteamp());
             userInfoExt.setIdentity(identity);
             userInfoExt.setName(name);
             userInfoExt.setUserId(userId);
@@ -50,7 +49,6 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
 
             //实名认证申请表
             identityAuthApply.setAddTime(DateStampUtils.getTimesteamp());
-            identityAuthApply.setUpdateTime(DateStampUtils.getTimesteamp());
             identityAuthApply.setIdentity(identity);
             identityAuthApply.setName(name);
             identityAuthApply.setStatus(1);//状态 1申请 2通过 3拒绝

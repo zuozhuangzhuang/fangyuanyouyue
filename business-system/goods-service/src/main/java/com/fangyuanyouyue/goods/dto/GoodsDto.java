@@ -44,7 +44,9 @@ public class GoodsDto {
 
     private Date lastIntervalTime;//最后一次降价时间
 
-    private Integer isAppraisal;//是否鉴定 1未鉴定 2已鉴定
+    private Integer isAppraisal;//是否官方鉴定 1未鉴定 2已鉴定
+
+    private Integer isCollect;//是否收藏/关注 1未关注未收藏（商品/抢购） 2已关注未收藏(抢购) 3未关注已收藏（商品/抢购） 4已关注已收藏(抢购)
 
     //GoodsImg
     private List<GoodsImgDto> goodsImgDtos;//商品图片
@@ -293,5 +295,13 @@ public class GoodsDto {
 
     public void setIsAppraisal(Integer isAppraisal) {
         this.isAppraisal = isAppraisal;
+    }
+
+    public Integer getIsCollect() {
+        return isCollect;
+    }
+
+    public void setIsCollect(Integer isCollect) {
+        this.isCollect = isCollect;
     }
 }

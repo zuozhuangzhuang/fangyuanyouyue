@@ -45,7 +45,6 @@ public class AppraisalServiceImpl implements AppraisalService{
         //可能提交多个商品鉴定
         GoodsAppraisal goodsAppraisal = new GoodsAppraisal();
         goodsAppraisal.setAddTime(DateStampUtils.getTimesteamp());
-        goodsAppraisal.setUpdateTime(DateStampUtils.getTimesteamp());
         goodsAppraisal.setUserId(userId);
         goodsAppraisalMapper.insert(goodsAppraisal);
         if(goodsIds != null || goodsIds.length != 0){
@@ -60,7 +59,6 @@ public class AppraisalServiceImpl implements AppraisalService{
                     }else{
                         goodsAppraisalDetail = new GoodsAppraisalDetail();
                         goodsAppraisalDetail.setAddTime(DateStampUtils.getTimesteamp());
-                        goodsAppraisalDetail.setUpdateTime(DateStampUtils.getTimesteamp());
                         goodsAppraisalDetail.setAppraisalId(goodsAppraisal.getId());
                         goodsAppraisalDetail.setGoodsId(goodsId);
                         goodsAppraisalDetail.setStatus(0);//状态 0申请 1真 2假 3存疑
@@ -80,7 +78,6 @@ public class AppraisalServiceImpl implements AppraisalService{
         }else{
             GoodsAppraisalDetail goodsAppraisalDetail = new GoodsAppraisalDetail();
             goodsAppraisalDetail.setAddTime(DateStampUtils.getTimesteamp());
-            goodsAppraisalDetail.setUpdateTime(DateStampUtils.getTimesteamp());
             goodsAppraisalDetail.setAppraisalId(goodsAppraisal.getId());
             goodsAppraisalDetail.setStatus(0);//状态 0申请 1真 2假 3存疑
             goodsAppraisalDetail.setTitle(title);

@@ -11,6 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.MultipartConfigElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 @EnableEurekaClient

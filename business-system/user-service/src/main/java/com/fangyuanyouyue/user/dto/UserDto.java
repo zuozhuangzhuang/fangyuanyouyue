@@ -47,6 +47,10 @@ public class UserDto {
 
     private Integer vipStatus;//会员状态1已开通 2未开通
 
+    //UserFans
+    private Integer fansCount;//粉丝数量
+
+    private Integer collectCount;//关注数量
     /**
      * ↓↓↓↓↓↓↓注释掉不需要返回的属性↓↓↓↓↓↓↓
      */
@@ -280,5 +284,21 @@ public class UserDto {
 
     public void setIdentityStatus(Integer identityStatus) {
         this.identityStatus = identityStatus;
+    }
+
+    public Integer getFansCount() {
+        return fansCount;
+    }
+
+    public void setFansCount(Integer fansCount) {
+        this.fansCount = fansCount;
+    }
+
+    public Integer getCollectCount() {
+        return collectCount;
+    }
+
+    public void setCollectCount(Integer collectCount) {
+        this.collectCount = collectCount;
     }
 }

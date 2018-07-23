@@ -90,6 +90,8 @@ public class CommentControllerTest {
         mvc.perform(MockMvcRequestBuilders.post("/comment/getComments")
                 //商品ID
                 .param("goodsId","1")
+                .param("start","0")
+                .param("limit","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

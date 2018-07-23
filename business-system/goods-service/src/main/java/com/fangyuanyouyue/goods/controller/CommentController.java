@@ -129,7 +129,9 @@ public class CommentController extends BaseController{
 
     @ApiOperation(value = "查看全部评论", notes = "查看全部评论",response = ResultUtil.class)
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true,dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true,dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "start", value = "起始页数", required = true,dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "limit", value = "每页个数", required = true,dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/getComments")
     @ResponseBody
@@ -140,7 +142,7 @@ public class CommentController extends BaseController{
             if(param.getGoodsId() == null){
                 return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
             }
-            List<GoodsCommentDto> comments = commentService.getComments(param.getGoodsId());
+            List<GoodsCommentDto> comments = commentService.getComments(param.getGoodsId(),param.getStart(),param.getLimit());
             return toSuccess(comments,"查看全部评论成功！");
         } catch (ServiceException e) {
             e.printStackTrace();

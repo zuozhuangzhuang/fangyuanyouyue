@@ -58,6 +58,15 @@ public interface GoodsInfoService {
     GoodsDto goodsInfo(Integer goodsId) throws ServiceException;
 
     /**
+     * 获取商品详情中的关注信息
+     * @param goodsId
+     * @param userId
+     * @return
+     * @throws ServiceException
+     */
+    GoodsDto goodsInfoByToken(Integer goodsId,Integer userId) throws ServiceException;
+
+    /**
      * 同类推荐
      * @param goodsId
      * @return
@@ -108,4 +117,11 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     List<GoodsQuickSearchDto> quickSearch() throws ServiceException;
+
+    /**
+     * 修改商品状态
+     * @param goodsId
+     * @throws ServiceException
+     */
+    void updateGoodsStatus(Integer goodsId,Integer status) throws ServiceException;
 }

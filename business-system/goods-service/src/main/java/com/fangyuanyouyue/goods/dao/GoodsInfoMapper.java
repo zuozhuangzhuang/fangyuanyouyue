@@ -65,5 +65,5 @@ public interface GoodsInfoMapper {
      * @param type
      * @return
      */
-    List<GoodsInfo> selectMyCollectGoods(@Param("userId")Integer userId,@Param("collectType")Integer collectType,@Param("type")Integer type);
+    List<GoodsInfo> selectMyCollectGoods(@Param("userId")Integer userId,@Param("collectType")Integer collectType,@Param("type")Integer type,@Param("goodsId")Integer goodsId);
 }

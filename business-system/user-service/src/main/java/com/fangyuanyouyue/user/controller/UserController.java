@@ -461,7 +461,7 @@ public class UserController extends BaseController {
             }
             //TODO 合并账号,一定是从三方账号发起请求
             UserDto userDto = userInfoService.accountMerge(param.getToken(),param.getPhone());
-            return toSuccess(userDto,"修改绑定手机成功！");
+            return toSuccess(userDto,"合并账号成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
@@ -529,7 +529,7 @@ public class UserController extends BaseController {
                             unionid = jsonObject.getString("unionid");
                             param.setUnionId(unionid);
                             UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
-                            return toSuccess(userDto,"小程序登录成功！");
+                            return toSuccess(userDto,"1小程序登录成功！");
                         }else{
                             return toError(ReCode.FAILD.getValue(),"解密异常!");
                         }
@@ -542,7 +542,7 @@ public class UserController extends BaseController {
                     param.setUnionId(unionid);
                     UserDto userDto = userInfoService.miniLogin(param,openid,session_key);
                     //最后要返回一个自定义的登录态,用来做后续数据传输的验证
-                    return toSuccess(userDto,"小程序登录成功！");
+                    return toSuccess(userDto,"2小程序登录成功！");
                 }
             }else{
                 return toError(ReCode.FAILD.getValue(),"页面授权失败！");
@@ -584,16 +584,16 @@ public class UserController extends BaseController {
                 if(userInfo != null){
                     return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
                 }
+            }else if(PhoneCode.TYPE_OLD_PHONE.getCode() == param.getType()){//为3验证旧手机，给旧手机发验证码去验证
+//                if(userInfo != null){//已存在此手机号
+//                    //验证此手机是否存在其他识别号
+//                    if(StringUtils.isNotEmpty(param.getUnionId())){//根据传入参数判断是qq还是微信绑定
+//
+//                    }
+//                }
             }else if(PhoneCode.TYPE_NEW_PHONE.getCode() == param.getType()){//TODO 未启用 绑定新手机
                 if(userInfo != null){
                     return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
-                }
-            }else if(PhoneCode.TYPE_OLD_PHONE.getCode() == param.getType()){//为3验证旧手机
-                if(userInfo != null){//已存在此手机号
-                    //验证此手机是否存在其他识别号
-                    if(StringUtils.isNotEmpty(param.getUnionId())){//根据传入参数判断是qq还是微信绑定
-
-                    }
                 }
             }else if(PhoneCode.TYPE_AUTH.getCode() == param.getType()){//为5认证店铺
 				/*if(count == 0){
@@ -608,7 +608,7 @@ public class UserController extends BaseController {
             log.info("code:"+code);
 
             redisTemplate.opsForValue().set(param.getPhone(),code);
-            redisTemplate.expire(param.getPhone(),1,TimeUnit.DAYS);
+            redisTemplate.expire(param.getPhone(),60,TimeUnit.SECONDS);
             return toSuccess("发送验证码成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -886,9 +886,12 @@ public class UserController extends BaseController {
 
 
     public static void main(String[] args) {
-        String code = "023dDxiJ1b2Hv60OxjmJ156AiJ1dDxib";
-        String encryptedData = "3f1eqRRy71lnE4hLzoO+FLOylSO37WM5eXg0H3+rnW3Oe7orwmb6/hEQ+XUPAWNppZQM6WXv4acVO0kUco/12IU9asMhBKf3ljZrkZqVKJnIBQb8cmWCvy/uLpD7/YwnOkrAFou61LUGccRvJGwSeI3MKdOix+9oHxvl4KLLTHt52hl4iwW4zRsG1J6bKnXcZt27N4+84QNdIW85SKNrtuOleFUBw74ThKRp3P7F8w/0Azbp9mScNT3ZUkAeQ106tQqn4/pcSjgRJ69tuS5Soqx6T6JeiDUF4coOCr369Dg5R95wLZ6rBJ0YZvk3hF5hmJfI0Slfis+WHC1oSMrzCmpHiaVDGkoKfvJpIEO6CJ+I94W28UhHWjJ2oHz8lAdzS0goj/Jv7Dko10t4hlObAzpGLXpD93/sVXNWL7GGCyE6ZRe1p7e+5KKybdsNvHcagiR/12mTZDZjMhJC3fXjN+s0kN4WQySVhqFDCUHdT+Q7+av5WiIxor/LSbbdu6LUSKwk27A9g6z/EtOwSfYkA3d732CXkraaYRg8qyN1bYg=";
-        String iv = "Gsn0F1c1yAO5DFS7TLk2kw==";
+        //微信获取的code
+        String code = "";
+        //包括敏感数据在内的完整用户信息的加密数据
+        String encryptedData = "";
+        //加密算法的初始向量
+        String iv = "";
         String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+WeChatSession.APPID+
                 "&secret="+WeChatSession.SECRET+"&js_code="+ code +"&grant_type=authorization_code";
         RestTemplate restTemplate = new RestTemplate();

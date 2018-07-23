@@ -186,7 +186,7 @@ public class GoodsParam{
 
     //Collect
     @ApiModelProperty(name = "collectId", value = "收藏对象ID", dataType = "int",hidden = true)
-    private Integer collectId;//收藏对象ID
+    private Integer[] collectId;//收藏对象ID
 
     @ApiModelProperty(name = "collectType", value = "关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏", dataType = "int",hidden = true)
     private Integer collectType;//关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
@@ -536,14 +536,6 @@ public class GoodsParam{
         this.markdown = markdown;
     }
 
-    public Integer getCollectId() {
-        return collectId;
-    }
-
-    public void setCollectId(Integer collectId) {
-        this.collectId = collectId;
-    }
-
     public Integer getCollectType() {
         return collectType;
     }
@@ -582,6 +574,14 @@ public class GoodsParam{
 
     public void setQuality(Integer quality) {
         this.quality = quality;
+    }
+
+    public Integer[] getCollectId() {
+        return collectId;
+    }
+
+    public void setCollectId(Integer[] collectId) {
+        this.collectId = collectId;
     }
 
     @Override
@@ -632,7 +632,7 @@ public class GoodsParam{
                 ", bannerIndexId=" + bannerIndexId +
                 ", businessId=" + businessId +
                 ", jumpType=" + jumpType +
-                ", collectId=" + collectId +
+                ", collectId=" + Arrays.toString(collectId) +
                 ", collectType=" + collectType +
                 ", opinion='" + opinion + '\'' +
                 '}';

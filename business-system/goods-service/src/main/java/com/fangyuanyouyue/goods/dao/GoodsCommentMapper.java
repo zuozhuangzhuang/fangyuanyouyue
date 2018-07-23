@@ -26,7 +26,7 @@ public interface GoodsCommentMapper {
      * @param goodsId
      * @return
      */
-    List<Map<String,Object>> selectByGoodsId(@Param("goodsId") Integer goodsId);
+    List<Map<String,Object>> selectByGoodsId(@Param("goodsId") Integer goodsId,@Param("start") Integer start,@Param("limit")Integer limit);
 
     /**
      * 根据商品ID，评论（或回复）ID获取回复列表

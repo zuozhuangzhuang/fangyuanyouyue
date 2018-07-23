@@ -39,6 +39,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     @Autowired
     private GoodsQuickSearchMapper goodsQuickSearchMapper;
     @Autowired
+    private CollectMapper collectMapper;
+    @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
 
     @Override
@@ -57,13 +59,11 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             if(hotSearch == null){
                 hotSearch = new HotSearch();
                 hotSearch.setAddTime(DateStampUtils.getTimesteamp());
-                hotSearch.setUpdateTime(DateStampUtils.getTimesteamp());
                 hotSearch.setName(param.getSearch());
                 hotSearch.setCount(1);
                 hotSearchMapper.insert(hotSearch);
             }else{
                 hotSearch.setCount(hotSearch.getCount()+1);
-                hotSearch.setUpdateTime(DateStampUtils.getTimesteamp());
                 hotSearchMapper.updateByPrimaryKey(hotSearch);
             }
         }
@@ -103,7 +103,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         goodsInfo.setType(param.getType());
         goodsInfo.setStatus(param.getStatus());
         goodsInfo.setAddTime(DateStampUtils.getTimesteamp());
-        goodsInfo.setUpdateTime(DateStampUtils.getTimesteamp());
         if(param.getType() == 2){
             goodsInfo.setFloorPrice(param.getFloorPrice());
             goodsInfo.setIntervalTime(param.getIntervalTime());
@@ -116,7 +115,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             GoodsCorrelation goodsCorrelation = new GoodsCorrelation();
             goodsCorrelation.setGoodsId(goodsInfo.getId());
             goodsCorrelation.setAddTime(DateStampUtils.getTimesteamp());
-            goodsCorrelation.setUpdateTime(DateStampUtils.getTimesteamp());
             goodsCorrelation.setGoodsCategoryId(param.getGoodsCategoryIds()[i]);
             goodsCorrelationMapper.insert(goodsCorrelation);
         }
@@ -256,9 +254,40 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
 
     @Override
+    public GoodsDto goodsInfoByToken(Integer goodsId, Integer userId) throws ServiceException {
+        List<GoodsInfo> goodsInfos = goodsInfoMapper.selectMyCollectGoods(userId, null, null, goodsId);
+        GoodsInfo goodsInfo;
+        GoodsDto goodsDto;
+        //是否收藏/关注 1未关注未收藏（商品/抢购） 2已关注未收藏(抢购) 3未关注已收藏（商品/抢购） 4已关注已收藏(抢购)
+        if(goodsInfos != null && goodsInfos.size() > 0){
+            goodsDto = setDtoByGoodsInfo(goodsInfos.get(0));
+            if(goodsInfos.size()>1){
+                goodsDto.setIsCollect(4);
+            }else{
+                //判断是收藏还是关注
+                Collect collect = collectMapper.selectByGoodsId(goodsId, null);
+                if(collect.getType() == 1){//类型 1关注 2收藏
+                    goodsDto.setIsCollect(2);
+                }else{
+                    goodsDto.setIsCollect(3);
+                }
+            }
+        }else{
+            goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
+            goodsDto = setDtoByGoodsInfo(goodsInfo);
+            goodsDto.setIsCollect(1);
+        }
+        return goodsDto;
+    }
+
+    @Override
     public GoodsDto goodsInfo(Integer goodsId) throws ServiceException {
         GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
-        return setDtoByGoodsInfo(goodsInfo);
+        if(goodsInfo == null){
+            throw new ServiceException("获取商品失败！");
+        }
+        GoodsDto goodsDto = setDtoByGoodsInfo(goodsInfo);
+        return goodsDto;
     }
 
     @Override
@@ -294,7 +323,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     public BannerIndex addBanner(GoodsParam param) throws ServiceException {
         BannerIndex bannerIndex = new BannerIndex();
         bannerIndex.setAddTime(DateStampUtils.getTimesteamp());
-        bannerIndex.setUpdateTime(DateStampUtils.getTimesteamp());
         bannerIndex.setType(param.getType());
         bannerIndex.setBusinessId(param.getBusinessId());
         bannerIndex.setImgUrl(param.getImgUrl());
@@ -316,7 +344,6 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(bannerIndex == null){
             throw new ServiceException("获取轮播图失败！");
         }else{
-            bannerIndex.setUpdateTime(DateStampUtils.getTimesteamp());
             bannerIndex.setType(param.getType());
             bannerIndex.setBusinessId(param.getBusinessId());
             bannerIndex.setImgUrl(param.getImgUrl());
@@ -367,6 +394,17 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             throw new ServiceException("获取快速查询条件列表失败！");
         }else{
             return goodsQuickSearchDtos;
+        }
+    }
+
+    @Override
+    public void updateGoodsStatus(Integer goodsId,Integer status) throws ServiceException {
+        GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
+        if(goodsInfo == null){
+            throw new ServiceException("获取商品失败！");
+        }else{
+            goodsInfo.setStatus(status);
+            goodsInfoMapper.updateByPrimaryKey(goodsInfo);
         }
     }
 }

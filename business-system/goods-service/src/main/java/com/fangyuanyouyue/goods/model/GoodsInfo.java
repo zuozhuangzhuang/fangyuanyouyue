@@ -35,7 +35,7 @@ public class GoodsInfo {
 
     private Date lastIntervalTime;//最后一次降价时间
 
-    private Integer isAppraisal;//是否鉴定 1未鉴定 2已鉴定
+    private Integer isAppraisal;//是否官方鉴定 1未鉴定 2已鉴定
 
     private Date addTime;//添加时间
 

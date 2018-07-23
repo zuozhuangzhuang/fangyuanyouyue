@@ -117,7 +117,8 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsInfo() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/goodsInfo")
-                .param("goodsId","1")
+                .param("token","10025FY1532117528984")
+                .param("goodsId","30")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

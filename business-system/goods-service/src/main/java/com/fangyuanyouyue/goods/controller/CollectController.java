@@ -43,10 +43,10 @@ public class CollectController extends BaseController{
     @ApiOperation(value = "收藏/关注或取消", notes = "收藏/关注或取消",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "collectId", value = "收藏对象ID", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "type", value = "类型 1关注 2收藏", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "状态 1关注/收藏 2取消关注/收藏", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "collectType", value = "关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏（只有抢购可以关注）", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "collectId", value = "收藏对象ID", allowMultiple = true,required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "type", value = "类型 1关注 2收藏", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "status", value = "状态 1关注/收藏 2取消关注/收藏", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "collectType", value = "关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏（只有抢购可以关注）", required = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/collectGoods")
     @ResponseBody
@@ -74,7 +74,7 @@ public class CollectController extends BaseController{
             if(param.getCollectType() == null){
                 return toError(ReCode.FAILD.getValue(),"关注/收藏类型不能为空！");
             }
-            if(param.getCollectId() == null){
+            if(param.getCollectId() == null || param.getCollectId().length < 1){
                 return toError(ReCode.FAILD.getValue(),"对象ID不能为空！");
             }
             if(param.getStatus() == null){

@@ -90,6 +90,9 @@ public class GoodsController extends BaseController{
                     return toError(ReCode.FAILD.getValue(),"只有抢购可选已完成！");
                 }
             }
+            if(param.getGoodsCategoryIds()  != null && param.getGoodsCategoryIds().length == 0){
+                return toError(ReCode.FAILD.getValue(),"商品分类数组不能为空！");
+            }
             //获取商品列表
             List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param);
             return toSuccess(goodsDtos,"获取商品列表成功！");
@@ -228,6 +231,7 @@ public class GoodsController extends BaseController{
     //商品详情
     @ApiOperation(value = "商品详情", notes = "商品详情",response = ResultUtil.class)
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsId", value = "商品id", required = true, dataType = "int", paramType = "query")
     })
     @GetMapping(value = "/goodsInfo")
@@ -240,8 +244,23 @@ public class GoodsController extends BaseController{
             if(param.getGoodsId() == null){
                 return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
             }
-            //商品详情
-            GoodsDto goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
+            GoodsDto goodsDto;
+            if(StringUtils.isNotEmpty(param.getToken())){//商品详情验证用户
+                //根据用户token获取userId
+                Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+                String verifyUser = schedualUserService.verifyUserById(userId);
+                JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+                if((Integer)jsonObject.get("code") != 0){
+                    return toError(jsonObject.getString("report"));
+                }
+                redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
+                param.setUserId(userId);
+                //TODO 获取用户是否已关注此商品
+                goodsDto = goodsInfoService.goodsInfoByToken(param.getGoodsId(),param.getUserId());
+            }else{
+                //商品详情
+                goodsDto = goodsInfoService.goodsInfo(param.getGoodsId());
+            }
 
             return toSuccess(goodsDto,"商品详情成功！");
         } catch (ServiceException e) {

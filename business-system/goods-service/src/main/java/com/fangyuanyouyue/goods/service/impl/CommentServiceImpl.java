@@ -29,7 +29,6 @@ public class CommentServiceImpl implements CommentService{
     public void addComment(GoodsParam param) throws ServiceException {
         GoodsComment goodsComment = new GoodsComment();
         goodsComment.setAddTime(DateStampUtils.getTimesteamp());
-        goodsComment.setUpdateTime(DateStampUtils.getTimesteamp());
         if(param.getCommentId() != null){
             goodsComment.setCommentId(param.getCommentId());
         }
@@ -57,14 +56,13 @@ public class CommentServiceImpl implements CommentService{
             throw new ServiceException("获取评论失败！");
         }else{
             goodsComment.setLikesCount(goodsComment.getLikesCount()+1);
-            goodsComment.setUpdateTime(DateStampUtils.getTimesteamp());
             goodsCommentMapper.updateByPrimaryKey(goodsComment);
         }
     }
 
     @Override
-    public List<GoodsCommentDto> getComments(Integer goodsId) throws ServiceException {
-        List<Map<String, Object>> maps = goodsCommentMapper.selectByGoodsId( goodsId);
+    public List<GoodsCommentDto> getComments(Integer goodsId,Integer start,Integer limit) throws ServiceException {
+        List<Map<String, Object>> maps = goodsCommentMapper.selectByGoodsId( goodsId,start*limit,limit);
         List<GoodsCommentDto> goodsCommentDtos = GoodsCommentDto.mapToDtoList(maps);
         for(GoodsCommentDto goodsCommentDto:goodsCommentDtos){
             goodsCommentDto.setReplys(selectCommentList(goodsCommentDto.getId(),goodsId));
@@ -73,7 +71,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     /**
-     * 递归获取评论及回复
+     * 递归获取评论及回复 （扁平化只显示两层，这里通过新增评论时多层级的回复全部按照一级评论作为父级实现，不用修改此处逻辑）
      * @param commentId
      * @param goodsId
      * @return

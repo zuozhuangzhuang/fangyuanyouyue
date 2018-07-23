@@ -27,5 +27,5 @@ public interface CommentService {
      * @return
      * @throws ServiceException
      */
-    List<GoodsCommentDto> getComments(Integer goodsId) throws ServiceException;
+    List<GoodsCommentDto> getComments(Integer goodsId,Integer start,Integer limit) throws ServiceException;
 }
