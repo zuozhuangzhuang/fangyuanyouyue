@@ -14,7 +14,6 @@ public interface ForumColumnService {
 
 	/**
 	 * 获取专栏列表
-	 * @param forumId
 	 * @param start
 	 * @param limit
 	 * @return

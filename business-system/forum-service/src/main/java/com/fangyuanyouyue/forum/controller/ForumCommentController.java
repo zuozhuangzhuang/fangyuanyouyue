@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping(value = "/comment")
-@Api(tags = "论坛评论Controller")
+@Api(description = "论坛评论Controller")
 @RefreshScope
 public class ForumCommentController extends BaseController {
 	protected Logger log = Logger.getLogger(this.getClass());

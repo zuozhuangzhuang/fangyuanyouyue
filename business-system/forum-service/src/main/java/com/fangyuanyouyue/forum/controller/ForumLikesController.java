@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping(value = "/likes")
-@Api(tags = "帖子点赞Controller")
+@Api(description = "帖子点赞Controller")
 @RefreshScope
 public class ForumLikesController extends BaseController {
 	protected Logger log = Logger.getLogger(this.getClass());

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping(value = "/column")
-@Api(tags = "专栏Controller")
+@Api(description = "专栏Controller")
 @RefreshScope
 public class ForumColumnController extends BaseController {
 	protected Logger log = Logger.getLogger(this.getClass());
