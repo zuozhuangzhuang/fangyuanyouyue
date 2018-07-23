@@ -21,7 +21,7 @@ public interface ForumLikesService {
 	 * @return
 	 * @throws ServiceException
 	 */
-    List<ForumLikesDto> getCommentList(Integer forumId,Integer start,Integer limit) throws ServiceException;
+    List<ForumLikesDto> getLikesList(Integer forumId,Integer start,Integer limit) throws ServiceException;
     
     /**
      * 计算点赞数量

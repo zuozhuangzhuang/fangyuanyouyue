@@ -51,7 +51,7 @@ public class ForumLikesController extends BaseController {
 				return toError("分页参数不能为空");
 			}
 
-			List<ForumLikesDto> dto = forumLikesService.getCommentList(param.getForumId(), param.getStart(),
+			List<ForumLikesDto> dto = forumLikesService.getLikesList(param.getForumId(), param.getStart(),
 					param.getLimit());
 
 			return toSuccess(dto);

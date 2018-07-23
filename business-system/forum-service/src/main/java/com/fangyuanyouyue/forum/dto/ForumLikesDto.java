@@ -3,7 +3,7 @@ package com.fangyuanyouyue.forum.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fangyuanyouyue.forum.model.ForumComment;
+import com.fangyuanyouyue.forum.model.ForumLikes;
 import com.fangyuanyouyue.forum.utils.DateUtil;
 
 /**
@@ -27,17 +27,17 @@ public class ForumLikesDto {
     	
     }
 
-    public ForumLikesDto(ForumComment model) {
+    public ForumLikesDto(ForumLikes model) {
         this.forumId = model.getForumId();
         this.addTime = DateUtil.getFormatDate(model.getAddTime(), DateUtil.DATE_FORMT);
         this.headImgUrl = model.getHeadImgUrl();
         this.nickName = model.getNickName();
     }
-    public static List<ForumLikesDto> toDtoList(List<ForumComment> list) {
+    public static List<ForumLikesDto> toDtoList(List<ForumLikes> list) {
         if (list == null)
             return null;
         List<ForumLikesDto> dtolist = new ArrayList<>();
-        for (ForumComment model : list) {
+        for (ForumLikes model : list) {
         	ForumLikesDto dto = new ForumLikesDto(model);
             dtolist.add(dto);
         }
