@@ -219,27 +219,45 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             }
             //修改商品信息
             if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
-
+                goodsInfo.setName(param.getGoodsInfoName());
             }
-            if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
-
+            if(StringUtils.isNotEmpty(param.getDescription())){
+                goodsInfo.setDescription(param.getDescription());
             }
-
-            goodsInfo.setName(param.getGoodsInfoName());
-            goodsInfo.setDescription(param.getDescription());
-            goodsInfo.setPrice(param.getPrice());
-            goodsInfo.setPostage(param.getPostage());
+            if(param.getPrice() != null){
+                goodsInfo.setPrice(param.getPrice());
+            }
+            if(param.getPostage() != null){
+                goodsInfo.setPostage(param.getPostage());
+            }
+            if(StringUtils.isNotEmpty(param.getLabel())){
+                goodsInfo.setLabel(param.getLabel());
+            }
 //            goodsInfo.setSort(param.getSort());
-            goodsInfo.setLabel(param.getLabel());
-            goodsInfo.setFloorPrice(param.getFloorPrice());if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
-
+            if(param.getFloorPrice() != null){
+                goodsInfo.setFloorPrice(param.getFloorPrice());
+            }
+            if(param.getIntervalTime() != null){
+                goodsInfo.setIntervalTime(param.getIntervalTime());
+            }
+            if(param.getMarkdown() != null){
+                goodsInfo.setMarkdown(param.getMarkdown());
+            }
+            if(StringUtils.isNotEmpty(param.getVideoUrl())){
+                goodsInfo.setVideoUrl(param.getVideoUrl());
             }
 
-            goodsInfo.setIntervalTime(param.getIntervalTime());
-            goodsInfo.setMarkdown(param.getMarkdown());
-            goodsInfo.setVideoUrl(param.getVideoUrl());
-            //修改商品图片信息
-
+            //删除旧商品图片信息
+            goodsImgMapper.deleteByGoodsId(goodsInfo.getId());
+            //新增商品图片信息
+            //每个图片储存一条商品图片表信息
+            for(int i=0;i<param.getImgUrls().length;i++){
+                if(i == 0){
+                    saveGoodsPicOne(goodsInfo.getId(),param.getImgUrls()[i],param.getType(),1);
+                }else{
+                    saveGoodsPicOne(goodsInfo.getId(),param.getImgUrls()[i],param.getType(),2);
+                }
+            }
         }
     }
 
@@ -322,6 +340,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             throw new ServiceException("获取商品失败！");
         }else{
             //根据商品获取此商品的所属的分类列表
+            //按照会员和认证店铺进行排序
             List<Integer> goodsCategoryIds = goodsCorrelationMapper.selectCategoryIdByGoodsId(goodsId);
             //根据分类列表获取商品的列表
             List<GoodsInfo> goodsInfos = goodsInfoMapper.selectByCategoryIds(goodsCategoryIds,pageNum*pageSize,pageSize);

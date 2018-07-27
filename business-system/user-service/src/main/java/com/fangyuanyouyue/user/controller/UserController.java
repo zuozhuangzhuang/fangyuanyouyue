@@ -591,7 +591,7 @@ public class UserController extends BaseController {
 //
 //                    }
 //                }
-            }else if(PhoneCode.TYPE_NEW_PHONE.getCode() == param.getType()){//TODO 未启用 绑定新手机
+            }else if(PhoneCode.TYPE_NEW_PHONE.getCode() == param.getType()){//为4绑定新手机
                 if(userInfo != null){
                     return toError(ReCode.FAILD.getValue(),"此手机号已被注册！");
                 }

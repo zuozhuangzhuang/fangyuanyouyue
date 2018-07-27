@@ -86,5 +86,7 @@ public class AppraisalServiceImpl implements AppraisalService{
             goodsAppraisalDetail.setPrice(price);
             goodsAppraisalDetailMapper.insert(goodsAppraisalDetail);
         }
+        //TODO 生成订单
+        //用户需要支付对应的资金才可以鉴定成功
     }
 }
