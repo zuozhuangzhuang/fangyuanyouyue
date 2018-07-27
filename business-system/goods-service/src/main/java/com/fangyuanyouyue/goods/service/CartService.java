@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.goods.service;
 
 import com.fangyuanyouyue.goods.dto.CartShopDto;
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.utils.ServiceException;
 
 import java.util.List;
@@ -29,4 +30,11 @@ public interface CartService {
      * @throws ServiceException
      */
     void cartRemove(Integer[] cartDetailIds) throws ServiceException;
+
+    /**
+     *
+     * @return
+     * @throws ServiceException
+     */
+    List<GoodsDto> choice(Integer userId) throws ServiceException;
 }

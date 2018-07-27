@@ -45,6 +45,7 @@ public class UserInfoExtServiceImpl implements UserInfoExtService {
             userInfoExt.setUserId(userId);
             userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
             userInfoExt.setCredit(100);
+            userInfoExt.setScore(0);
             userInfoExtMapper.insert(userInfoExt);
 
             //实名认证申请表

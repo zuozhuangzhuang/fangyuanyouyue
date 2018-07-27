@@ -34,7 +34,6 @@ public class UserDto {
 
     private String levelDesc;//等级描述
 
-    private Integer extStatus;//实名登记状态 1已实名 2未实名
 
     private Integer identityStatus;//实名认证状态 1申请 2通过 3拒绝
 
@@ -45,12 +44,26 @@ public class UserDto {
 
     private Integer vipType;//会员类型 1体验会员 2月会员 3年会员
 
-    private Integer vipStatus;//会员状态1已开通 2未开通
+    private Integer vipStatus;//会员状态 1已开通 2未开通
 
     //UserFans
     private Integer fansCount;//粉丝数量
 
     private Integer collectCount;//关注数量
+
+    //UserAddressDto
+    private UserAddressDto defaultAddress;//用户默认收货地址
+
+
+    //UserInfoExt 用户扩展表
+    private Integer score;//用户积分
+
+    private Integer credit;//信誉度
+
+    private Integer authType;//认证状态 1已认证 2未认证
+
+    private Integer extStatus;//实名登记状态 1已实名 2未实名
+
     /**
      * ↓↓↓↓↓↓↓注释掉不需要返回的属性↓↓↓↓↓↓↓
      */
@@ -75,13 +88,11 @@ public class UserDto {
 
 //    private String miniOpenId;//小程序openid
 
-    //UserInfoExt 用户扩展表
 //    private String identity;//身份证号码
 
 //    private String name;//真实姓名
 
-    //UserAddressDto
-//    private List<UserAddressDto> userAddressDtos;//用户收货地址
+
 
     /**
      * ↑↑↑↑↑↑注释掉不需要返回的属性↑↑↑↑↑↑
@@ -110,6 +121,9 @@ public class UserDto {
         }
         //UserInfoExt
         if(userInfoExt != null){
+            this.credit = userInfoExt.getCredit();
+            this.score = userInfoExt.getScore();
+            this.authType = userInfoExt.getAuthType();
             this.extStatus = userInfoExt.getStatus();
         }
         //IdentityAuthApply
@@ -300,5 +314,37 @@ public class UserDto {
 
     public void setCollectCount(Integer collectCount) {
         this.collectCount = collectCount;
+    }
+
+    public UserAddressDto getDefaultAddress() {
+        return defaultAddress;
+    }
+
+    public void setDefaultAddress(UserAddressDto defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public Integer getCredit() {
+        return credit;
+    }
+
+    public void setCredit(Integer credit) {
+        this.credit = credit;
+    }
+
+    public Integer getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(Integer authType) {
+        this.authType = authType;
     }
 }

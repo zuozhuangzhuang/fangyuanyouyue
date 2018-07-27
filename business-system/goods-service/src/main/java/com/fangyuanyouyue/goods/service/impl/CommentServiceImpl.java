@@ -43,7 +43,9 @@ public class CommentServiceImpl implements CommentService{
             goodsComment.setImg1Url(param.getImg3Url());
         }
         goodsComment.setStatus(1);//状态 1正常 2隐藏
-        goodsComment.setContent(param.getContent());
+        if(StringUtils.isNotEmpty(param.getContent())){
+            goodsComment.setContent(param.getContent());
+        }
         goodsComment.setGoodsId(param.getGoodsId());
         goodsComment.setLikesCount(0);//点赞数初始值为0
         goodsCommentMapper.insert(goodsComment);

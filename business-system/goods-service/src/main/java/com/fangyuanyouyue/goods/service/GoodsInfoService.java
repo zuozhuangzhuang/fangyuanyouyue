@@ -1,9 +1,6 @@
 package com.fangyuanyouyue.goods.service;
 
-import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
-import com.fangyuanyouyue.goods.dto.GoodsDto;
-import com.fangyuanyouyue.goods.dto.GoodsQuickSearchDto;
-import com.fangyuanyouyue.goods.dto.SearchDto;
+import com.fangyuanyouyue.goods.dto.*;
 import com.fangyuanyouyue.goods.model.BannerIndex;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
@@ -12,7 +9,13 @@ import com.fangyuanyouyue.goods.utils.ServiceException;
 import java.util.List;
 
 public interface GoodsInfoService {
-
+    /**
+     * 根据商品ID获取商品主图
+     * @param goodsId
+     * @return
+     * @throws ServiceException
+     */
+    String goodsMainImg(Integer goodsId) throws ServiceException;
     /**
      * 根据ID获取商品
      * @param id
@@ -42,6 +45,12 @@ public interface GoodsInfoService {
      */
     void deleteGoods(Integer[] goodsIds) throws ServiceException;
 
+    /**
+     * 编辑商品/抢购
+     * @param param
+     * @throws ServiceException
+     */
+    void modifyGoods(GoodsParam param) throws ServiceException;
     /**
      * 获取分类列表
      * @return
@@ -79,7 +88,7 @@ public interface GoodsInfoService {
      * @return
      * @throws ServiceException
      */
-    List<BannerIndex> getBanner(Integer type) throws ServiceException;
+    List<BannerIndexDto> getBanner(Integer type) throws ServiceException;
 
     /**
      * 新增首页轮播图
@@ -124,4 +133,13 @@ public interface GoodsInfoService {
      * @throws ServiceException
      */
     void updateGoodsStatus(Integer goodsId,Integer status) throws ServiceException;
+
+    /**
+     * 举报商品
+     * @param userId
+     * @param goodsId
+     * @param reason
+     * @throws ServiceException
+     */
+    void reportGoods(Integer userId,Integer goodsId,String reason) throws ServiceException;
 }

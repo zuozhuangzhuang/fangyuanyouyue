@@ -94,6 +94,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
         //TODO 信誉度待定
         userInfoExt.setCredit(100);
+        userInfoExt.setScore(0);
         userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
         userInfoExtMapper.insert(userInfoExt);
         //用户会员系统
@@ -185,6 +186,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
             //TODO 信誉度待定
             userInfoExt.setCredit(100);
+            userInfoExt.setScore(0);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
             //用户会员系统
@@ -432,6 +434,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfoExt.setStatus(2);//实名登记状态 1已实名 2未实名
             //TODO 信誉度待定
             userInfoExt.setCredit(100);
+            userInfoExt.setScore(0);
             userInfoExt.setAddTime(DateStampUtils.getTimesteamp());
             userInfoExtMapper.insert(userInfoExt);
             //用户会员系统
@@ -551,8 +554,12 @@ public class UserInfoServiceImpl implements UserInfoService {
             if(toUser == null){
                 throw new ServiceException("被关注用户不存在！");
             }else{
+                UserFans userFans = userFansMapper.selectByUserIdToUserId(userId,toUserId);
                 if(type == 0){//关注用户
-                    UserFans userFans = new UserFans();
+                    if(userFans != null){
+                        throw new ServiceException("已关注，请勿重复关注！");
+                    }
+                    userFans = new UserFans();
                     userFans.setAddTime(DateStampUtils.getTimesteamp());
                     userFans.setToUserId(toUserId);
                     userFans.setUserId(userId);
@@ -563,9 +570,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                         iterator.remove();
                     }
                 }else if(type == 1){//取消关注
-                    UserFans userFans = userFansMapper.selectByUserIdToUserId(userId, toUserId);
                     if(userFans == null){
-                        throw new ServiceException("双方不是好友，取消关注失败！");
+                        throw new ServiceException("未关注，取消关注失败！");
                     }else{
                         userFansMapper.deleteByPrimaryKey(userFans.getId());
                     }

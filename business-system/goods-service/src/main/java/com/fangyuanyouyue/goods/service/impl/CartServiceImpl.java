@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
 import com.fangyuanyouyue.goods.dto.CartDetailDto;
 import com.fangyuanyouyue.goods.dto.CartShopDto;
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.model.CartDetail;
 import com.fangyuanyouyue.goods.model.CartInfo;
+import com.fangyuanyouyue.goods.model.GoodsImg;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.service.CartService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
@@ -27,6 +29,8 @@ public class CartServiceImpl implements CartService{
     private CartDetailMapper cartDetailMapper;
     @Autowired
     private CartInfoMapper cartInfoMapper;
+    @Autowired
+    private GoodsImgMapper goodsImgMapper;
     @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
 
@@ -92,7 +96,16 @@ public class CartServiceImpl implements CartService{
                     cartShopDto.setUserId(cartDetail.getUserId());
                     cartShopDto.setHeadImgUrl(cartDetail.getHeadImgUrl());
                     cartShopDto.setNickName(cartDetail.getNickName());
+
                     List<CartDetailDto> cartDetailDtos = CartDetailDto.toDtoList(cartDetailMapper.selectByCartIdUserId(cart.getId(), cartDetail.getUserId()));
+                    for(CartDetailDto cartDetailDto:cartDetailDtos){
+                        List<GoodsImg> imgsByGoodsId = goodsImgMapper.getImgsByGoodsId(cartDetailDto.getGoodsId());
+                        for(GoodsImg goodsImg:imgsByGoodsId){
+                            if(goodsImg.getType() == 1){//主图
+                                cartDetailDto.setMainUrl(goodsImg.getImgUrl());
+                            }
+                        }
+                    }
                     cartShopDto.setCartDetail(cartDetailDtos);
                     cartShopDtos.add(cartShopDto);
                 }
@@ -114,5 +127,13 @@ public class CartServiceImpl implements CartService{
                 cartDetailMapper.updateByPrimaryKey(cartDetail);
             }
         }
+    }
+
+    @Override
+    public List<GoodsDto> choice(Integer userId) throws ServiceException {
+        //根据用户购物车内的商品分类等获取精选商品列表
+        List<GoodsDto> goodsDtos = new ArrayList<>();
+
+        return goodsDtos;
     }
 }

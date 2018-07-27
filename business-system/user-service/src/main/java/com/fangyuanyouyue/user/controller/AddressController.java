@@ -246,4 +246,38 @@ public class AddressController extends BaseController{
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
         }
     }
+
+
+    @ApiOperation(value = "获取默认地址", notes = "获取默认地址",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/getDefaultAddress")
+    @ResponseBody
+    public String getDefaultAddress(UserParam param) throws IOException {
+        try {
+            log.info("----》获取默认地址《----");
+            log.info("参数："+param.toString());
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            UserInfo user=userInfoService.getUserByToken(param.getToken());
+            if(user == null){
+                return toError(ReCode.FAILD.getValue(),"登录超时，请重新登录！");
+            }
+            if(user.getStatus() == 2){
+                return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
+            }
+            //获取默认地址
+            UserAddressDto defaultAddress = userAddressInfoService.getDefaultAddress(param.getToken());
+            return toSuccess(defaultAddress,"获取收货地址列表成功");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
 }

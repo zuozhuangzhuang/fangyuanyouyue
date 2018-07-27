@@ -1,30 +1,20 @@
 package com.fangyuanyouyue.goods.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.client.BaseController;
-import com.fangyuanyouyue.goods.dto.GoodsDto;
+import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
 import com.fangyuanyouyue.goods.utils.ReCode;
-import com.fangyuanyouyue.goods.utils.ResultUtil;
 import com.fangyuanyouyue.goods.utils.ServiceException;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/goodsFeign")
@@ -38,6 +28,46 @@ public class FeignController extends BaseController{
     private SchedualUserService schedualUserService;//调用其他service时用
     @Autowired
     protected RedisTemplate redisTemplate;
+
+
+    @GetMapping(value = "/goodsMainImg")
+    @ResponseBody
+    public String goodsMainImg(GoodsParam param) throws IOException {
+        try {
+            log.info("----》获取商品主图《----");
+            log.info("参数：" + param.toString());
+
+            if (param.getGoodsId() == null) {
+                return toError(ReCode.FAILD.getValue(), "商品id不能为空！");
+            }
+            //商品详情
+            String goodsMainImg = goodsInfoService.goodsMainImg(param.getGoodsId());
+
+            return toSuccess(goodsMainImg, "获取商品主图成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+    @GetMapping(value = "/goodsInfo")
+    @ResponseBody
+    public String goodsInfo(GoodsParam param) throws IOException {
+        try {
+            log.info("----》商品详情《----");
+            log.info("参数：" + param.toString());
+
+            if (param.getGoodsId() == null) {
+                return toError(ReCode.FAILD.getValue(), "商品id不能为空！");
+            }
+            //商品详情
+            GoodsInfo goodsInfo = goodsInfoService.selectByPrimaryKey(param.getGoodsId());
+
+            return toSuccess(goodsInfo, "商品详情成功！");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
     @PostMapping(value = "/updateGoodsStatus")
     @ResponseBody

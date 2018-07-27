@@ -21,7 +21,7 @@ public class ShopDto {
 
     private Integer level;//用户等级
 
-    private Integer vipLevel;//会员等级
+    private Integer vipLevel;//会员等级 1铂金会员 2至尊会员
 
     private Integer vipType;//会员类型 1体验会员 2月会员 3年会员
 

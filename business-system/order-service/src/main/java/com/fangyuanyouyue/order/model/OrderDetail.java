@@ -1,12 +1,12 @@
 package com.fangyuanyouyue.order.model;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * 订单详情表
+ * 订单详情DTO
  */
-public class OrderDetail implements Serializable{
+public class OrderDetail {
     private Integer id;//唯一自增ID
 
     private Integer userId;//用户id
@@ -20,6 +20,18 @@ public class OrderDetail implements Serializable{
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
+    private Integer couponId;//优惠券ID
+
+    private String mainImgUrl;//商品主图
+
+    private BigDecimal orgprice;//商品原价
+
+    private BigDecimal freight;//运送费
+
+    private BigDecimal price;//实际支付金额
+
+    private String description;//商品描述
 
     public Integer getId() {
         return id;
@@ -75,5 +87,53 @@ public class OrderDetail implements Serializable{
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
+    }
+
+    public String getMainImgUrl() {
+        return mainImgUrl;
+    }
+
+    public void setMainImgUrl(String mainImgUrl) {
+        this.mainImgUrl = mainImgUrl == null ? null : mainImgUrl.trim();
+    }
+
+    public BigDecimal getOrgprice() {
+        return orgprice;
+    }
+
+    public void setOrgprice(BigDecimal orgprice) {
+        this.orgprice = orgprice;
+    }
+
+    public BigDecimal getFreight() {
+        return freight;
+    }
+
+    public void setFreight(BigDecimal freight) {
+        this.freight = freight;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description == null ? null : description.trim();
     }
 }

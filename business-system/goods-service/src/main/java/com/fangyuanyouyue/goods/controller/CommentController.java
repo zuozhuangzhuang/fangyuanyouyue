@@ -49,7 +49,7 @@ public class CommentController extends BaseController{
             @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "goodsId", value = "商品id",required = true,dataType = "int", paramType = "query"),
             @ApiImplicitParam(name = "commentId", value = "回复评论id", dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "content", value = "评论内容", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "content", value = "评论内容",  dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "img1Url", value = "图片地址1", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "img2Url", value = "图片地址2", dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "img3Url", value = "图片地址3", dataType = "String", paramType = "query")
@@ -74,8 +74,8 @@ public class CommentController extends BaseController{
                 return toError(jsonObject.getString("report"));
             }
             redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
-            if(StringUtils.isEmpty(param.getContent())){
-                return toError(ReCode.FAILD.getValue(),"评论内容不能为空！");
+            if(param.getImg1Url() == null && StringUtils.isEmpty(param.getContent())){
+                return toError(ReCode.FAILD.getValue(),"内容不能为空！");
             }
             param.setUserId(userId);
 
@@ -141,6 +141,9 @@ public class CommentController extends BaseController{
             log.info("参数："+param.toString());
             if(param.getGoodsId() == null){
                 return toError(ReCode.FAILD.getValue(),"商品id不能为空！");
+            }
+            if(param.getStart() == null || param.getLimit() == null){
+                return toError(ReCode.FAILD.getValue(),"分页参数不能为空！");
             }
             List<GoodsCommentDto> comments = commentService.getComments(param.getGoodsId(),param.getStart(),param.getLimit());
             return toSuccess(comments,"查看全部评论成功！");

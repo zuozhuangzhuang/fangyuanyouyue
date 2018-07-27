@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.dao.*;
 import com.fangyuanyouyue.goods.dto.GoodsCommentDto;
 import com.fangyuanyouyue.goods.dto.GoodsDto;
-import com.fangyuanyouyue.goods.model.Collect;
-import com.fangyuanyouyue.goods.model.GoodsCorrelation;
-import com.fangyuanyouyue.goods.model.GoodsImg;
-import com.fangyuanyouyue.goods.model.GoodsInfo;
+import com.fangyuanyouyue.goods.model.*;
 import com.fangyuanyouyue.goods.service.CollectService;
 import com.fangyuanyouyue.goods.service.SchedualUserService;
 import com.fangyuanyouyue.goods.utils.DateStampUtils;
@@ -50,7 +47,7 @@ public class CollectServiceImpl implements CollectService{
             if(goodsInfo == null){
                 throw new ServiceException("商品数据异常！");
             }else{
-                if(goodsInfo.getType() != collectType){
+                if(goodsInfo.getType().intValue() != collectType.intValue()){
                     throw new ServiceException("类型错误！");
                 }
                 //collectType 关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏
@@ -152,9 +149,7 @@ public class CollectServiceImpl implements CollectService{
                 }
             }
             //获取卖家信息
-            String verifyUser = schedualUserService.verifyUserById(goodsInfo.getUserId());
-            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
+            UserInfo user = JSONObject.toJavaObject(JSONObject.parseObject(JSONObject.parseObject(schedualUserService.verifyUserById(goodsInfo.getUserId())).getString("data")), UserInfo.class);
             GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsCommentDtos);
             goodsDto.setCommentCount(goodsCommentMapperl.selectCount(goodsInfo.getId()));
             return goodsDto;

@@ -22,7 +22,7 @@
     delete from report_goods
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.fangyuanyouyue.goods.model.ReportGoods"  useGeneratedKeys="true" keyProperty="id">
+  <insert id="insert" parameterType="com.fangyuanyouyue.goods.model.ReportGoods" useGeneratedKeys="true" keyProperty="id">
     insert into report_goods (id, reason, goods_id, 
       user_id, add_time, update_time
       )
@@ -103,4 +103,16 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectByUserIdGoodsId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from report_goods
+    <where>
+      1=1
+      <if test="userId != null">
+        and user_id = #{userId,jdbcType=INTEGER}
+      </if>
+      <if test="goodsId != null">
+        and goods_id = #{goodsId,jdbcType=INTEGER}
+      </if>
+    </where>
+  </select>
 </mapper>

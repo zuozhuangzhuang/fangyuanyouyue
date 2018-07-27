@@ -65,4 +65,12 @@ public interface UserAddressInfoService {
      * @throws ServiceException
      */
     List<UserAddressDto> getAddressList(String token,Integer addressId) throws ServiceException;
+
+    /**
+     * 获取默认地址
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
+    UserAddressDto getDefaultAddress(String token) throws ServiceException;
 }

@@ -14,4 +14,9 @@ public class SchedualGoodsServiceImpl implements SchedualGoodsService{
     public String updateGoodsStatus(Integer goodsId,Integer status) {
         return "系统繁忙，请稍后重试！";
     }
+
+    @Override
+    public String goodsMainImg(Integer goodsId) {
+        return "系统繁忙，请稍后重试！";
+    }
 }

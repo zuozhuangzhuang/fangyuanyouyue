@@ -137,4 +137,20 @@ public class UserAddressInfoServiceImpl implements UserAddressInfoService{
             return UserAddressDto.toDtoList(userAddressInfos);
         }
     }
+
+    @Override
+    public UserAddressDto getDefaultAddress(String token) throws ServiceException {
+        Integer userId = (Integer)redisTemplate.opsForValue().get(token);
+        redisTemplate.expire(token,7,TimeUnit.DAYS);
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
+        if(userInfo == null){
+            throw new ServiceException("用户不存在！");
+        }else{
+            UserAddressInfo defaultAddress = userAddressInfoMapper.selectDefaultAddressByUserId(userId);
+            if(defaultAddress == null){
+                throw new ServiceException("未设置默认地址！");
+            }
+            return new UserAddressDto(defaultAddress);
+        }
+    }
 }

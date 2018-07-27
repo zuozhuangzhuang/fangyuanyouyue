@@ -117,8 +117,8 @@ public class GoodsControllerTest {
     @Transactional
     public void goodsInfo() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/goodsInfo")
-                .param("token","10025FY1532117528984")
-                .param("goodsId","30")
+//                .param("token","10025FY1532456125699")
+                .param("goodsId","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -146,9 +146,9 @@ public class GoodsControllerTest {
     @Transactional
     public void similarGoods() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/similarGoods")
-                .param("goodsId","6")
+                .param("goodsId","1")
                 .param("start","0")
-                .param("limit","10")
+                .param("limit","4")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -202,6 +202,23 @@ public class GoodsControllerTest {
     @Transactional
     public void quickSearch() throws Exception {
         mvc.perform(MockMvcRequestBuilders.get("/goods/quickSearch")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+
+    /**
+     * 获取快速查询条件
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void reportGoods() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/goods/reportGoods")
+                .param("token","10025FY1532302815762")
+                .param("goodsId","1")
+                .param("reason","假货")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

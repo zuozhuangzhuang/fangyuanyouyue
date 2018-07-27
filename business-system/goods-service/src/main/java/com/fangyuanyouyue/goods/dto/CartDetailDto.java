@@ -21,6 +21,8 @@ public class CartDetailDto {
 
     private BigDecimal price;//商品价格
 
+    private BigDecimal postage;//运费
+
     private String mainUrl;//商品主图
 
     public CartDetailDto() {
@@ -33,7 +35,7 @@ public class CartDetailDto {
         this.name = (String)map.get("name");
         this.description = (String)map.get("description");
         this.price = (BigDecimal)map.get("price");
-        this.mainUrl = (String)map.get("mainUrl");
+        this.postage = (BigDecimal)map.get("postage");
     }
 
     public static List<CartDetailDto> toDtoList(List<Map<String,Object>> list) {
@@ -101,5 +103,13 @@ public class CartDetailDto {
 
     public void setMainUrl(String mainUrl) {
         this.mainUrl = mainUrl;
+    }
+
+    public BigDecimal getPostage() {
+        return postage;
+    }
+
+    public void setPostage(BigDecimal postage) {
+        this.postage = postage;
     }
 }

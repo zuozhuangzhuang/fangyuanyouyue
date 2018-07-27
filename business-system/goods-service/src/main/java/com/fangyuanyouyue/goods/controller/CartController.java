@@ -3,6 +3,7 @@ package com.fangyuanyouyue.goods.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.client.BaseController;
 import com.fangyuanyouyue.goods.dto.CartShopDto;
+import com.fangyuanyouyue.goods.dto.GoodsDto;
 import com.fangyuanyouyue.goods.param.GoodsParam;
 import com.fangyuanyouyue.goods.service.CartService;
 import com.fangyuanyouyue.goods.service.GoodsInfoService;
@@ -150,5 +151,39 @@ public class CartController extends BaseController{
         }
     }
 
+
+    //移出购物车
+    @ApiOperation(value = "精选", notes = "购物车内的精选推荐",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/choice")
+    @ResponseBody
+    public String choice(GoodsParam param) throws IOException{
+        try {
+            log.info("----》精选《----");
+            log.info("参数：" + param.toString());
+            //验证用户
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+            String verifyUser = schedualUserService.verifyUserById(userId);
+            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+            if((Integer)jsonObject.get("code") != 0){
+                return toError(jsonObject.getString("report"));
+            }
+            redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
+            //精选
+            List<GoodsDto> goodsDtos = cartService.choice(userId);
+            return toSuccess(goodsDtos,"获取精选列表成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
 }

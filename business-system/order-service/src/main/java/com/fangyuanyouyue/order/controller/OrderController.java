@@ -148,9 +148,9 @@ public class OrderController extends BaseController{
                 return toError(jsonObject.getString("report"));
             }
             redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
-            //TODO 取消订单
-            orderService.cancelOrder(userId,param.getOrderId());
-            return toSuccess("取消订单成功！");
+            //TODO 订单详情
+            OrderDto orderDto = orderService.orderDetail(userId, param.getOrderId());
+            return toSuccess(orderDto,"查看订单详情成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");

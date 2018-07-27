@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 
 @ApiModel(value = "商品参数类")
 public class GoodsParam{
@@ -50,8 +49,6 @@ public class GoodsParam{
     @ApiModelProperty(name = "token", value = "用户token", dataType = "String",hidden = true)
     private String token;//用户token
 
-    @ApiModelProperty(name = "goodsInfoIds", value = "商品id数组", dataType = "int",hidden = true)
-    private Integer[] goodsInfoIds;//商品id数组
 
     @ApiModelProperty(name = "goodsInfoName", value = "商品名称", dataType = "String",hidden = true)
     private String goodsInfoName;//商品名称
@@ -69,11 +66,14 @@ public class GoodsParam{
     @ApiModelProperty(name = "floorPrice", value = "最低价", dataType = "BigDecimal",hidden = true)
     private BigDecimal floorPrice;//最低价
 
-    @ApiModelProperty(name = "intervalTime", value = "降价时间间隔", dataType = "Long",hidden = true)
-    private Long intervalTime;//降价时间间隔
+    @ApiModelProperty(name = "intervalTime", value = "降价时间间隔", dataType = "int",hidden = true)
+    private Integer intervalTime;//降价时间间隔(单位秒)
 
     @ApiModelProperty(name = "markdown", value = "降价幅度", dataType = "BigDecimal",hidden = true)
     private BigDecimal markdown;//降价幅度
+
+    @ApiModelProperty(name = "videoUrl", value = "视频路径", dataType = "String",hidden = true)
+    private String videoUrl;//视频路径
 
 
     //GoodsImg
@@ -197,6 +197,14 @@ public class GoodsParam{
     private String opinion;//鉴定观点
 
 
+    //ReportGoods
+    @ApiModelProperty(name = "reason", value = "举报原因", dataType = "String",hidden = true)
+    private String reason;//举报原因
+
+    //GoodsBargain
+    @ApiModelProperty(name = "bargainId", value = "压价详情ID", dataType = "int",hidden = true)
+    private Integer bargainId;//压价详情ID
+
     public Integer getStart() {
         return start;
     }
@@ -244,14 +252,6 @@ public class GoodsParam{
 
     public void setStatus(Integer status) {
         this.status = status;
-    }
-
-    public Integer[] getGoodsInfoIds() {
-        return goodsInfoIds;
-    }
-
-    public void setGoodsInfoIds(Integer[] goodsInfoIds) {
-        this.goodsInfoIds = goodsInfoIds;
     }
 
 
@@ -520,14 +520,6 @@ public class GoodsParam{
         this.floorPrice = floorPrice;
     }
 
-    public Long getIntervalTime() {
-        return intervalTime;
-    }
-
-    public void setIntervalTime(Long intervalTime) {
-        this.intervalTime = intervalTime;
-    }
-
     public BigDecimal getMarkdown() {
         return markdown;
     }
@@ -584,6 +576,38 @@ public class GoodsParam{
         this.collectId = collectId;
     }
 
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Integer getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setIntervalTime(Integer intervalTime) {
+        this.intervalTime = intervalTime;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+
+    public Integer getBargainId() {
+        return bargainId;
+    }
+
+    public void setBargainId(Integer bargainId) {
+        this.bargainId = bargainId;
+    }
+
     @Override
     public String toString() {
         return "GoodsParam{" +
@@ -600,7 +624,6 @@ public class GoodsParam{
                 ", description='" + description + '\'' +
                 ", userId=" + userId +
                 ", token='" + token + '\'' +
-                ", goodsInfoIds=" + Arrays.toString(goodsInfoIds) +
                 ", goodsInfoName='" + goodsInfoName + '\'' +
                 ", postage=" + postage +
                 ", label='" + label + '\'' +
@@ -608,6 +631,7 @@ public class GoodsParam{
                 ", floorPrice=" + floorPrice +
                 ", intervalTime=" + intervalTime +
                 ", markdown=" + markdown +
+                ", videoUrl='" + videoUrl + '\'' +
                 ", goodsImgId=" + goodsImgId +
                 ", goodsCommentId=" + goodsCommentId +
                 ", commentId=" + commentId +
@@ -635,6 +659,8 @@ public class GoodsParam{
                 ", collectId=" + Arrays.toString(collectId) +
                 ", collectType=" + collectType +
                 ", opinion='" + opinion + '\'' +
+                ", reason='" + reason + '\'' +
+                ", bargainId=" + bargainId +
                 '}';
     }
 }

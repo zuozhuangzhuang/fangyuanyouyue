@@ -2,7 +2,7 @@ package com.fangyuanyouyue.forum.constants;
 
 public enum StatusEnum {
 	
-	STATUS_NORMAL(1),STATUS_FROZEN(2);
+	STATUS_NORMAL(0),STATUS_FROZEN(1);
 
 	StatusEnum(Integer value){
 		

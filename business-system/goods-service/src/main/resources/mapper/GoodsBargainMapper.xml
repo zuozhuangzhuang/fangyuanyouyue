@@ -125,4 +125,11 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="selectByUserIdGoodsId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_bargain where user_id = #{userId} and goods_id = #{goodsId} and status = 1
+  </select>
+  <select id="selectAllByGoodsId" parameterType="Integer" resultMap="BaseResultMap">
+    select * from goods_bargain where goods_id = #{goodsId} and status = 1
+  </select>
 </mapper>

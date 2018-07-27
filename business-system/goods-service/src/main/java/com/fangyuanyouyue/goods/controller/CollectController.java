@@ -96,11 +96,11 @@ public class CollectController extends BaseController{
         }
     }
 
-    @ApiOperation(value = "获取我的收藏/关注", notes = "获取我的收藏/关注",response = ResultUtil.class)
+    @ApiOperation(value = "获取我的收藏/关注", notes = "获取我的收藏/关注的商品或抢购",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1关注 2收藏", required = true, dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "collectType", value = "关注/收藏类型 1商品 2抢购 3视频 4专栏 5鉴赏（只有抢购可以关注）", required = true, dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "collectType", value = "关注/收藏类型 1商品 2抢购（只有抢购可以关注）", required = true, dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/collectList")
     @ResponseBody

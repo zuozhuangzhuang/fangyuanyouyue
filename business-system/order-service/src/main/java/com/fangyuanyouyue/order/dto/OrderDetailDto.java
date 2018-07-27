@@ -1,7 +1,6 @@
 package com.fangyuanyouyue.order.dto;
 
 import com.fangyuanyouyue.order.model.OrderDetail;
-import com.fangyuanyouyue.order.model.OrderPay;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -25,35 +24,39 @@ public class OrderDetailDto {
 
     private BigDecimal freight;//运送费
 
-//    private BigDecimal discount;//活动优惠
-
     private String iconImg;//商品主图
+
+    private String description;//商品详情
 
     private Integer status;//状态 1待支付 2待发货 3待收货 4已完成 5已取消  7已申请退货
 
-    private String allowReturn;//是否可以退货  0可退货  1不可退货
+    private Integer allowReturn = 0;//是否可以退货  0可退货  1不可退货
+
+    //优惠券
 
     public OrderDetailDto() {
     }
 
-    public OrderDetailDto(OrderDetail orderDetail) {
+    public OrderDetailDto(OrderDetail orderDetail,Integer status) {
         this.userId = orderDetail.getUserId();
         this.orderId = orderDetail.getOrderId();
         this.goodsId = orderDetail.getGoodsId();
         this.goodsName = orderDetail.getGoodsName();
-//        this.price = orderDetail
-//        this.orgPrice = orderDetail
-        this.freight = freight;
-        this.iconImg = iconImg;
+        this.iconImg = orderDetail.getMainImgUrl();
+        this.price = orderDetail.getPrice();
+        this.orgPrice = orderDetail.getOrgprice();
+        this.freight = orderDetail.getFreight();
         this.status = status;
-        this.allowReturn = allowReturn;
+        this.description = orderDetail.getDescription();
+//        this.allowReturn = allowReturn;
     }
-    public static ArrayList<OrderDetailDto> toDtoList(List<OrderDetail> list) {
+
+    public static ArrayList<OrderDetailDto> toDtoList(List<OrderDetail> list,Integer status) {
         if (list == null)
             return null;
         ArrayList<OrderDetailDto> dtolist = new ArrayList<>();
         for (OrderDetail model : list) {
-            OrderDetailDto dto = new OrderDetailDto(model);
+            OrderDetailDto dto = new OrderDetailDto(model,status);
             dtolist.add(dto);
         }
         return dtolist;
@@ -131,11 +134,19 @@ public class OrderDetailDto {
         this.status = status;
     }
 
-    public String getAllowReturn() {
+    public Integer getAllowReturn() {
         return allowReturn;
     }
 
-    public void setAllowReturn(String allowReturn) {
+    public void setAllowReturn(Integer allowReturn) {
         this.allowReturn = allowReturn;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

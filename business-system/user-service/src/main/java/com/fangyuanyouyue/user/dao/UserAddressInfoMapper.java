@@ -24,4 +24,6 @@ public interface UserAddressInfoMapper {
     List<UserAddressInfo> selectAddressByUserId(@Param("userId") Integer userId,@Param("addressId")Integer addressId);
 
     UserAddressInfo selectDefaultAddressByUserId(Integer userId);
+
+
 }

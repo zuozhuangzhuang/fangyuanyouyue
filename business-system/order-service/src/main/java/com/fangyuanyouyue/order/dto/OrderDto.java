@@ -34,7 +34,6 @@ public class OrderDto {
 
     public OrderDto(OrderInfo orderInfo) {
         this.userId = orderInfo.getUserId();
-        this.nickName = orderInfo.getOrderNo();
         this.orderId = orderInfo.getId();
         this.orderNo = orderInfo.getOrderNo();
         this.totalAmount = orderInfo.getAmount();
@@ -51,6 +50,7 @@ public class OrderDto {
         }
         return dtolist;
     }
+
     public Integer getUserId() {
         return userId;
     }

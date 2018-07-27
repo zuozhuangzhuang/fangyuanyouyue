@@ -43,9 +43,10 @@ public class OrderControllerTest {
     @Transactional
     public void saveOrder() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/order/saveOrder")
-                .param("token","10025FY1532125190847")
-                .param("goodsIds","1,2,8,9")
+                .param("token","10025FY1532544458673")
+                .param("goodsIds","18,19,20")
                 .param("addressId","27")
+                .param("type","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -61,6 +62,21 @@ public class OrderControllerTest {
         mvc.perform(MockMvcRequestBuilders.post("/order/cancelOrder")
                 .param("token","10025FY1532136940739")
                 .param("orderId","6")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 订单详情
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void orderDetail() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/order/orderDetail")
+                .param("token","10025FY1532544458673")
+                .param("orderId","41")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();

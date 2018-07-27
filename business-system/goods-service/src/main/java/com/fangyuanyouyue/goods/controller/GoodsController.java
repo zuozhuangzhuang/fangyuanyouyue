@@ -2,10 +2,7 @@ package com.fangyuanyouyue.goods.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fangyuanyouyue.goods.client.BaseController;
-import com.fangyuanyouyue.goods.dto.GoodsCategoryDto;
-import com.fangyuanyouyue.goods.dto.GoodsDto;
-import com.fangyuanyouyue.goods.dto.GoodsQuickSearchDto;
-import com.fangyuanyouyue.goods.dto.SearchDto;
+import com.fangyuanyouyue.goods.dto.*;
 import com.fangyuanyouyue.goods.model.BannerIndex;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.param.GoodsParam;
@@ -90,9 +87,6 @@ public class GoodsController extends BaseController{
                     return toError(ReCode.FAILD.getValue(),"只有抢购可选已完成！");
                 }
             }
-            if(param.getGoodsCategoryIds()  != null && param.getGoodsCategoryIds().length == 0){
-                return toError(ReCode.FAILD.getValue(),"商品分类数组不能为空！");
-            }
             //获取商品列表
             List<GoodsDto> goodsDtos = goodsInfoService.getGoodsInfoList(param);
             return toSuccess(goodsDtos,"获取商品列表成功！");
@@ -118,8 +112,8 @@ public class GoodsController extends BaseController{
             @ApiImplicitParam(name = "intervalTime", value = "降价时间间隔", dataType = "date", paramType = "query"),
             @ApiImplicitParam(name = "markdown", value = "降价幅度", dataType = "BigDecimal", paramType = "query"),
             @ApiImplicitParam(name = "type", value = "类型 1普通商品 2抢购商品", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "status", value = "状态 普通商品 1出售中 2 已售出 5删除", required = true, dataType = "int", paramType = "query"),
-            @ApiImplicitParam(name = "imgUrls", value = "商品图片路径数组", required = true,allowMultiple = true,dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "imgUrls", value = "商品图片路径数组", required = true,allowMultiple = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "videoUrl", value = "视频路径",dataType = "String", paramType = "query")
     })
     @PostMapping(value = "/addGoods")
     @ResponseBody
@@ -186,7 +180,7 @@ public class GoodsController extends BaseController{
     @ApiOperation(value = "批量删除商品", notes = "批量删除商品",response = ResultUtil.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "token", value = "用户token", dataType = "String", paramType = "query"),
-            @ApiImplicitParam(name = "goodsInfoIds", value = "商品id数组", required = true, allowMultiple = true, dataType = "int", paramType = "query")
+            @ApiImplicitParam(name = "goodsIds", value = "商品id数组", required = true, allowMultiple = true, dataType = "int", paramType = "query")
     })
     @PostMapping(value = "/deleteGoods")
     @ResponseBody
@@ -205,10 +199,10 @@ public class GoodsController extends BaseController{
                 return toError(jsonObject.getString("report"));
             }
             redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
-            if(param.getGoodsInfoIds().length<1){
+            if(param.getGoodsIds().length<1){
                 return toError(ReCode.FAILD.getValue(),"商品ID不能为空！");
             }
-            for(Integer goodsId:param.getGoodsInfoIds()){
+            for(Integer goodsId:param.getGoodsIds()){
                 //TODO 依次查询商品是否有未完成订单，有订单则不能删
                 GoodsInfo goodsInfo = goodsInfoService.selectByPrimaryKey(goodsId);
                 if(false){
@@ -216,9 +210,55 @@ public class GoodsController extends BaseController{
                     return toError(ReCode.FAILD.getValue(),"商品"+goodsInfo.getName()+"存在未完成订单，请勿删除！");
                 }
             }
+
             //TODO 批量删除商品
-            goodsInfoService.deleteGoods(param.getGoodsInfoIds());
+            goodsInfoService.deleteGoods(param.getGoodsIds());
             return toSuccess("批量删除商品成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
+
+
+    @ApiOperation(value = "编辑商品/抢购", notes = "对已发布的商品或抢购进行修改",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true,dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "goodsInfoName", value = "商品名称", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "goodsCategoryIds", value = "商品分类数组（同一商品可多种分类）",allowMultiple = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "description", value = "商品描述(详情)",  dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "price", value = "商品价格",  dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "postage", value = "运费",  dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "label", value = "标签", dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "floorPrice", value = "最低价", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "intervalTime", value = "降价时间间隔", dataType = "date", paramType = "query"),
+            @ApiImplicitParam(name = "markdown", value = "降价幅度", dataType = "BigDecimal", paramType = "query"),
+            @ApiImplicitParam(name = "imgUrls", value = "商品图片路径数组",allowMultiple = true,dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "videoUrl", value = "视频路径",dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/modifyGoods")
+    @ResponseBody
+    public String modifyGoods(GoodsParam param) throws IOException {
+        try {
+            log.info("----》编辑商品/抢购《----");
+            log.info("参数："+param.toString());
+            //验证用户
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+            String verifyUser = schedualUserService.verifyUserById(userId);
+            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+            if((Integer)jsonObject.get("code") != 0){
+                return toError(jsonObject.getString("report"));
+            }
+            redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
+            goodsInfoService.modifyGoods(param);
+            return toSuccess("编辑商品成功！");
         } catch (ServiceException e) {
             e.printStackTrace();
             return toError(e.getMessage());
@@ -255,7 +295,7 @@ public class GoodsController extends BaseController{
                 }
                 redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
                 param.setUserId(userId);
-                //TODO 获取用户是否已关注此商品
+                //获取用户是否已关注此商品
                 goodsDto = goodsInfoService.goodsInfoByToken(param.getGoodsId(),param.getUserId());
             }else{
                 //商品详情
@@ -339,9 +379,9 @@ public class GoodsController extends BaseController{
             if(param.getType() == null){
                 return toError(ReCode.FAILD.getValue(),"轮播图类型不能为空！");
             }
-            List<BannerIndex> banner = goodsInfoService.getBanner(param.getType());
+            List<BannerIndexDto> banners = goodsInfoService.getBanner(param.getType());
 
-            return toSuccess(banner,"获取首页轮播图成功！");
+            return toSuccess(banners,"获取首页轮播图成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
@@ -498,6 +538,42 @@ public class GoodsController extends BaseController{
         }
     }
 
+
+    //举报商品
+    @ApiOperation(value = "举报商品", notes = "举报商品",response = ResultUtil.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token", value = "用户token", required = true, dataType = "String", paramType = "query"),
+            @ApiImplicitParam(name = "goodsId", value = "商品ID", required = true, dataType = "int", paramType = "query"),
+            @ApiImplicitParam(name = "reason", value = "举报原因", required = true, dataType = "String", paramType = "query")
+    })
+    @PostMapping(value = "/reportGoods")
+    @ResponseBody
+    public String reportGoods(GoodsParam param) throws IOException{
+        try {
+            log.info("----》举报商品《----");
+            log.info("参数：" + param.toString());
+            //验证用户
+            if(StringUtils.isEmpty(param.getToken())){
+                return toError(ReCode.FAILD.getValue(),"用户token不能为空！");
+            }
+            Integer userId = (Integer)redisTemplate.opsForValue().get(param.getToken());
+            String verifyUser = schedualUserService.verifyUserById(userId);
+            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
+            if((Integer)jsonObject.get("code") != 0){
+                return toError(jsonObject.getString("report"));
+            }
+            redisTemplate.expire(param.getToken(),7, TimeUnit.DAYS);
+            //举报商品
+            goodsInfoService.reportGoods(userId,param.getGoodsId(),param.getReason());
+            return toSuccess("举报商品成功！");
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return toError(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return toError(ReCode.FAILD.getValue(),"系统繁忙，请稍后再试！");
+        }
+    }
 
     //我拍下的商品
 //

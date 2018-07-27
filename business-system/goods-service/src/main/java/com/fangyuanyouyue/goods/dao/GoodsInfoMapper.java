@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Mapper
 public interface GoodsInfoMapper {
@@ -22,6 +24,7 @@ public interface GoodsInfoMapper {
     int updateByPrimaryKeyWithBLOBs(GoodsInfo record);
 
     int updateByPrimaryKey(GoodsInfo record);
+
 
     /**
      *分页获取商品/抢购列表
@@ -49,7 +52,7 @@ public interface GoodsInfoMapper {
      * @param goodsIds
      * @return
      */
-    List<GoodsInfo> getGoodsByGoodsIds(@Param("goodsIds") List<Integer> goodsIds,int pageNum, int pageSize);
+    List<GoodsInfo> getGoodsByGoodsIds(@Param("goodsIds") Set<Integer> goodsIds, int pageNum, int pageSize);
 
     /**
      * 根据当前时间获取需要降价的抢购列表
@@ -66,4 +69,32 @@ public interface GoodsInfoMapper {
      * @return
      */
     List<GoodsInfo> selectMyCollectGoods(@Param("userId")Integer userId,@Param("collectType")Integer collectType,@Param("type")Integer type,@Param("goodsId")Integer goodsId);
+
+    /**
+     * 根据商品所属分类列表获取商品列表
+     * @param goodsCategoryIds
+     * @return
+     */
+    List<GoodsInfo> selectByCategoryIds(@Param("goodsCategoryIds")List<Integer> goodsCategoryIds,@Param("start")Integer start,@Param("limit")Integer limit);
+
+    /**
+     * 获取商品所在店铺是否官方认证
+     * @param goodsId
+     * @return
+     */
+    Map<String,Object> getGoodsUserInfoExtAndVip(@Param("goodsId")Integer goodsId);
+
+    /**
+     * 获取卖家粉丝数
+     * @param goodsId
+     * @return
+     */
+    Integer getGoodsUserFansCount(Integer goodsId);
+
+    /**
+     * 获取卖家关注数
+     * @param goodsId
+     * @return
+     */
+    Integer getGoodsUserCollectCount(Integer goodsId);
 }

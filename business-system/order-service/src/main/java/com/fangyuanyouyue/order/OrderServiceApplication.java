@@ -21,16 +21,32 @@ import java.util.logging.Logger;
 @EnableFeignClients
 public class OrderServiceApplication {
 
+	/**
+	 * ---------神兽保佑 !---------
+	 *
+	 *   ┏┓      ┏┓
+	 * ┏┛┻━━━┛┻┓
+	 * ┃              ┃
+	 * ┃      ━      ┃
+	 * ┃  ┳┛  ┗┳  ┃
+	 * ┃              ┃
+	 * ┃      ┻      ┃
+	 * ┃              ┃
+	 * ┗━┓      ┏━┛
+	 *     ┃      ┃
+	 *     ┃      ┃
+	 *     ┃      ┗━━━┓
+	 *     ┃              ┣┓
+	 *     ┃              ┏┛
+	 *     ┗┓┓┏━┳┓┏┛
+	 *       ┃┫┫  ┃┫┫
+	 *       ┗┻┛  ┗┻┛
+	 *
+	 *
+	 */
+
 	public static void main(String[] args) {
 		SpringApplication.run(OrderServiceApplication.class, args);
 	}
 
-//	private static final Logger LOG = Logger.getLogger(OrderServiceApplication.class.getName());
-//	@Value("${server.port}")
-//	String port;
-//	@RequestMapping("/order")
-//	public String order(@RequestParam String name) {
-//		LOG.log(Level.INFO, "calling trace order-service  ");
-//		return "order "+name+",i am from port:" +port;
-//	}
 }

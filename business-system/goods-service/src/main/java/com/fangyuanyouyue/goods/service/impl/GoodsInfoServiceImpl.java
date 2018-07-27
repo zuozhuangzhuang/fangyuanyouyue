@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service(value = "goodsInfoService")
 public class GoodsInfoServiceImpl implements GoodsInfoService{
@@ -42,7 +40,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     private CollectMapper collectMapper;
     @Autowired
     private SchedualUserService schedualUserService;//调用其他service时用
-
+    @Autowired
+    private ReportGoodsMapper reportGoodsMapper;
     @Override
     public GoodsInfo selectByPrimaryKey(Integer id) {
         GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(id);
@@ -50,6 +49,20 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             throw new SecurityException("获取商品失败！");
         }
         return goodsInfo;
+    }
+
+
+    @Override
+    public String goodsMainImg(Integer goodsId) throws ServiceException {
+        List<GoodsImg> imgsByGoodsId = goodsImgMapper.getImgsByGoodsId(goodsId);
+        if(imgsByGoodsId != null){
+            for(GoodsImg goodsImg:imgsByGoodsId){
+                if(goodsImg.getType() == 1){
+                    return goodsImg.getImgUrl();
+                }
+            }
+        }
+        throw new ServiceException("获取商品主图失败！");
     }
 
     @Override
@@ -101,7 +114,7 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             goodsInfo.setLabel(param.getLabel());
         }
         goodsInfo.setType(param.getType());
-        goodsInfo.setStatus(param.getStatus());
+        goodsInfo.setStatus(1);//状态 1出售中 2 已售出 5删除
         goodsInfo.setAddTime(DateStampUtils.getTimesteamp());
         if(param.getType() == 2){
             goodsInfo.setFloorPrice(param.getFloorPrice());
@@ -153,65 +166,15 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
                     goodsCommentDto.setToUserName((String)map.get("nick_name"));
                 }
             }
-//            if(goodsCommentDtos != null){
-//                circulation:for(GoodsComment goodsComment:goodsComments){
-//                    goodsCommentDtos.add(new GoodsCommentDto(goodsComment));
-//                    if(goodsCommentDtos.size() == 3){
-//                        break;
-//                    }
-//                    //获取评论的回复
-//                    List<GoodsComment> replys = goodsCommentMapperl.selectByGoodsIdCommentId(goodsComment.getCommentId(),goodsInfo.getId());
-//                    if(replys == null){
-//                        //评论没有回复，就获取下一条商品的评论
-//                        continue;
-//                    }else{
-//                        //评论有回复，将回复放到评论的replys中
-//                        List<GoodsCommentDto> replyDtos = new ArrayList<>();
-//                        for(int i=0;i<replys.size();i++){
-//                            GoodsCommentDto replyDto = new GoodsCommentDto(replys.get(i));
-//                            replyDtos.add(new GoodsCommentDto());
-//                            goodsCommentDtos.add(new GoodsCommentDto(replys.get(i)));
-//                            if(goodsCommentDtos.size() == 3){
-//                                break circulation;
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+
             //获取卖家信息
-            String verifyUser = schedualUserService.verifyUserById(goodsInfo.getUserId());
-            JSONObject jsonObject = JSONObject.parseObject(verifyUser);
-            JSONObject user = JSONObject.parseObject(jsonObject.getString("data"));
+            UserInfo user = JSONObject.toJavaObject(JSONObject.parseObject(JSONObject.parseObject(schedualUserService.verifyUserById(goodsInfo.getUserId())).getString("data")), UserInfo.class);
             GoodsDto goodsDto = new GoodsDto(user,goodsInfo,goodsImgs,goodsCorrelations,goodsCommentDtos);
             goodsDto.setCommentCount(goodsCommentMapperl.selectCount(goodsInfo.getId()));
             return goodsDto;
         }
     }
 
-    /**
-     * 根据商品ID和评论ID获取评论列表
-     * @param commentId
-     * @param goodsId
-     * @return
-     */
-//    public List<GoodsComment> getCommentsByGoodsId(Integer commentId,Integer goodsId) throws ServiceException{
-//        List<GoodsComment> goodsComments;
-//        if(commentId == null){
-//            //商品的最新评论
-//            goodsComments = goodsCommentMapperl.selectByGoodsId(goodsId);
-//            return goodsComments;
-//        }else{
-//            //评论的最新回复
-//            goodsComments = goodsCommentMapperl.selectByGoodsIdCommentId(commentId,goodsId);
-//            if(goodsComments == null){
-//                //没有回复
-//                return null;
-//            }else{
-//                goodsCommentMapperl.selectByGoodsIdCommentId(commentId,goodsId);
-//                return goodsComments;
-//            }
-//        }
-//    }
     /**
      * 添加商品图片路径
      * @param goodsId
@@ -231,6 +194,8 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
 
     @Override
     public void deleteGoods(Integer[] goodsIds) throws ServiceException {
+        //TODO 如果商品存在用户议价，取消所有议价并返还用户余额？
+        //TODO 删除商品所有评论
         //批量修改商品状态为删除
         for(Integer goodsId:goodsIds){
             GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
@@ -240,6 +205,41 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
                 goodsInfo.setStatus(5);//状态 普通商品 1出售中 2已售出 5删除
                 goodsInfoMapper.updateByPrimaryKey(goodsInfo);
             }
+        }
+    }
+
+    @Override
+    public void modifyGoods(GoodsParam param) throws ServiceException {
+        GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(param.getGoodsId());
+        if(goodsInfo == null){
+            throw new ServiceException("商品状态错误！");
+        }else{
+            if(goodsInfo.getStatus() != 1){
+                throw new ServiceException("商品已下架或已售出！");
+            }
+            //修改商品信息
+            if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
+
+            }
+            if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
+
+            }
+
+            goodsInfo.setName(param.getGoodsInfoName());
+            goodsInfo.setDescription(param.getDescription());
+            goodsInfo.setPrice(param.getPrice());
+            goodsInfo.setPostage(param.getPostage());
+//            goodsInfo.setSort(param.getSort());
+            goodsInfo.setLabel(param.getLabel());
+            goodsInfo.setFloorPrice(param.getFloorPrice());if(StringUtils.isNotEmpty(param.getGoodsInfoName())){
+
+            }
+
+            goodsInfo.setIntervalTime(param.getIntervalTime());
+            goodsInfo.setMarkdown(param.getMarkdown());
+            goodsInfo.setVideoUrl(param.getVideoUrl());
+            //修改商品图片信息
+
         }
     }
 
@@ -277,6 +277,18 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             goodsDto = setDtoByGoodsInfo(goodsInfo);
             goodsDto.setIsCollect(1);
         }
+        //是否官方认证
+        Map<String, Object> goodsUserInfoExtAndVip = goodsInfoMapper.getGoodsUserInfoExtAndVip(goodsId);
+        goodsDto.setAuthType((Integer)goodsUserInfoExtAndVip.get("auth_type"));
+        goodsDto.setVipLevel((Integer)goodsUserInfoExtAndVip.get("vip_level"));
+        goodsDto.setCredit((Integer)goodsUserInfoExtAndVip.get("credit"));
+        //卖家信息
+        //粉丝数
+        goodsDto.setFansCount(goodsInfoMapper.getGoodsUserFansCount(goodsId));
+        //关注数
+        goodsDto.setCollectCount(goodsInfoMapper.getGoodsUserCollectCount(goodsId));
+
+
         return goodsDto;
     }
 
@@ -287,6 +299,18 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
             throw new ServiceException("获取商品失败！");
         }
         GoodsDto goodsDto = setDtoByGoodsInfo(goodsInfo);
+        //是否官方认证
+        Map<String, Object> goodsUserInfoExtAndVip = goodsInfoMapper.getGoodsUserInfoExtAndVip(goodsId);
+        if(goodsUserInfoExtAndVip != null){
+            goodsDto.setAuthType((Integer)goodsUserInfoExtAndVip.get("auth_type"));
+            goodsDto.setVipLevel((Integer)goodsUserInfoExtAndVip.get("vip_level"));
+            goodsDto.setCredit((Integer)goodsUserInfoExtAndVip.get("credit"));
+        }
+        //卖家信息
+        //粉丝数
+        goodsDto.setFansCount(goodsInfoMapper.getGoodsUserFansCount(goodsId));
+        //关注数
+        goodsDto.setCollectCount(goodsInfoMapper.getGoodsUserCollectCount(goodsId));
         return goodsDto;
     }
 
@@ -297,14 +321,11 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         if(goodsInfo == null){
             throw new ServiceException("获取商品失败！");
         }else{
+            //根据商品获取此商品的所属的分类列表
+            List<Integer> goodsCategoryIds = goodsCorrelationMapper.selectCategoryIdByGoodsId(goodsId);
+            //根据分类列表获取商品的列表
+            List<GoodsInfo> goodsInfos = goodsInfoMapper.selectByCategoryIds(goodsCategoryIds,pageNum*pageSize,pageSize);
             //获取商品的分类集合
-            List<GoodsCorrelation> goodsCorrelations = goodsCorrelationMapper.getCorrelationsByGoodsId(goodsId);
-            List<Integer> goodsIds = new ArrayList<>();
-            for(GoodsCorrelation goodsCorrelation:goodsCorrelations){
-                goodsIds.add(goodsCorrelation.getGoodsId());
-            }
-            PageHelper.startPage(pageNum, pageSize);
-            List<GoodsInfo> goodsInfos = goodsInfoMapper.getGoodsByGoodsIds(goodsIds,pageNum,pageSize);
             List<GoodsDto> goodsDtos = new ArrayList<>();
             for(GoodsInfo model:goodsInfos){
                 goodsDtos.add(setDtoByGoodsInfo(model));
@@ -314,9 +335,10 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
     }
 
     @Override
-    public List<BannerIndex> getBanner(Integer type) throws ServiceException {
-        List<BannerIndex> banner = bannerIndexMapper.getBanner(type);
-        return banner;
+    public List<BannerIndexDto> getBanner(Integer type) throws ServiceException {
+        List<BannerIndex> banners = bannerIndexMapper.getBanner(type);
+        List<BannerIndexDto> bannerIndexDtos = BannerIndexDto.toDtoList(banners);
+        return bannerIndexDtos;
     }
 
     @Override
@@ -405,6 +427,27 @@ public class GoodsInfoServiceImpl implements GoodsInfoService{
         }else{
             goodsInfo.setStatus(status);
             goodsInfoMapper.updateByPrimaryKey(goodsInfo);
+        }
+    }
+
+    @Override
+    public void reportGoods(Integer userId, Integer goodsId, String reason) throws ServiceException {
+        GoodsInfo goodsInfo = goodsInfoMapper.selectByPrimaryKey(goodsId);
+        if(goodsInfo == null){
+            throw new ServiceException("获取商品失败！");
+        }else{
+            //判断商品状态
+            ReportGoods reportGoods = reportGoodsMapper.selectByUserIdGoodsId(userId,goodsId);
+            if(reportGoods != null){
+                throw new ServiceException("您已举报过此商品！");
+            }else{
+                reportGoods = new ReportGoods();
+                reportGoods.setAddTime(DateStampUtils.getTimesteamp());
+                reportGoods.setGoodsId(goodsId);
+                reportGoods.setReason(reason);
+                reportGoods.setUserId(userId);
+                reportGoodsMapper.insert(reportGoods);
+            }
         }
     }
 }

@@ -2,6 +2,9 @@ package com.fangyuanyouyue.user.model;
 
 import java.util.Date;
 
+/**
+ * 用户扩展信息表
+ */
 public class UserInfoExt {
     private Integer id;//唯一自增ID
 
@@ -22,6 +25,8 @@ public class UserInfoExt {
     private Integer credit;//信誉度
 
     private Integer authType;//认证状态 1已认证 2未认证
+
+    private Integer score;//用户积分
 
     public Integer getId() {
         return id;
@@ -79,6 +84,14 @@ public class UserInfoExt {
         this.addTime = addTime;
     }
 
+    public Integer getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(Integer authType) {
+        this.authType = authType;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
     }
@@ -95,11 +108,11 @@ public class UserInfoExt {
         this.credit = credit;
     }
 
-    public Integer getAuthType() {
-        return authType;
+    public Integer getScore() {
+        return score;
     }
 
-    public void setAuthType(Integer authType) {
-        this.authType = authType;
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }
