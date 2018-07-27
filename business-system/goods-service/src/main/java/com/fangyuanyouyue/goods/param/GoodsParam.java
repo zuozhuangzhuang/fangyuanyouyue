@@ -21,7 +21,7 @@ public class GoodsParam{
     @ApiModelProperty(name = "goodsId", value = "商品id", dataType = "int",hidden = true)
     private Integer goodsId;//商品id
 
-    @ApiModelProperty(name = "goodsId", value = "商品id数组", dataType = "int",hidden = true)
+    @ApiModelProperty(name = "goodsIds", value = "商品id数组", dataType = "int",hidden = true)
     private Integer[] goodsIds;//商品id数组
 
     @ApiModelProperty(name = "imgUrl", value = "图片地址", dataType = "String",hidden = true)
