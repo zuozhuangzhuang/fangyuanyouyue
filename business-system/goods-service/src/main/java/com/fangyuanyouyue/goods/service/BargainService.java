@@ -1,9 +1,11 @@
 package com.fangyuanyouyue.goods.service;
 
+import com.fangyuanyouyue.goods.dto.BargainDto;
 import com.fangyuanyouyue.goods.model.GoodsBargain;
 import com.fangyuanyouyue.goods.utils.ServiceException;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface BargainService {
     /**
@@ -24,6 +26,13 @@ public interface BargainService {
      */
     void updateBargain(Integer userId, Integer goodsId,Integer bargainId,Integer status) throws ServiceException;
 
+    /**
+     * 我的压价列表
+     * @param userId
+     * @return
+     * @throws ServiceException
+     */
+    List<BargainDto> bargainList(Integer userId) throws ServiceException;
     /**
      * 压价详情
      * @param userId

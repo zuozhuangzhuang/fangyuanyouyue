@@ -86,7 +86,7 @@ public class CartServiceImpl implements CartService{
         CartInfo cart = cartInfoMapper.selectByUserId(userId);
         //购物车是否存在
         if(cart == null){
-            throw new ServiceException("购物车空空如也！");
+            throw new ServiceException("购物车异常！");
         }else{
             List<CartShopDto> cartShopDtos = new ArrayList<>();
             List<CartDetail> cartDetails = cartDetailMapper.selectByCartId(cart.getId());
@@ -109,6 +109,9 @@ public class CartServiceImpl implements CartService{
                     cartShopDto.setCartDetail(cartDetailDtos);
                     cartShopDtos.add(cartShopDto);
                 }
+                if(cartShopDtos.size() < 1){
+                    throw new ServiceException("购物车内空空如也！");
+                }
                 return cartShopDtos;
             }else{
                 throw new ServiceException("获取购物车详情失败！");
@@ -123,8 +126,7 @@ public class CartServiceImpl implements CartService{
             if(cartDetail == null){
                 throw new ServiceException("购物车详情数据异常！");
             }else{
-                cartDetail.setStatus(2);//商品是否显示 1显示2不显示
-                cartDetailMapper.updateByPrimaryKey(cartDetail);
+                cartDetailMapper.deleteByPrimaryKey(cartDetail.getId());
             }
         }
     }

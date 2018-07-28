@@ -2,6 +2,7 @@ package com.fangyuanyouyue.goods.service.impl;
 
 import com.fangyuanyouyue.goods.dao.GoodsBargainMapper;
 import com.fangyuanyouyue.goods.dao.GoodsInfoMapper;
+import com.fangyuanyouyue.goods.dto.BargainDto;
 import com.fangyuanyouyue.goods.model.GoodsBargain;
 import com.fangyuanyouyue.goods.model.GoodsInfo;
 import com.fangyuanyouyue.goods.service.BargainService;
@@ -105,6 +106,15 @@ public class BargainServiceImpl implements BargainService{
                 throw new ServiceException("压价信息异常！");
             }
         }
+    }
+
+    @Override
+    public List<BargainDto> bargainList(Integer userId) throws ServiceException {
+        List<GoodsBargain> goodsBargains = goodsBargainMapper.selectAllByUserId(userId);
+        if(goodsBargains == null){
+            throw new ServiceException("获取压价列表失败！");
+        }
+        return BargainDto.toDtoList(goodsBargains);
     }
 
     @Override

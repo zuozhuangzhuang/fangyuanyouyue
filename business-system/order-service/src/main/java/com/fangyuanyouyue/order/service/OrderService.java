@@ -3,6 +3,8 @@ package com.fangyuanyouyue.order.service;
 import com.fangyuanyouyue.order.dto.OrderDto;
 import com.fangyuanyouyue.order.utils.ServiceException;
 
+import java.util.List;
+
 public interface OrderService {
     /**
      * 商品下单
@@ -30,4 +32,16 @@ public interface OrderService {
      * @throws ServiceException
      */
     OrderDto orderDetail(Integer userId,Integer orderId) throws ServiceException;
+
+    /**
+     * 我的订单列表
+     * @param userId
+     * @param start
+     * @param limit
+     * @param type
+     * @param status
+     * @return
+     * @throws ServiceException
+     */
+    List<OrderDto> myOrderList(Integer userId, Integer start,Integer limit,Integer type,Integer status) throws ServiceException;
 }
