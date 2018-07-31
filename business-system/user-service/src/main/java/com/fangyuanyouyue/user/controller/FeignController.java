@@ -1,11 +1,9 @@
 package com.fangyuanyouyue.user.controller;
 
-import com.fangyuanyouyue.user.client.BaseClientResult;
 import com.fangyuanyouyue.user.client.BaseController;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.service.*;
 import com.fangyuanyouyue.user.utils.ReCode;
-import com.fangyuanyouyue.user.utils.Status;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,8 +31,6 @@ public class FeignController  extends BaseController {
     @Autowired
     private UserInfoExtService userInfoExtService;
     @Autowired
-    private UserExamineService userExamineService;
-    @Autowired
     private UserAddressInfoService userAddressInfoService;
     @Autowired
     private SchedualGoodsService schedualGoodsService;//调用其他service时用
@@ -59,9 +55,9 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "验证用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "验证用户成功！");
+//            result.put("userInfo",userInfo);
+            return toSuccess(userInfo,"验证用户成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -87,9 +83,10 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据手机号验证用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据手机号验证用户成功！");
+//            result.put("userInfo",userInfo);
+//            return toResult(result);
+            return toSuccess(userInfo,"根据手机号验证用户成功！");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");
@@ -117,9 +114,10 @@ public class FeignController  extends BaseController {
             if(userInfo.getStatus() == 2){
                 return toError(ReCode.FAILD.getValue(),"您的账号已被冻结，请联系管理员！");
             }
-            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据三方唯一识别号获取用户成功！");
-            result.put("userInfo",userInfo);
-            return toResult(result);
+//            BaseClientResult result = new BaseClientResult(Status.YES.getValue(), "根据三方唯一识别号获取用户成功！");
+//            result.put("userInfo",userInfo);
+//            return toResult(result);
+            return toSuccess(userInfo,"根据三方唯一识别号获取用户成功!");
         } catch (Exception e) {
             e.printStackTrace();
             return toError("系统繁忙，请稍后再试！");

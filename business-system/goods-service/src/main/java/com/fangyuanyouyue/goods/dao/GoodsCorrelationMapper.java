@@ -20,4 +20,6 @@ public interface GoodsCorrelationMapper {
     int updateByPrimaryKey(GoodsCorrelation record);
 
     List<GoodsCorrelation> getCorrelationsByGoodsId(Integer goodsId);
+
+    List<Integer> selectCategoryIdByGoodsId(Integer goodsId);
 }

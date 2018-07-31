@@ -2,6 +2,9 @@ package com.fangyuanyouyue.goods.model;
 
 import java.util.Date;
 
+/**
+ * 商品类目表
+ */
 public class GoodsCategory {
     private Integer id;
 
@@ -16,6 +19,8 @@ public class GoodsCategory {
     private Integer type;//类型 1普通 2热门
 
     private Integer status;//状态
+
+    private Integer searchCount;//搜索次数
 
     private Date addTime;//添加时间
 
@@ -75,6 +80,14 @@ public class GoodsCategory {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getSearchCount() {
+        return searchCount;
+    }
+
+    public void setSearchCount(Integer searchCount) {
+        this.searchCount = searchCount;
     }
 
     public Date getAddTime() {

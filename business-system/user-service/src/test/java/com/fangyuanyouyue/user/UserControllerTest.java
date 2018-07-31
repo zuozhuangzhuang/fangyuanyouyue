@@ -62,6 +62,7 @@ public class UserControllerTest {
                 .param("loginPwd","123456")
                 .param("nickName","昵称")
 //                .param("headImgUrl","123456")
+//                .param("bgImgUrl","123456")
                 .param("gender","1")
                 .param("regPlatform","1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -70,7 +71,7 @@ public class UserControllerTest {
     }
 
     /**
-     * 登录
+     * 用户登录
      * @throws Exception
      */
     @Test
@@ -85,39 +86,25 @@ public class UserControllerTest {
                 .andReturn();
     }
 
-    /**
-     * 三方注册
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void thirdRegister() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/thirdRegister")
-                .param("thirdNickName","偷看")
-                .param("thirdHeadImgUrl","http://app.fangyuanyouyue.com/static/pic/2018/03/05/HEADIMG_180305120832068.jpg")
-                .param("gender","0")
-                .param("unionId","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
-                .param("regType","2")
-                .param("regPlatform","3")
-                .param("type","1")
-//                .param("phone","18103966057")
-//                .param("loginPwd","123456")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
 
     /**
-     * APP三方登录
+     * APP三方注册/登录
      * @throws Exception
      */
     @Test
     @Transactional
     public void thirdLogin() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/thirdLogin")
+                .param("thirdNickName","昵称")
+                //第三方账号头像地址
+//                .param("thirdHeadImgUrl","")
+                //性别，1男 2女 0不确定
+                .param("gender","1")
+                //登录平台 1安卓 2iOS 3小程序
+                .param("loginPlatform","1")
                 .param("unionId","oJ9SjwsSoaWNMR_xflHnyaRnUf2Q")
+                //类型 1微信 2QQ 3微博
                 .param("type","1")
-                .param("lastLoginPlatform","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -131,9 +118,10 @@ public class UserControllerTest {
     @Transactional
     public void thirdBind() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/thirdBind")
-                .param("thirdNo","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
-                .param("type","1")
                 .param("token","6008FY1525397451364")
+                .param("unionId","oJ9SjwtB9Yqh_6pvlAaoIP3QvhwE")
+                //类型 1微信 2QQ 3微博
+                .param("type","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
@@ -148,30 +136,18 @@ public class UserControllerTest {
     public void certification() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/certification")
                 .param("token","6008FY1525397451364")
-                .param("cardNo","41282419940411771X")
-                .param("realName","左壮壮")
+                .param("name","左壮壮")
+                //身份证号
+                .param("identity","41282419940411771X")
+                //身份证封面图路径
+                .param("identityImgCoverUrl","")
+                //身份证背面路径
+                .param("identityImgBackUrl","")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
-    /**
-     * 上传头像
-     * @throws Exception
-     */
-//    @Test
-//    @Transactional
-//    public void headImg() throws Exception {
-//        MockMultipartFile firstFile = new MockMultipartFile("data", "filename.txt", "text/plain", "some xml".getBytes());
-//        mvc.perform(MockMvcRequestBuilders.post("/user/headImg")
-//                .param("token","6008FY1525397451364")
-//
-//                .contentType(MediaType.IMAGE_PNG)
-//                .param("headImg","")
-//                .accept(MediaType.APPLICATION_JSON))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andReturn();
-//    }
 
     /**
      * 完善资料
@@ -180,22 +156,28 @@ public class UserControllerTest {
     @Test
     @Transactional
     public void modify() throws Exception {
-        FileInputStream headImg = new FileInputStream("E:\\pic\\1.jpg");
-        FileInputStream bgImg = new FileInputStream("E:\\pic\\2.jpg");
-        mvc.perform(MockMvcRequestBuilders.multipart("/user/modify")
-//                .file(new MockMultipartFile("headImg", "E:\\pic\\1.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
-//                .file(new MockMultipartFile("bgImg", "E:\\pic\\2.jpg", ",multipart/form-data", "hello upload".getBytes("UTF-8")))
-                .file(new MockMultipartFile("headImg",headImg))
-                .file(new MockMultipartFile("bgImg",bgImg))
-                .param("userId","1")
+        mvc.perform(MockMvcRequestBuilders.post("/user/modify")
+                .param("token","10014FY1531254449019")
                 .param("phone","18103966057")
                 .param("email","zuozhuang_zzz@163.com")
+                //用户所在地
+                .param("userAddress","zuozhuang_zzz@163.com")
                 .param("nickName","偷看看哟")
+                //头像图片路径
+                .param("headImgUrl","偷看看哟")
+                //背景图片路径
+                .param("bgImgUrl","偷看看哟")
+                //性别，1男 2女 0不确定
                 .param("gender","1")
+                //个性签名
                 .param("signature","个性签名")
+                //联系电话
                 .param("contact","13333333333")
+                //身份证号码
                 .param("identity","41282419940411772X")
+                //真实姓名
                 .param("name","左壮壮")
+                //支付密码，md5加密，32位小写字母
                 .param("payPwd","123456")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
@@ -225,89 +207,13 @@ public class UserControllerTest {
     @Transactional
     public void updatePwd() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updatePwd")
-                .param("userId","1")
+                .param("token","10014FY1531254449019")
                 .param("loginPwd","123456")
                 .param("newPwd","654321")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
-
-    /**
-     * 添加收货地址
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void addAddress() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/addAddress")
-                .param("userId","1")
-                .param("receiverName","左壮壮")
-                .param("receiverPhone","18103966057")
-                .param("province","广东省")
-                .param("city","深圳市")
-                .param("area","罗湖区")
-                .param("address","世界金融中心B座1015")
-                .param("postCode","450000")
-                .param("type","2")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-    /**
-     * 修改收货地址
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void updateAddress() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/updateAddress")
-                .param("userId","1")
-                .param("addressId","1")
-                .param("receiverName","左壮壮")
-                .param("receiverPhone","18103966057")
-                .param("province","广东省")
-                .param("city","深圳市")
-                .param("area","罗湖区")
-                .param("address","世界金融中心B座1015")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-
-    /**
-     * 删除收货地址
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void deleteAddress() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/deleteAddress")
-                .param("userId","1")
-                .param("addressId","1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
-
-    /**
-     * 设置默认收货地址
-     * @throws Exception
-     */
-    @Test
-    @Transactional
-    public void defaultAddress() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/user/defaultAddress")
-                .param("userId","1")
-                .param("addressId","1")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(MockMvcResultHandlers.print())
-                .andReturn();
-    }
-
 
     /**
      * 修改绑定手机
@@ -317,13 +223,141 @@ public class UserControllerTest {
     @Transactional
     public void updatePhone() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/user/updatePhone")
-                .param("userId","1")
+                .param("token","1")
                 .param("phone","18103966056")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
 
+    /**
+     * 合并账号
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void accountMerge() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/accountMerge")
+                .param("token","1")
+                .param("phone","18103966056")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 小程序登录
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void miniLogin() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/miniLogin")
+                //code值
+                .param("code","1")
+                //第三方账号昵称
+                .param("thirdNickName","18103966056")
+                //第三方账号头像地址
+                .param("thirdHeadImgUrl","18103966056")
+                //性别，1男 2女 0不确定
+                .param("gender","18103966056")
+                //类型 1微信 2QQ 3微博
+                .param("type","18103966056")
+                //包括敏感数据在内的完整用户信息的加密数据
+                .param("encryptedData","18103966056")
+                //加密算法的初始向量
+                .param("iv","18103966056")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+
+    /**
+     * 发送验证码
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void sendCode() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/sendCode")
+                .param("token","1")
+                .param("phone","18103966056")
+                //验证码类型 0表示注册 1表示密码找回 2 表示支付密码相关 3验证旧手机，4绑定新手机 5店铺认证
+                .param("type","18103966056")
+                .param("unionId","18103966056")
+                //类型 1微信 2QQ 3微博
+                .param("thirdType","18103966056")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+
+    /**
+     * 验证验证码
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void verifyCode() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/verifyCode")
+                //验证码
+                .param("code","1")
+                .param("phone","18103966056")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+
+
+    /**
+     * 获取个人店铺列表
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void shopList() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/user/shopList")
+//                .param("nickName","佛")
+                .param("start","0")
+                .param("limit","10")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 获取用户信息
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void userInfo() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/userInfo")
+                .param("token","10025FY1532677840708")
+                .param("userId","22")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
+
+    /**
+     * 添加/取消关注
+     * @throws Exception
+     */
+    @Test
+    @Transactional
+    public void fansFollow() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.post("/user/fansFollow")
+                .param("token","10025FY1531699708772")
+                .param("toUserId","21")
+                .param("type","0")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+    }
 
 //
 //    /**
@@ -342,22 +376,7 @@ public class UserControllerTest {
 //                .andReturn();
 //    }
 //
-//    /**
-//     * 添加/取消关注
-//     * @throws Exception
-//     */
-//    @Test
-//    @Transactional
-//    public void fansFollow() throws Exception {
-//        mvc.perform(MockMvcRequestBuilders.post("/user/fansFollow")
-//                .param("token","6008FY1525397451364")
-//                .param("userId","6008")
-//                .param("type","0")
-//                .accept(MediaType.APPLICATION_JSON))
-//                .andDo(MockMvcResultHandlers.print())
-//                .andReturn();
-//    }
-//
+
 //    /**
 //     * 我的关注
 //     * @throws Exception

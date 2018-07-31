@@ -17,5 +17,10 @@ public interface UserInfoExtMapper {
 
     int updateByPrimaryKey(UserInfoExt record);
 
+    /**
+     * 根据用户ID获取用户扩展信息
+     * @param userId
+     * @return
+     */
     UserInfoExt selectByUserId(int userId);
 }

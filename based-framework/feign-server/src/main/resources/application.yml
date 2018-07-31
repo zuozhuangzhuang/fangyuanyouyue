@@ -8,7 +8,7 @@ server:
 
 spring:
   application:
-    name: service-feign
+    name: feign-server
 
 #断路器开关
 feign:

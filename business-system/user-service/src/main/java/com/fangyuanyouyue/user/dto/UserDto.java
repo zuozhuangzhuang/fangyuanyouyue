@@ -1,6 +1,7 @@
 package com.fangyuanyouyue.user.dto;
 
 import com.fangyuanyouyue.user.model.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -9,7 +10,9 @@ import java.util.List;
  */
 public class UserDto {
     //UserInfo 用户基本信息表
-    private Integer userId;//用户id
+    private Integer userId;//用户ID
+
+    private String token;//用户token
 
     private String phone;//手机号码
 
@@ -34,48 +37,7 @@ public class UserDto {
     private String levelDesc;//等级描述
 
 
-    //UserExamine
-//    private String oldNickname;//申请前昵称
-//
-//    private String newNickname;//待审核昵称
-//
-//    private Integer examineStatus;//审核状态 0申请中 1申请通过 2已拒绝
-
-    //UserInfoExt 用户扩展表
-    private String identity;//身份证号码
-
-    private String name;//真实姓名
-
-    private Integer extStatus;//实名登记状态 1已实名 2未实名
-
-    /* ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ */
-    //IdentityAuthApply
-    private String identityImgCover;//身份证封面图
-
-    private String identityImgBack;//身份证背面
-
-    private String identityRejectDesc;//拒绝原因
-
     private Integer identityStatus;//实名认证状态 1申请 2通过 3拒绝
-
-
-
-    //UserThirdParty
-    private Integer thirdType;//类型 1微信 2QQ 3微博
-
-    private String unionId;//第三方唯一ID
-
-    private String appOpenId;//微信app openid
-
-    private String mpOpenId;//公众号openid
-
-    private String miniOpenId;//小程序openid
-
-    private String thirdNickName;//第三方账号昵称
-
-    private String thirdHeadImgUrl;//第三方账号头像地址
-
-
 
     //UserVip
     private Integer vipLevel;//会员等级
@@ -84,15 +46,69 @@ public class UserDto {
 
     private Integer vipType;//会员类型 1体验会员 2月会员 3年会员
 
-    private Integer vipStatus;//会员状态1已开通 2未开通
+    private Integer vipStatus;//会员状态 1已开通 2未开通
+
+    //UserFans
+    private Integer fansCount;//粉丝数量
+
+    private Integer collectCount;//关注数量
+
+    private Integer isFollow = 2;//是否关注 1是 2否
 
     //UserAddressDto
-//    private List<UserAddressDto> userAddressDtos;//用户收货地址
+    private UserAddressDto defaultAddress;//用户默认收货地址
+
+
+    //UserInfoExt 用户扩展表
+    private Integer score;//用户积分
+
+    private Integer credit;//信誉度
+
+    private Integer authType;//认证状态 1已认证 2未认证
+
+    private Integer extStatus;//实名登记状态 1已实名 2未实名
+
+    /**
+     * ↓↓↓↓↓↓↓注释掉不需要返回的属性↓↓↓↓↓↓↓
+     */
+
+    //IdentityAuthApply
+//    private String identityImgCover;//身份证封面图
+
+//    private String identityImgBack;//身份证背面
+
+//    private String identityRejectDesc;//拒绝原因
+
+
+
+    //UserThirdParty
+//    private Integer thirdType;//类型 1微信 2QQ 3微博
+
+//    private String unionId;//第三方唯一ID
+
+//    private String appOpenId;//微信app openid
+
+//    private String mpOpenId;//公众号openid
+
+//    private String miniOpenId;//小程序openid
+
+//    private String identity;//身份证号码
+
+//    private String name;//真实姓名
+
+
+
+    /**
+     * ↑↑↑↑↑↑注释掉不需要返回的属性↑↑↑↑↑↑
+     */
 
     public UserDto() {
     }
 
-    public UserDto(UserInfo userInfo, UserVip userVip, IdentityAuthApply identityAuthApply, UserInfoExt userInfoExt, UserExamine userExamine,UserThirdParty userThirdParty) {
+    public UserDto(String token,UserInfo userInfo, UserVip userVip, UserInfoExt userInfoExt,IdentityAuthApply identityAuthApply) {
+        if(StringUtils.isNotEmpty(token)){
+            this.token = token;
+        }
         //UserInfo
         if(userInfo != null){
             this.userId = userInfo.getId();
@@ -110,27 +126,28 @@ public class UserDto {
         }
         //UserInfoExt
         if(userInfoExt != null){
+            this.credit = userInfoExt.getCredit();
+            this.score = userInfoExt.getScore();
+            this.authType = userInfoExt.getAuthType();
             this.extStatus = userInfoExt.getStatus();
         }
         //IdentityAuthApply
         if(identityAuthApply != null){
-            this.identity = identityAuthApply.getIdentity();
-            this.name = identityAuthApply.getName();
-            this.identityImgCover = identityAuthApply.getIdentityImgCover();
-            this.identityImgBack = identityAuthApply.getIdentityImgBack();
-            this.identityRejectDesc = identityAuthApply.getRejectDesc();
+//            this.identity = identityAuthApply.getIdentity();
+//            this.name = identityAuthApply.getName();
+//            this.identityImgCover = identityAuthApply.getIdentityImgCover();
+//            this.identityImgBack = identityAuthApply.getIdentityImgBack();
+//            this.identityRejectDesc = identityAuthApply.getRejectDesc();
             this.identityStatus = identityAuthApply.getStatus();
         }
         //UserThirdParty
-        if(userThirdParty != null){
-            this.thirdType = userThirdParty.getType();
-            this.unionId = userThirdParty.getUnionId();
-            this.appOpenId = userThirdParty.getAppOpenId();
-            this.mpOpenId = userThirdParty.getMpOpenId();
-            this.miniOpenId = userThirdParty.getMiniOpenId();
-            this.thirdNickName = userThirdParty.getNickName();
-            this.thirdHeadImgUrl = userThirdParty.getHeadImgUrl();
-        }
+//        if(userThirdParty != null){
+//            this.thirdType = userThirdParty.getType();
+//            this.unionId = userThirdParty.getUnionId();
+//            this.appOpenId = userThirdParty.getAppOpenId();
+//            this.mpOpenId = userThirdParty.getMpOpenId();
+//            this.miniOpenId = userThirdParty.getMiniOpenId();
+//        }
         //UserVip
         if(userVip != null){
             this.vipLevel = userVip.getVipLevel();
@@ -138,24 +155,18 @@ public class UserDto {
             this.vipType = userVip.getVipType();
             this.vipStatus = userVip.getStatus();
         }
-        //UserExamine
-//        if(userExamine != null ){
-//            this.oldNickname = userExamine.getOldNickname();
-//            this.newNickname = userExamine.getNewNickname();
-//            this.examineStatus = userExamine.getStatus();
-//        }
         //UserAddressInfo
 //        if(userAddressInfos != null && userAddressInfos.size()>0){
 //            this.userAddressDtos = UserAddressDto.toDtoList(userAddressInfos);
 //        }
     }
 
-    public Integer getUserId() {
-        return userId;
+    public String getToken() {
+        return token;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getPhone() {
@@ -246,84 +257,12 @@ public class UserDto {
         this.levelDesc = levelDesc;
     }
 
-    public String getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(String identity) {
-        this.identity = identity;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Integer getExtStatus() {
         return extStatus;
     }
 
     public void setExtStatus(Integer extStatus) {
         this.extStatus = extStatus;
-    }
-
-    public Integer getThirdType() {
-        return thirdType;
-    }
-
-    public void setThirdType(Integer thirdType) {
-        this.thirdType = thirdType;
-    }
-
-    public String getUnionId() {
-        return unionId;
-    }
-
-    public void setUnionId(String unionId) {
-        this.unionId = unionId;
-    }
-
-    public String getAppOpenId() {
-        return appOpenId;
-    }
-
-    public void setAppOpenId(String appOpenId) {
-        this.appOpenId = appOpenId;
-    }
-
-    public String getMpOpenId() {
-        return mpOpenId;
-    }
-
-    public void setMpOpenId(String mpOpenId) {
-        this.mpOpenId = mpOpenId;
-    }
-
-    public String getMiniOpenId() {
-        return miniOpenId;
-    }
-
-    public void setMiniOpenId(String miniOpenId) {
-        this.miniOpenId = miniOpenId;
-    }
-
-    public String getThirdNickName() {
-        return thirdNickName;
-    }
-
-    public void setThirdNickName(String thirdNickName) {
-        this.thirdNickName = thirdNickName;
-    }
-
-    public String getThirdHeadImgUrl() {
-        return thirdHeadImgUrl;
-    }
-
-    public void setThirdHeadImgUrl(String thirdHeadImgUrl) {
-        this.thirdHeadImgUrl = thirdHeadImgUrl;
     }
 
     public Integer getVipLevel() {
@@ -358,30 +297,6 @@ public class UserDto {
         this.vipStatus = vipStatus;
     }
 
-    public String getIdentityImgCover() {
-        return identityImgCover;
-    }
-
-    public void setIdentityImgCover(String identityImgCover) {
-        this.identityImgCover = identityImgCover;
-    }
-
-    public String getIdentityImgBack() {
-        return identityImgBack;
-    }
-
-    public void setIdentityImgBack(String identityImgBack) {
-        this.identityImgBack = identityImgBack;
-    }
-
-    public String getIdentityRejectDesc() {
-        return identityRejectDesc;
-    }
-
-    public void setIdentityRejectDesc(String identityRejectDesc) {
-        this.identityRejectDesc = identityRejectDesc;
-    }
-
     public Integer getIdentityStatus() {
         return identityStatus;
     }
@@ -390,4 +305,67 @@ public class UserDto {
         this.identityStatus = identityStatus;
     }
 
+    public Integer getFansCount() {
+        return fansCount;
+    }
+
+    public void setFansCount(Integer fansCount) {
+        this.fansCount = fansCount;
+    }
+
+    public Integer getCollectCount() {
+        return collectCount;
+    }
+
+    public void setCollectCount(Integer collectCount) {
+        this.collectCount = collectCount;
+    }
+
+    public UserAddressDto getDefaultAddress() {
+        return defaultAddress;
+    }
+
+    public void setDefaultAddress(UserAddressDto defaultAddress) {
+        this.defaultAddress = defaultAddress;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public Integer getCredit() {
+        return credit;
+    }
+
+    public void setCredit(Integer credit) {
+        this.credit = credit;
+    }
+
+    public Integer getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(Integer authType) {
+        this.authType = authType;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getIsFollow() {
+        return isFollow;
+    }
+
+    public void setIsFollow(Integer isFollow) {
+        this.isFollow = isFollow;
+    }
 }

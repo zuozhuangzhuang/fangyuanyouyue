@@ -9,12 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UserInfoExtService {
     /**
      * 实名认证
-     * @param userId
+     * @param token
      * @param name
      * @param identity
-     * @param identityImgCover
-     * @param identityImgBack
+     * @param identityImgCoverUrl
+     * @param identityImgBackUrl
      * @throws ServiceException
      */
-    void certification(Integer userId, String name, String identity, MultipartFile identityImgCover, MultipartFile identityImgBack) throws ServiceException;
+    void certification(String token, String name, String identity, String identityImgCoverUrl, String identityImgBackUrl) throws ServiceException;
 }

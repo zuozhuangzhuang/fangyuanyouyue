@@ -6,7 +6,11 @@ import com.fangyuanyouyue.goods.model.GoodsCorrelation;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+/*
 
+
+
+ */
 /**
  * 商品分类关联表Dto
  */
@@ -17,6 +21,8 @@ public class GoodsCorrelationDto {
 
     private Integer goodsId;//商品ID
 
+    private Integer categoryParentId;//商品分类父ID
+
     public GoodsCorrelationDto() {
     }
 
@@ -24,6 +30,7 @@ public class GoodsCorrelationDto {
         this.correlationId = goodsCorrelation.getId();
         this.goodsCategoryId = goodsCorrelation.getGoodsCategoryId();
         this.goodsId = goodsCorrelation.getGoodsId();
+        this.categoryParentId = goodsCorrelation.getCategoryParentId();
     }
     public static List<GoodsCorrelationDto> toDtoList(List<GoodsCorrelation> list) {
         if (list == null)
@@ -59,4 +66,11 @@ public class GoodsCorrelationDto {
         this.goodsId = goodsId;
     }
 
+    public Integer getCategoryParentId() {
+        return categoryParentId;
+    }
+
+    public void setCategoryParentId(Integer categoryParentId) {
+        this.categoryParentId = categoryParentId;
+    }
 }

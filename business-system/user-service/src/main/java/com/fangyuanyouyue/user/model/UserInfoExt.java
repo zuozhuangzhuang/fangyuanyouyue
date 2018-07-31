@@ -8,7 +8,7 @@ import java.util.Date;
 public class UserInfoExt {
     private Integer id;//唯一自增ID
 
-    private Integer userId;//用户id，user_info id
+    private Integer userId;//用户id
 
     private String identity;//身份证号码
 
@@ -21,6 +21,12 @@ public class UserInfoExt {
     private Date addTime;//添加时间
 
     private Date updateTime;//更新时间
+
+    private Integer credit;//信誉度
+
+    private Integer authType;//认证状态 1已认证 2未认证
+
+    private Integer score;//用户积分
 
     public Integer getId() {
         return id;
@@ -78,11 +84,35 @@ public class UserInfoExt {
         this.addTime = addTime;
     }
 
+    public Integer getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(Integer authType) {
+        this.authType = authType;
+    }
+
     public Date getUpdateTime() {
         return updateTime;
     }
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getCredit() {
+        return credit;
+    }
+
+    public void setCredit(Integer credit) {
+        this.credit = credit;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }

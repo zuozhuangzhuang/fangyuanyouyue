@@ -6,7 +6,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class SchedualGoodsServiceImpl implements SchedualGoodsService{
     @Override
-    public String goodsList(String classify, String start, String limit) {
+    public String goodsList(Integer userId, Integer start, Integer limit) {
+        return "系统繁忙，请稍后重试！";
+    }
+
+    @Override
+    public String goodsInfo(Integer goodsId) {
         return "系统繁忙，请稍后重试！";
     }
 }

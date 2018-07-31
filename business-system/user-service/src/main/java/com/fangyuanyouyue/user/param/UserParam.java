@@ -1,12 +1,36 @@
 package com.fangyuanyouyue.user.param;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.Date;
 
-//@ApiModel(value = "用户相关参数")
-public class UserParam extends BaseParam {
+@ApiModel(value = "用户相关参数")
+public class UserParam{
+	//公用
+
+	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "int",hidden = true)
+	private Integer userId; //用户ID
+
+	@ApiModelProperty(name = "start", value = "起始页", dataType = "int",hidden = true)
+	private Integer start; // 起始页
+
+	@ApiModelProperty(name = "limit", value = "限制页", dataType = "int",hidden = true)
+	private Integer limit; // 限制页
+
+	@ApiModelProperty(name = "type", value = "类型", dataType = "int",hidden = true)
+	private Integer type;//类型	UserThirdParty：1微信 2QQ 3微博 UserAddressInfo：1默认地址 2其他 UserCollect：1关注 2收藏
+
+	@ApiModelProperty(name = "imgFile", value = "图片文件", dataType = "file",hidden = true)
+	private MultipartFile imgFile;//图片文件
+
+	@ApiModelProperty(name = "videoFile", value = "视频文件", dataType = "file",hidden = true)
+	private MultipartFile videoFile;//视频文件
+
+
+	//UserInfo
 	@ApiModelProperty(name = "phone", value = "手机号码", dataType = "String",hidden = true)
 	private String phone;//手机号码
 
@@ -25,14 +49,14 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "headImgUrl", value = "头像图片地址", dataType = "String",hidden = true)
 	private String headImgUrl;//头像图片地址
 
-	@ApiModelProperty(name = "headImg", value = "头像图片", dataType = "file",hidden = true)
-	private MultipartFile headImg;//头像图片
+//	@ApiModelProperty(name = "headImg", value = "头像图片", dataType = "file",hidden = true)
+//	private MultipartFile headImg;//头像图片
 
 	@ApiModelProperty(name = "bgImgUrl", value = "背景图片地址", dataType = "String",hidden = true)
 	private String bgImgUrl;//背景图片地址
 
-	@ApiModelProperty(name = "bgImg", value = "背景图片", dataType = "file",hidden = true)
-	private MultipartFile bgImg;//背景图片
+//	@ApiModelProperty(name = "bgImg", value = "背景图片", dataType = "file",hidden = true)
+//	private MultipartFile bgImg;//背景图片
 
 	@ApiModelProperty(name = "gender", value = "性别，1男 2女 0不确定", dataType = "int",hidden = true)
 	private Integer gender;//性别，1男 2女 0不确定
@@ -58,8 +82,8 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "updateTime", value = "更新时间", dataType = "int",hidden = true)
 	private Date updateTime;//更新时间
 
-	@ApiModelProperty(name = "userId", value = "用户ID", dataType = "int",hidden = true)
-	private Integer userId;//用户ID
+	@ApiModelProperty(name = "token", value = "用户token", dataType = "String",hidden = true)
+	private String token;//用户token
 
 	@ApiModelProperty(name = "newPwd", value = "新密码", dataType = "String",hidden = true)
 	private String newPwd;//新密码
@@ -76,11 +100,11 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "payPwd", value = "支付密码，md5加密，32位小写字母", dataType = "String",hidden = true)
 	private String payPwd;//支付密码，明文6位，MD5小写
 
-	@ApiModelProperty(name = "identityImgCover", value = "身份证封面图", dataType = "file",hidden = true)
-	private MultipartFile identityImgCover;//身份证封面图
+	@ApiModelProperty(name = "identityImgCoverUrl", value = "身份证封面图路径", dataType = "String",hidden = true)
+	private String identityImgCoverUrl;//身份证封面图
 
-	@ApiModelProperty(name = "identityImgBack", value = "身份证背面", dataType = "file",hidden = true)
-	private MultipartFile identityImgBack;//身份证背面
+	@ApiModelProperty(name = "identityImgBackUrl", value = "身份证背面路径", dataType = "String",hidden = true)
+	private String identityImgBackUrl;//身份证背面
 
 	@ApiModelProperty(name = "receiverName", value = "收货人", dataType = "String",hidden = true)
 	private String receiverName;//收货人
@@ -115,15 +139,48 @@ public class UserParam extends BaseParam {
 	@ApiModelProperty(name = "thirdHeadImgUrl", value = "第三方账号头像地址", dataType = "String",hidden = true)
 	private String thirdHeadImgUrl;//第三方账号头像地址
 
-	@ApiModelProperty(name = "loginPlatform", value = "最后登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
-	private Integer loginPlatform;//最后登录平台 1安卓 2IOS 3小程序
+	@ApiModelProperty(name = "loginPlatform", value = "登录平台 1安卓 2IOS 3小程序", dataType = "int",hidden = true)
+	private Integer loginPlatform;//登录平台 1安卓 2IOS 3小程序
 
+
+
+	//小程序
 	@ApiModelProperty(name = "code", value = "微信获取的code", dataType = "String",hidden = true)
 	private String code;//微信获取的code
+
 	@ApiModelProperty(name = "encryptedData", value = "包括敏感数据在内的完整用户信息的加密数据", dataType = "String",hidden = true)
 	private String encryptedData;//包括敏感数据在内的完整用户信息的加密数据
+
 	@ApiModelProperty(name = "iv", value = "加密算法的初始向量", dataType = "String",hidden = true)
 	private String iv;//加密算法的初始向量
+
+	//UserFans
+	@ApiModelProperty(name = "toUserId", value = "加密算法的初始向量", dataType = "int",hidden = true)
+	private Integer toUserId;//被关注人ID
+
+	public Integer getStart() {
+		return start;
+	}
+
+	public void setStart(Integer start) {
+		this.start = start;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
+	public Integer getType() {
+		return type;
+	}
+
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
 	public String getPhone() {
 		return phone;
@@ -171,14 +228,6 @@ public class UserParam extends BaseParam {
 
 	public void setHeadImgUrl(String headImgUrl) {
 		this.headImgUrl = headImgUrl;
-	}
-
-	public String getBgImgUrl() {
-		return bgImgUrl;
-	}
-
-	public void setBgImgUrl(String bgImgUrl) {
-		this.bgImgUrl = bgImgUrl;
 	}
 
 	public Integer getGender() {
@@ -245,13 +294,6 @@ public class UserParam extends BaseParam {
 		this.updateTime = updateTime;
 	}
 
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
 
 	public String getNewPwd() {
 		return newPwd;
@@ -269,12 +311,10 @@ public class UserParam extends BaseParam {
 		this.birth = birth;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -287,20 +327,12 @@ public class UserParam extends BaseParam {
 		this.identity = identity;
 	}
 
-	public MultipartFile getIdentityImgCover() {
-		return identityImgCover;
+	public String getPayPwd() {
+		return payPwd;
 	}
 
-	public void setIdentityImgCover(MultipartFile identityImgCover) {
-		this.identityImgCover = identityImgCover;
-	}
-
-	public MultipartFile getIdentityImgBack() {
-		return identityImgBack;
-	}
-
-	public void setIdentityImgBack(MultipartFile identityImgBack) {
-		this.identityImgBack = identityImgBack;
+	public void setPayPwd(String payPwd) {
+		this.payPwd = payPwd;
 	}
 
 	public String getReceiverName() {
@@ -391,31 +423,6 @@ public class UserParam extends BaseParam {
 		this.thirdHeadImgUrl = thirdHeadImgUrl;
 	}
 
-
-	public String getPayPwd() {
-		return payPwd;
-	}
-
-	public void setPayPwd(String payPwd) {
-		this.payPwd = payPwd;
-	}
-
-	public MultipartFile getHeadImg() {
-		return headImg;
-	}
-
-	public void setHeadImg(MultipartFile headImg) {
-		this.headImg = headImg;
-	}
-
-	public MultipartFile getBgImg() {
-		return bgImg;
-	}
-
-	public void setBgImg(MultipartFile bgImg) {
-		this.bgImg = bgImg;
-	}
-
 	public Integer getLoginPlatform() {
 		return loginPlatform;
 	}
@@ -448,18 +455,86 @@ public class UserParam extends BaseParam {
 		this.iv = iv;
 	}
 
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public MultipartFile getImgFile() {
+		return imgFile;
+	}
+
+	public void setImgFile(MultipartFile imgFile) {
+		this.imgFile = imgFile;
+	}
+
+	public String getBgImgUrl() {
+		return bgImgUrl;
+	}
+
+	public void setBgImgUrl(String bgImgUrl) {
+		this.bgImgUrl = bgImgUrl;
+	}
+
+	public String getIdentityImgCoverUrl() {
+		return identityImgCoverUrl;
+	}
+
+	public void setIdentityImgCoverUrl(String identityImgCoverUrl) {
+		this.identityImgCoverUrl = identityImgCoverUrl;
+	}
+
+	public String getIdentityImgBackUrl() {
+		return identityImgBackUrl;
+	}
+
+	public void setIdentityImgBackUrl(String identityImgBackUrl) {
+		this.identityImgBackUrl = identityImgBackUrl;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getToUserId() {
+		return toUserId;
+	}
+
+	public void setToUserId(Integer toUserId) {
+		this.toUserId = toUserId;
+	}
+
+	public MultipartFile getVideoFile() {
+		return videoFile;
+	}
+
+	public void setVideoFile(MultipartFile videoFile) {
+		this.videoFile = videoFile;
+	}
+
 	@Override
 	public String toString() {
 		return "UserParam{" +
-				"phone='" + phone + '\'' +
+				"userId=" + userId +
+				", start=" + start +
+				", limit=" + limit +
+				", type=" + type +
+				", imgFile=" + imgFile +
+				", videoFile=" + videoFile +
+				", phone='" + phone + '\'' +
 				", email='" + email + '\'' +
 				", userAddress='" + userAddress + '\'' +
 				", loginPwd='" + loginPwd + '\'' +
 				", nickName='" + nickName + '\'' +
 				", headImgUrl='" + headImgUrl + '\'' +
-				", headImg=" + headImg +
 				", bgImgUrl='" + bgImgUrl + '\'' +
-				", bgImg=" + bgImg +
 				", gender=" + gender +
 				", signature='" + signature + '\'' +
 				", contact='" + contact + '\'' +
@@ -468,14 +543,14 @@ public class UserParam extends BaseParam {
 				", levelDesc='" + levelDesc + '\'' +
 				", status=" + status +
 				", updateTime=" + updateTime +
-				", userId=" + userId +
+				", token='" + token + '\'' +
 				", newPwd='" + newPwd + '\'' +
 				", birth='" + birth + '\'' +
 				", name='" + name + '\'' +
 				", identity='" + identity + '\'' +
 				", payPwd='" + payPwd + '\'' +
-				", identityImgCover=" + identityImgCover +
-				", identityImgBack=" + identityImgBack +
+				", identityImgCoverUrl='" + identityImgCoverUrl + '\'' +
+				", identityImgBackUrl='" + identityImgBackUrl + '\'' +
 				", receiverName='" + receiverName + '\'' +
 				", receiverPhone='" + receiverPhone + '\'' +
 				", province='" + province + '\'' +
@@ -491,6 +566,7 @@ public class UserParam extends BaseParam {
 				", code='" + code + '\'' +
 				", encryptedData='" + encryptedData + '\'' +
 				", iv='" + iv + '\'' +
+				", toUserId=" + toUserId +
 				'}';
 	}
 }

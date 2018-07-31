@@ -16,4 +16,6 @@ public interface CartInfoMapper {
     int updateByPrimaryKeySelective(CartInfo record);
 
     int updateByPrimaryKey(CartInfo record);
+
+    CartInfo selectByUserId(Integer userId);
 }

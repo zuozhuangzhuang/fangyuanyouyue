@@ -2,6 +2,10 @@ package com.fangyuanyouyue.goods.dao;
 
 import com.fangyuanyouyue.goods.model.CartDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CartDetailMapper {
@@ -16,4 +20,10 @@ public interface CartDetailMapper {
     int updateByPrimaryKeySelective(CartDetail record);
 
     int updateByPrimaryKey(CartDetail record);
+
+    List<CartDetail> selectByCartId(Integer cartId);
+
+    CartDetail selectByCartIdGoodsId(@Param("cartId") Integer cartId, @Param("goodsId")Integer goodsId);
+
+    List<Map<String,Object>> selectByCartIdUserId(@Param("cartId")Integer cartId, @Param("userId") Integer userId);
 }

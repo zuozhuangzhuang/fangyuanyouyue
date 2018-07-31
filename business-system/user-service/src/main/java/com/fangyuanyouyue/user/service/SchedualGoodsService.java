@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(value = "goods-service",fallback = SchedualGoodsServiceImpl.class)
 @Component
 public interface SchedualGoodsService {
-    @RequestMapping(value = "/goods/goodsList",method = RequestMethod.GET)
-    String goodsList(@RequestParam(value = "classify") String classify,@RequestParam(value = "start") String start,@RequestParam(value = "limit") String limit);
+    @RequestMapping(value = "/goods/goodsList",method = RequestMethod.POST)
+    String goodsList(@RequestParam(value = "userId") Integer userId,@RequestParam(value = "start") Integer start,@RequestParam(value = "limit") Integer limit);
+
+    @RequestMapping(value = "/goods/goodsInfo",method = RequestMethod.POST)
+    String goodsInfo(@RequestParam(value = "goodsId") Integer goodsId);
 }

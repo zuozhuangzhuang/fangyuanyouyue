@@ -1,16 +1,25 @@
 package com.fangyuanyouyue.user.service;
 
+import com.fangyuanyouyue.user.dto.ShopDto;
 import com.fangyuanyouyue.user.dto.UserDto;
 import com.fangyuanyouyue.user.model.UserInfo;
 import com.fangyuanyouyue.user.param.UserParam;
 import com.fangyuanyouyue.user.utils.ServiceException;
+
+import java.util.List;
 
 /**
  * 用户相关接口
  */
 public interface UserInfoService {
 
-
+    /**
+     * 根据用户token获取用户信息
+     * @param token
+     * @return
+     * @throws ServiceException
+     */
+    UserInfo getUserByToken(String token) throws ServiceException;
     /**
      * 根据ID获取用户
      * @param id
@@ -51,30 +60,22 @@ public interface UserInfoService {
     UserDto login(String phone,String logingPwd,Integer lastLoginPlatform) throws ServiceException;
 
     /**
-     * 三方注册
+     * 三方登录
      * @param param
-     * @return
-     */
-    UserDto thirdRegister(UserParam param) throws ServiceException;
-
-    /**
-     * 三方登陆
-     * @param unionId
-     * @param type
      * @return
      * @throws ServiceException
      */
-    UserDto thirdLogin(String unionId,Integer type,Integer lastLoginPlatform) throws ServiceException;
+    UserDto thirdLogin(UserParam param) throws ServiceException;
 
     /**
      * 三方绑定
-     * @param userId
+     * @param token
      * @param unionId
      * @param type
      * @return
      * @throws ServiceException
      */
-    UserDto thirdBind(Integer userId,String unionId,Integer type) throws ServiceException;
+    UserDto thirdBind(String token,String unionId,Integer type) throws ServiceException;
 
 
 
@@ -96,28 +97,28 @@ public interface UserInfoService {
 
     /**
      * 修改密码
-     * @param userId
+     * @param token
      * @param newPwd
      * @throws ServiceException
      */
-    void updatePwd(Integer userId,String newPwd) throws ServiceException;
+    void updatePwd(String token,String newPwd) throws ServiceException;
 
     /**
      * 修改绑定手机
-     * @param userId
+     * @param token
      * @param phone
      * @throws ServiceException
      */
-    UserDto updatePhone(Integer userId,String phone) throws ServiceException;
+    UserDto updatePhone(String token,String phone) throws ServiceException;
 
     /**
      * 合并账号
-     * @param userId
+     * @param token
      * @param phone
      * @return
      * @throws ServiceException
      */
-    UserDto accountMerge(Integer userId,String phone) throws ServiceException;
+    UserDto accountMerge(String token,String phone) throws ServiceException;
 
     /**
      * 小程序登录
@@ -134,4 +135,30 @@ public interface UserInfoService {
      * @throws ServiceException
      */
     UserInfo getUserByUnionId(String unionId,Integer type) throws ServiceException;
+
+    /**
+     * 获取个人店铺列表
+     * @param type
+     * @param start
+     * @param limit
+     * @return
+     * @throws ServiceException
+     */
+    List<ShopDto> shopList(String nickName,Integer type,Integer start,Integer limit) throws ServiceException;
+
+    /**
+     * 获取用户信息
+     * @param userId
+     * @return
+     * @throws ServiceException
+     */
+    UserDto userInfo(String token,Integer userId) throws ServiceException;
+
+    /**
+     * 添加关注/取消关注
+     * @param userId
+     * @param toUserId
+     * @throws ServiceException
+     */
+    void fansFollow(Integer userId,Integer toUserId,Integer type) throws ServiceException;
 }
